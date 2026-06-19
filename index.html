@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ms" data-theme="light">
+<html lang="ms" data-theme="light" data-color="emerald">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,17 +17,30 @@
         <div class="brand-mark"></div>
         <div>
           <div class="brand-name">ASB Pro</div>
-          <div class="brand-sub">Kalkulator Pelaburan</div>
+          <div class="brand-sub" data-i18n="brand_sub">Kalkulator Pelaburan</div>
         </div>
       </div>
       <div class="header-actions">
-        <button class="hdr-btn" onclick="shareURL()" title="Salin link tetapan anda — boleh bookmark atau hantar ke orang lain">
-          <i class="ph ph-link"></i><span>Kongsi Link</span>
+        <!-- Color theme picker -->
+        <div class="color-picker" title="Pilih tema warna">
+          <button class="color-dot active" data-color="emerald" style="background:#059669" title="Emerald"></button>
+          <button class="color-dot" data-color="ocean"   style="background:#0284c7" title="Ocean Blue"></button>
+          <button class="color-dot" data-color="sunset"  style="background:#ea580c" title="Sunset"></button>
+          <button class="color-dot" data-color="purple"  style="background:#7c3aed" title="Purple"></button>
+          <button class="color-dot" data-color="rose"    style="background:#e11d48" title="Rose"></button>
+        </div>
+        <!-- Language toggle -->
+        <div class="lang-toggle">
+          <button class="lang-toggle-btn active" data-lang="bm">BM</button>
+          <button class="lang-toggle-btn" data-lang="en">EN</button>
+        </div>
+        <button class="hdr-btn" onclick="shareURL()">
+          <i class="ph ph-link"></i><span data-i18n="hdr_share">Kongsi Link</span>
         </button>
-        <button class="hdr-btn hdr-btn-ghost" onclick="resetState()" title="Buang semua tetapan, mula semula">
+        <button class="hdr-btn hdr-btn-ghost" onclick="resetState()" title="Reset">
           <i class="ph ph-arrow-counter-clockwise"></i>
         </button>
-        <button class="icon-btn" id="themeToggle" title="Tukar tema cerah/gelap">
+        <button class="icon-btn" id="themeToggle">
           <i class="ph ph-moon" id="themeIcon"></i>
         </button>
       </div>
@@ -36,15 +49,15 @@
 
   <nav class="tab-nav" id="tabNav">
     <div class="tab-nav-inner" id="tabNavInner">
-      <button class="tab-btn active" data-tab="dashboard"><i class="ph ph-squares-four"></i><span>Dashboard</span></button>
-      <button class="tab-btn" data-tab="savings"><i class="ph ph-trend-up"></i><span>Simpanan</span></button>
-      <button class="tab-btn" data-tab="financing"><i class="ph ph-bank"></i><span>ASBF</span></button>
-      <button class="tab-btn" data-tab="comparison"><i class="ph ph-arrows-left-right"></i><span>Banding</span></button>
-      <button class="tab-btn" data-tab="forecast"><i class="ph ph-chart-line-up"></i><span>Ramalan</span></button>
-      <button class="tab-btn" data-tab="goal"><i class="ph ph-flag"></i><span>Matlamat</span></button>
-      <button class="tab-btn" data-tab="zakat"><i class="ph ph-hand-heart"></i><span>Zakat</span></button>
-      <button class="tab-btn" data-tab="history"><i class="ph ph-clock-countdown"></i><span>Sejarah</span></button>
-      <button class="tab-btn" data-tab="news"><i class="ph ph-newspaper"></i><span>Berita</span></button>
+      <button class="tab-btn active" data-tab="dashboard"><i class="ph ph-squares-four"></i><span data-i18n="tab_dashboard">Dashboard</span></button>
+      <button class="tab-btn" data-tab="savings"><i class="ph ph-trend-up"></i><span data-i18n="tab_savings">Simpanan</span></button>
+      <button class="tab-btn" data-tab="financing"><i class="ph ph-bank"></i><span data-i18n="tab_financing">ASBF</span></button>
+      <button class="tab-btn" data-tab="comparison"><i class="ph ph-arrows-left-right"></i><span data-i18n="tab_comparison">Banding</span></button>
+      <button class="tab-btn" data-tab="forecast"><i class="ph ph-chart-line-up"></i><span data-i18n="tab_forecast">Ramalan</span></button>
+      <button class="tab-btn" data-tab="goal"><i class="ph ph-flag"></i><span data-i18n="tab_goal">Matlamat</span></button>
+      <button class="tab-btn" data-tab="zakat"><i class="ph ph-hand-heart"></i><span data-i18n="tab_zakat">Zakat</span></button>
+      <button class="tab-btn" data-tab="history"><i class="ph ph-clock-countdown"></i><span data-i18n="tab_history">Sejarah</span></button>
+      <button class="tab-btn" data-tab="news"><i class="ph ph-newspaper"></i><span data-i18n="tab_news">Berita</span></button>
     </div>
     <div class="tab-indicator" id="tabIndicator"></div>
   </nav>
@@ -56,9 +69,9 @@
       <div class="dashboard-hero">
         <div class="hero-eyebrow">
           <i class="ph ph-info"></i>
-          Nilai ini dikira berdasarkan tetapan di tab Simpanan — tukar untuk lihat unjuran anda
+          <span data-i18n="hero_eyebrow">Nilai dikira berdasarkan tetapan di tab Simpanan — ubah untuk lihat unjuran anda</span>
         </div>
-        <div class="hero-label">Unjuran Nilai Akhir (Kadar Sederhana)</div>
+        <div class="hero-label" data-i18n="hero_label">Unjuran Nilai Akhir (Kadar Sederhana)</div>
         <div class="hero-val" id="dashFinalVal">RM 0</div>
         <div class="hero-sub" id="dashFinalSub">—</div>
         <div class="hero-pills">
@@ -68,59 +81,27 @@
         </div>
       </div>
       <div class="stats-grid stats-grid-4">
-        <div class="stat-card">
-          <div class="stat-label">Jumlah Dilaburkan</div>
-          <div class="stat-value accent" id="dashTotalInvest">RM 0</div>
-          <div class="stat-sub" id="dashInvestSub">—</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Jumlah Dividen</div>
-          <div class="stat-value" id="dashTotalReturn">RM 0</div>
-          <div class="stat-sub" id="dashReturnSub">—</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Sumbangan Bulanan</div>
-          <div class="stat-value" id="dashMonthly">RM 0</div>
-          <div class="stat-sub" id="dashDivRate">—</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Zakat Tahun Ini</div>
-          <div class="stat-value" id="dashZakat">RM 0</div>
-          <div class="stat-sub" id="dashZakatSub">—</div>
-        </div>
+        <div class="stat-card"><div class="stat-label" data-i18n="stat_invested">Jumlah Dilaburkan</div><div class="stat-value accent" id="dashTotalInvest">RM 0</div><div class="stat-sub" id="dashInvestSub">—</div></div>
+        <div class="stat-card"><div class="stat-label" data-i18n="stat_dividends">Jumlah Dividen</div><div class="stat-value" id="dashTotalReturn">RM 0</div><div class="stat-sub" id="dashReturnSub">—</div></div>
+        <div class="stat-card"><div class="stat-label" data-i18n="stat_monthly">Sumbangan Bulanan</div><div class="stat-value" id="dashMonthly">RM 0</div><div class="stat-sub" id="dashDivRate">—</div></div>
+        <div class="stat-card"><div class="stat-label" data-i18n="stat_zakat">Zakat Tahun Ini</div><div class="stat-value" id="dashZakat">RM 0</div><div class="stat-sub" id="dashZakatSub">—</div></div>
       </div>
       <div class="chart-block">
         <div class="chart-header">
-          <span class="chart-title">Pertumbuhan ASB — 3 Senario</span>
+          <span class="chart-title" data-i18n="chart_scenarios">Pertumbuhan ASB — 3 Senario</span>
           <span class="chart-legend">
-            <span class="leg-item"><span class="leg-dot bull"></span>Optimis</span>
-            <span class="leg-item"><span class="leg-dot base"></span>Sederhana</span>
-            <span class="leg-item"><span class="leg-dot bear"></span>Pesimis</span>
+            <span class="leg-item"><span class="leg-dot bull"></span><span data-i18n="lbl_optimis">Optimis</span></span>
+            <span class="leg-item"><span class="leg-dot base"></span><span data-i18n="lbl_moderate">Sederhana</span></span>
+            <span class="leg-item"><span class="leg-dot bear"></span><span data-i18n="lbl_pessimis">Pesimis</span></span>
           </span>
         </div>
         <div class="chart-wrap h300"><canvas id="dashChart"></canvas></div>
       </div>
       <div class="dashboard-quick">
-        <div class="quick-card" onclick="switchTab('savings')" title="Tetapkan deposit, sumbangan bulanan dan kadar dividen">
-          <i class="ph ph-trend-up"></i>
-          <span>Kira Simpanan</span>
-          <i class="ph ph-arrow-right quick-arrow"></i>
-        </div>
-        <div class="quick-card" onclick="switchTab('financing')">
-          <i class="ph ph-bank"></i>
-          <span>Kira ASBF</span>
-          <i class="ph ph-arrow-right quick-arrow"></i>
-        </div>
-        <div class="quick-card" onclick="switchTab('forecast')">
-          <i class="ph ph-chart-line-up"></i>
-          <span>Lihat Ramalan</span>
-          <i class="ph ph-arrow-right quick-arrow"></i>
-        </div>
-        <div class="quick-card" onclick="switchTab('goal')">
-          <i class="ph ph-flag"></i>
-          <span>Tetapkan Matlamat</span>
-          <i class="ph ph-arrow-right quick-arrow"></i>
-        </div>
+        <div class="quick-card" onclick="switchTab('savings')"><i class="ph ph-trend-up"></i><span data-i18n="qc_savings">Kira Simpanan</span><i class="ph ph-arrow-right quick-arrow"></i></div>
+        <div class="quick-card" onclick="switchTab('financing')"><i class="ph ph-bank"></i><span data-i18n="qc_financing">Kira ASBF</span><i class="ph ph-arrow-right quick-arrow"></i></div>
+        <div class="quick-card" onclick="switchTab('forecast')"><i class="ph ph-chart-line-up"></i><span data-i18n="qc_forecast">Lihat Ramalan</span><i class="ph ph-arrow-right quick-arrow"></i></div>
+        <div class="quick-card" onclick="switchTab('goal')"><i class="ph ph-flag"></i><span data-i18n="qc_goals">Tetapkan Matlamat</span><i class="ph ph-arrow-right quick-arrow"></i></div>
       </div>
     </section>
 
@@ -129,108 +110,68 @@
       <div class="calc-layout">
         <div class="inputs-panel">
           <div class="panel-header">
-            <h2 class="panel-title">Kalkulator Simpanan ASB</h2>
-            <p class="panel-desc">Simulasi DCA bulanan dengan kaedah pengiraan PNB</p>
+            <h2 class="panel-title" data-i18n="sav_title">Kalkulator Simpanan ASB</h2>
+            <p class="panel-desc" data-i18n="sav_desc">Simulasi DCA bulanan dengan kaedah pengiraan PNB</p>
           </div>
           <div class="input-group">
-            <label class="input-label">Deposit Awal <span class="input-val" id="savInitVal">RM 10,000</span></label>
+            <label class="input-label"><span data-i18n="sav_initial">Deposit Awal</span> <span class="input-val" id="savInitVal">RM 10,000</span></label>
             <input type="range" class="slider" id="savInitial" min="0" max="500000" step="1000" value="10000">
             <div class="range-bounds"><span>RM 0</span><span>RM 500k</span></div>
           </div>
           <div class="input-group">
-            <label class="input-label">Sumbangan Bulanan (DCA) <span class="input-val" id="savMonthlyVal">RM 500</span></label>
+            <label class="input-label"><span data-i18n="sav_monthly">Sumbangan Bulanan (DCA)</span> <span class="input-val" id="savMonthlyVal">RM 500</span></label>
             <input type="range" class="slider" id="savMonthly" min="0" max="5000" step="50" value="500">
             <div class="range-bounds"><span>RM 0</span><span>RM 5,000</span></div>
           </div>
           <div class="input-group">
-            <label class="input-label">Kadar Dividen Dijangka <span class="input-val" id="savRateVal">5.00%</span></label>
+            <label class="input-label"><span data-i18n="sav_rate">Kadar Dividen Dijangka</span> <span class="input-val" id="savRateVal">5.00%</span></label>
             <input type="range" class="slider" id="savRate" min="1" max="10" step="0.25" value="5">
             <div class="range-bounds"><span>1%</span><span>10%</span></div>
           </div>
           <div class="input-group">
-            <label class="input-label">Bonus Tahunan <span class="input-val" id="savBonusVal">0.00%</span></label>
+            <label class="input-label"><span data-i18n="sav_bonus">Bonus Tahunan</span> <span class="input-val" id="savBonusVal">0.00%</span></label>
             <input type="range" class="slider" id="savBonus" min="0" max="1" step="0.05" value="0">
             <div class="range-bounds"><span>0%</span><span>1%</span></div>
           </div>
           <div class="input-group">
-            <label class="input-label">Tempoh Pelaburan <span class="input-val" id="savYearsVal">20 tahun</span></label>
+            <label class="input-label"><span data-i18n="sav_years">Tempoh Pelaburan</span> <span class="input-val" id="savYearsVal">20 tahun</span></label>
             <input type="range" class="slider" id="savYears" min="1" max="40" step="1" value="20">
-            <div class="range-bounds"><span>1 thn</span><span>40 thn</span></div>
+            <div class="range-bounds"><span>1</span><span>40</span></div>
           </div>
-          <div class="divider-text"><span>Simulasi Pengeluaran</span></div>
+          <div class="divider-text"><span data-i18n="sav_withdrawal_section">Simulasi Pengeluaran</span></div>
           <div class="input-group">
-            <label class="input-label">Pengeluaran Sekali (RM)</label>
-            <input type="number" class="input-field" id="withdrawAmount" placeholder="cth: 10000" min="0">
-            <div class="input-hint">Kesan pengeluaran terhadap nilai akhir</div>
+            <label class="input-label" data-i18n="sav_withdrawal">Pengeluaran Sekali (RM)</label>
+            <input type="number" class="input-field" id="withdrawAmount" min="0">
+            <div class="input-hint" data-i18n="sav_withdrawal_hint">Kesan pengeluaran terhadap nilai akhir</div>
           </div>
           <div class="highlight-result">
-            <div class="highlight-label">Nilai Akhir (DCA)</div>
+            <div class="highlight-label" data-i18n="sav_final_label">Nilai Akhir (DCA)</div>
             <div class="highlight-val accent" id="savFinalVal">RM 0</div>
             <div class="highlight-sub" id="savLastDiv">—</div>
           </div>
-          <div class="autosave-note">
-            <i class="ph ph-cloud-check"></i> Tetapan disimpan secara automatik
-          </div>
+          <div class="autosave-note"><i class="ph ph-cloud-check"></i><span data-i18n="sav_autosave">Tetapan disimpan secara automatik</span></div>
         </div>
         <div class="results-panel">
           <div class="stats-grid stats-grid-2">
-            <div class="stat-card">
-              <div class="stat-label">Jumlah Dilaburkan</div>
-              <div class="stat-value" id="savTotalInvest">RM 0</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-label">Jumlah Dividen</div>
-              <div class="stat-value accent" id="savTotalDiv">RM 0</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-label">ROI</div>
-              <div class="stat-value" id="savROI">0%</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-label">Impak Pengeluaran</div>
-              <div class="stat-value" id="savWithdrawImpact">—</div>
-            </div>
+            <div class="stat-card"><div class="stat-label" data-i18n="sav_invested">Jumlah Dilaburkan</div><div class="stat-value" id="savTotalInvest">RM 0</div></div>
+            <div class="stat-card"><div class="stat-label" data-i18n="sav_dividend">Jumlah Dividen</div><div class="stat-value accent" id="savTotalDiv">RM 0</div></div>
+            <div class="stat-card"><div class="stat-label" data-i18n="sav_roi">ROI</div><div class="stat-value" id="savROI">0%</div></div>
+            <div class="stat-card"><div class="stat-label" data-i18n="sav_impact">Impak Pengeluaran</div><div class="stat-value" id="savWithdrawImpact">—</div></div>
           </div>
-
-          <!-- DCA vs Lump Sum comparison -->
           <div class="compare-block">
-            <div class="compare-block-title">DCA vs Lump Sum</div>
+            <div class="compare-block-title" data-i18n="sav_compare">DCA vs Lump Sum</div>
             <div class="compare-pair">
-              <div class="compare-side">
-                <div class="compare-side-label">DCA Bulanan</div>
-                <div class="compare-side-val" id="dcaFinalVal">RM 0</div>
-                <div class="compare-side-sub">Salin RM/bulan sepanjang tempoh</div>
-              </div>
+              <div class="compare-side"><div class="compare-side-label" data-i18n="sav_dca_label">DCA Bulanan</div><div class="compare-side-val" id="dcaFinalVal">RM 0</div><div class="compare-side-sub" data-i18n="sav_dca_sub">Salin RM/bulan sepanjang tempoh</div></div>
               <div class="compare-vs">VS</div>
-              <div class="compare-side">
-                <div class="compare-side-label">Lump Sum Awal</div>
-                <div class="compare-side-val" id="lumpFinalVal">RM 0</div>
-                <div class="compare-side-sub">Laburkan semua duit dari awal</div>
-              </div>
+              <div class="compare-side"><div class="compare-side-label" data-i18n="sav_lump_label">Lump Sum Awal</div><div class="compare-side-val" id="lumpFinalVal">RM 0</div><div class="compare-side-sub" data-i18n="sav_lump_sub">Laburkan semua duit dari awal</div></div>
             </div>
             <div class="compare-verdict" id="dcaVsLumpVerdict">—</div>
           </div>
-
-          <div class="chart-block">
-            <div class="chart-header"><span class="chart-title">Pertumbuhan ASB (RM)</span></div>
-            <div class="chart-wrap h300"><canvas id="savGrowthChart"></canvas></div>
-          </div>
-          <div class="chart-block">
-            <div class="chart-header"><span class="chart-title">Dividen Tahunan (RM)</span></div>
-            <div class="chart-wrap h200"><canvas id="savDivChart"></canvas></div>
-          </div>
-          <div class="table-toggle-row">
-            <button class="table-toggle-btn" id="savTableToggle">
-              <i class="ph ph-table"></i> Lihat Jadual Tahunan
-            </button>
-          </div>
+          <div class="chart-block"><div class="chart-header"><span class="chart-title" data-i18n="sav_chart1">Pertumbuhan ASB (RM)</span></div><div class="chart-wrap h300"><canvas id="savGrowthChart"></canvas></div></div>
+          <div class="chart-block"><div class="chart-header"><span class="chart-title" data-i18n="sav_chart2">Dividen Tahunan (RM)</span></div><div class="chart-wrap h200"><canvas id="savDivChart"></canvas></div></div>
+          <div class="table-toggle-row"><button class="table-toggle-btn" id="savTableToggle"><i class="ph ph-table"></i><span data-i18n="sav_view_table">Lihat Jadual Tahunan</span></button></div>
           <div class="data-table hidden" id="savTableWrap">
-            <table>
-              <thead>
-                <tr><th>Thn</th><th>Baki Awal</th><th>Deposit</th><th>Dividen</th><th>Baki Akhir</th><th>Jum. Dilaburkan</th></tr>
-              </thead>
-              <tbody id="savTableBody"></tbody>
-            </table>
+            <table><thead><tr><th data-i18n="hist_col_year">Thn</th><th data-i18n="th_start_bal">Baki Awal</th><th data-i18n="th_deposit">Deposit</th><th data-i18n="th_dividend">Dividen</th><th data-i18n="th_end_bal">Baki Akhir</th><th data-i18n="th_total_inv">Jum. Dilaburkan</th></tr></thead><tbody id="savTableBody"></tbody></table>
           </div>
         </div>
       </div>
@@ -240,104 +181,34 @@
     <section class="tab-panel" id="panel-financing">
       <div class="calc-layout">
         <div class="inputs-panel">
-          <div class="panel-header">
-            <h2 class="panel-title">Kalkulator ASBF</h2>
-            <p class="panel-desc">Pembiayaan ASB — analisis bayaran, faedah dan keuntungan bersih</p>
-          </div>
+          <div class="panel-header"><h2 class="panel-title" data-i18n="fin_title">Kalkulator ASBF</h2><p class="panel-desc" data-i18n="fin_desc">Pembiayaan ASB — analisis bayaran, faedah dan keuntungan bersih</p></div>
           <div class="toggle-mode-row">
-            <button class="mode-btn active" id="asbfModeToggle" data-mode="loan">
-              <i class="ph ph-currency-dollar"></i> Input Jumlah Pinjaman
-            </button>
-            <button class="mode-btn" id="asbfPaymentModeBtn" data-mode="payment">
-              <i class="ph ph-calculator"></i> Input Bayaran Bulanan
-            </button>
+            <button class="mode-btn active" id="asbfModeToggle" data-mode="loan"><i class="ph ph-currency-dollar"></i><span data-i18n="fin_mode_loan">Input Jumlah Pinjaman</span></button>
+            <button class="mode-btn" id="asbfPaymentModeBtn" data-mode="payment"><i class="ph ph-calculator"></i><span data-i18n="fin_mode_pay">Input Bayaran Bulanan</span></button>
           </div>
           <div id="asbfLoanGroup">
-            <div class="input-group">
-              <label class="input-label">Jumlah Pinjaman <span class="input-val" id="finLoanVal">RM 100,000</span></label>
-              <input type="range" class="slider" id="finLoan" min="10000" max="1000000" step="5000" value="100000">
-              <div class="range-bounds"><span>RM 10k</span><span>RM 1j</span></div>
-            </div>
+            <div class="input-group"><label class="input-label"><span data-i18n="fin_loan">Jumlah Pinjaman</span> <span class="input-val" id="finLoanVal">RM 100,000</span></label><input type="range" class="slider" id="finLoan" min="10000" max="1000000" step="5000" value="100000"><div class="range-bounds"><span>RM 10k</span><span>RM 1j</span></div></div>
           </div>
           <div id="asbfPaymentGroup" class="hidden">
-            <div class="input-group">
-              <label class="input-label">Bayaran Bulanan <span class="input-val" id="finPaymentVal">RM 500</span></label>
-              <input type="range" class="slider" id="finPayment" min="200" max="10000" step="50" value="500">
-              <div class="range-bounds"><span>RM 200</span><span>RM 10k</span></div>
-            </div>
+            <div class="input-group"><label class="input-label"><span data-i18n="fin_payment">Bayaran Bulanan</span> <span class="input-val" id="finPaymentVal">RM 500</span></label><input type="range" class="slider" id="finPayment" min="200" max="10000" step="50" value="500"><div class="range-bounds"><span>RM 200</span><span>RM 10k</span></div></div>
           </div>
-          <div class="input-group">
-            <label class="input-label">Kadar Faedah Pinjaman <span class="input-val" id="finRateVal">4.00%</span></label>
-            <input type="range" class="slider" id="finRate" min="1" max="8" step="0.25" value="4">
-            <div class="range-bounds"><span>1%</span><span>8%</span></div>
-          </div>
-          <div class="input-group">
-            <label class="input-label">Tempoh Pinjaman <span class="input-val" id="finTenureVal">30 tahun</span></label>
-            <input type="range" class="slider" id="finTenure" min="1" max="42" step="1" value="30">
-            <div class="range-bounds"><span>1 thn</span><span>42 thn</span></div>
-          </div>
-          <div class="input-group">
-            <label class="input-label">Kadar Dividen ASB <span class="input-val" id="finDivVal">5.00%</span></label>
-            <input type="range" class="slider" id="finDiv" min="1" max="10" step="0.25" value="5">
-            <div class="range-bounds"><span>1%</span><span>10%</span></div>
-          </div>
-          <div class="highlight-result">
-            <div class="highlight-label">Keuntungan Bersih ASBF</div>
-            <div class="highlight-val" id="finNetProfit">RM 0</div>
-            <div class="highlight-sub" id="finNetSub">—</div>
-          </div>
-          <div class="spread-card" id="spreadCard">
-            <div class="spread-label">Spread (Dividen − Faedah)</div>
-            <div class="spread-val" id="spreadVal">0.00%</div>
-            <div class="spread-note" id="spreadNote">—</div>
-          </div>
+          <div class="input-group"><label class="input-label"><span data-i18n="fin_rate">Kadar Faedah Pinjaman</span> <span class="input-val" id="finRateVal">4.00%</span></label><input type="range" class="slider" id="finRate" min="1" max="8" step="0.25" value="4"><div class="range-bounds"><span>1%</span><span>8%</span></div></div>
+          <div class="input-group"><label class="input-label"><span data-i18n="fin_tenure">Tempoh Pinjaman</span> <span class="input-val" id="finTenureVal">30 tahun</span></label><input type="range" class="slider" id="finTenure" min="1" max="42" step="1" value="30"><div class="range-bounds"><span>1</span><span>42</span></div></div>
+          <div class="input-group"><label class="input-label"><span data-i18n="fin_div">Kadar Dividen ASB</span> <span class="input-val" id="finDivVal">5.00%</span></label><input type="range" class="slider" id="finDiv" min="1" max="10" step="0.25" value="5"><div class="range-bounds"><span>1%</span><span>10%</span></div></div>
+          <div class="highlight-result"><div class="highlight-label" data-i18n="fin_net_label">Keuntungan Bersih ASBF</div><div class="highlight-val" id="finNetProfit">RM 0</div><div class="highlight-sub" id="finNetSub">—</div></div>
+          <div class="spread-card" id="spreadCard"><div class="spread-label" data-i18n="fin_spread">Spread (Dividen − Faedah)</div><div class="spread-val" id="spreadVal">0.00%</div><div class="spread-note" id="spreadNote">—</div></div>
         </div>
         <div class="results-panel">
           <div class="stats-grid stats-grid-2">
-            <div class="stat-card">
-              <div class="stat-label">Bayaran Bulanan</div>
-              <div class="stat-value" id="finMonthlyPay">RM 0</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-label">Nilai ASB (Akhir)</div>
-              <div class="stat-value accent" id="finASBFinal">RM 0</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-label">Jumlah Faedah Dibayar</div>
-              <div class="stat-value" id="finTotalInterest">RM 0</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-label">Jumlah Bayaran</div>
-              <div class="stat-value" id="finTotalPaid">RM 0</div>
-            </div>
+            <div class="stat-card"><div class="stat-label" data-i18n="fin_monthly">Bayaran Bulanan</div><div class="stat-value" id="finMonthlyPay">RM 0</div></div>
+            <div class="stat-card"><div class="stat-label" data-i18n="fin_asb_final">Nilai ASB (Akhir)</div><div class="stat-value accent" id="finASBFinal">RM 0</div></div>
+            <div class="stat-card"><div class="stat-label" data-i18n="fin_interest">Jumlah Faedah Dibayar</div><div class="stat-value" id="finTotalInterest">RM 0</div></div>
+            <div class="stat-card"><div class="stat-label" data-i18n="fin_total_paid">Jumlah Bayaran</div><div class="stat-value" id="finTotalPaid">RM 0</div></div>
           </div>
-          <div class="chart-block">
-            <div class="chart-header">
-              <span class="chart-title">Nilai ASB vs Baki Pinjaman</span>
-              <span class="chart-legend">
-                <span class="leg-item"><span class="leg-dot bull"></span>Nilai ASB</span>
-                <span class="leg-item"><span class="leg-dot bear"></span>Baki Pinjaman</span>
-              </span>
-            </div>
-            <div class="chart-wrap h300"><canvas id="finChart"></canvas></div>
-          </div>
-          <div class="chart-block">
-            <div class="chart-header"><span class="chart-title">Komposisi Bayaran</span></div>
-            <div class="chart-wrap h200"><canvas id="finDonutChart"></canvas></div>
-          </div>
-          <div class="table-toggle-row">
-            <button class="table-toggle-btn" id="finTableToggle">
-              <i class="ph ph-table"></i> Lihat Jadual Amortisasi
-            </button>
-          </div>
-          <div class="data-table hidden" id="finTableWrap">
-            <table>
-              <thead>
-                <tr><th>Thn</th><th>Baki Pinjaman</th><th>Faedah</th><th>Prinsipal</th><th>Nilai ASB</th><th>Nilai Bersih</th></tr>
-              </thead>
-              <tbody id="finTableBody"></tbody>
-            </table>
-          </div>
+          <div class="chart-block"><div class="chart-header"><span class="chart-title" data-i18n="fin_chart1">Nilai ASB vs Baki Pinjaman</span><span class="chart-legend"><span class="leg-item"><span class="leg-dot bull"></span><span data-i18n="lbl_asb_value">Nilai ASB</span></span><span class="leg-item"><span class="leg-dot bear"></span><span data-i18n="lbl_loan_bal">Baki Pinjaman</span></span></span></div><div class="chart-wrap h300"><canvas id="finChart"></canvas></div></div>
+          <div class="chart-block"><div class="chart-header"><span class="chart-title" data-i18n="fin_chart2">Komposisi Bayaran</span></div><div class="chart-wrap h200"><canvas id="finDonutChart"></canvas></div></div>
+          <div class="table-toggle-row"><button class="table-toggle-btn" id="finTableToggle"><i class="ph ph-table"></i><span data-i18n="fin_view_table">Lihat Jadual Amortisasi</span></button></div>
+          <div class="data-table hidden" id="finTableWrap"><table><thead><tr><th data-i18n="hist_col_year">Thn</th><th data-i18n="lbl_loan_bal">Baki Pinjaman</th><th data-i18n="th_interest">Faedah</th><th data-i18n="th_principal">Prinsipal</th><th data-i18n="lbl_asb_value">Nilai ASB</th><th data-i18n="th_net">Nilai Bersih</th></tr></thead><tbody id="finTableBody"></tbody></table></div>
         </div>
       </div>
     </section>
@@ -346,93 +217,25 @@
     <section class="tab-panel" id="panel-comparison">
       <div class="calc-layout">
         <div class="inputs-panel">
-          <div class="panel-header">
-            <h2 class="panel-title">Perbandingan Instrumen</h2>
-            <p class="panel-desc">ASB Biasa vs ASBF vs FD vs EPF — pilih yang terbaik untuk anda</p>
-          </div>
-          <div class="input-group">
-            <label class="input-label">Bajet Bulanan <span class="input-val" id="cmpBudgetVal">RM 500</span></label>
-            <input type="range" class="slider" id="cmpBudget" min="100" max="10000" step="50" value="500">
-            <div class="range-bounds"><span>RM 100</span><span>RM 10k</span></div>
-          </div>
-          <div class="input-group">
-            <label class="input-label">Kadar Dividen ASB <span class="input-val" id="cmpDivVal">5.00%</span></label>
-            <input type="range" class="slider" id="cmpDiv" min="1" max="10" step="0.25" value="5">
-            <div class="range-bounds"><span>1%</span><span>10%</span></div>
-          </div>
-          <div class="input-group">
-            <label class="input-label">Kadar Faedah ASBF <span class="input-val" id="cmpLoanRateVal">4.00%</span></label>
-            <input type="range" class="slider" id="cmpLoanRate" min="1" max="8" step="0.25" value="4">
-            <div class="range-bounds"><span>1%</span><span>8%</span></div>
-          </div>
-          <div class="input-group">
-            <label class="input-label">Kadar FD <span class="input-val" id="cmpFDRateVal">3.50%</span></label>
-            <input type="range" class="slider" id="cmpFDRate" min="1" max="6" step="0.25" value="3.5">
-            <div class="range-bounds"><span>1%</span><span>6%</span></div>
-          </div>
-          <div class="input-group">
-            <label class="input-label">Kadar EPF/KWSP <span class="input-val" id="cmpEPFRateVal">5.50%</span></label>
-            <input type="range" class="slider" id="cmpEPFRate" min="2" max="9" step="0.25" value="5.5">
-            <div class="range-bounds"><span>2%</span><span>9%</span></div>
-          </div>
-          <div class="input-group">
-            <label class="input-label">Tempoh <span class="input-val" id="cmpYearsVal">20 tahun</span></label>
-            <input type="range" class="slider" id="cmpYears" min="1" max="40" step="1" value="20">
-            <div class="range-bounds"><span>1 thn</span><span>40 thn</span></div>
-          </div>
+          <div class="panel-header"><h2 class="panel-title" data-i18n="cmp_title">Perbandingan Instrumen</h2><p class="panel-desc" data-i18n="cmp_desc">ASB Biasa vs ASBF vs FD vs EPF — pilih yang terbaik untuk anda</p></div>
+          <div class="input-group"><label class="input-label"><span data-i18n="cmp_budget">Bajet Bulanan</span> <span class="input-val" id="cmpBudgetVal">RM 500</span></label><input type="range" class="slider" id="cmpBudget" min="100" max="10000" step="50" value="500"><div class="range-bounds"><span>RM 100</span><span>RM 10k</span></div></div>
+          <div class="input-group"><label class="input-label"><span data-i18n="cmp_div">Kadar Dividen ASB</span> <span class="input-val" id="cmpDivVal">5.00%</span></label><input type="range" class="slider" id="cmpDiv" min="1" max="10" step="0.25" value="5"><div class="range-bounds"><span>1%</span><span>10%</span></div></div>
+          <div class="input-group"><label class="input-label"><span data-i18n="cmp_loan">Kadar Faedah ASBF</span> <span class="input-val" id="cmpLoanRateVal">4.00%</span></label><input type="range" class="slider" id="cmpLoanRate" min="1" max="8" step="0.25" value="4"><div class="range-bounds"><span>1%</span><span>8%</span></div></div>
+          <div class="input-group"><label class="input-label"><span data-i18n="cmp_fd">Kadar FD</span> <span class="input-val" id="cmpFDRateVal">3.50%</span></label><input type="range" class="slider" id="cmpFDRate" min="1" max="6" step="0.25" value="3.5"><div class="range-bounds"><span>1%</span><span>6%</span></div></div>
+          <div class="input-group"><label class="input-label"><span data-i18n="cmp_epf">Kadar EPF/KWSP</span> <span class="input-val" id="cmpEPFRateVal">5.50%</span></label><input type="range" class="slider" id="cmpEPFRate" min="2" max="9" step="0.25" value="5.5"><div class="range-bounds"><span>2%</span><span>9%</span></div></div>
+          <div class="input-group"><label class="input-label"><span data-i18n="cmp_years">Tempoh</span> <span class="input-val" id="cmpYearsVal">20 tahun</span></label><input type="range" class="slider" id="cmpYears" min="1" max="40" step="1" value="20"><div class="range-bounds"><span>1</span><span>40</span></div></div>
         </div>
         <div class="results-panel">
           <div class="compare-cards-4" id="cmpCards">
-            <div class="compare-card" id="cmpCardASB">
-              <div class="compare-card-badge">ASB Biasa</div>
-              <div class="compare-card-val" id="cmpASBFinal">—</div>
-              <div class="compare-card-sub" id="cmpASBReturn">—</div>
-              <div class="compare-card-method">DCA Bulanan</div>
-            </div>
-            <div class="compare-card" id="cmpCardASBF">
-              <div class="compare-card-badge">ASBF</div>
-              <div class="compare-card-val" id="cmpASBFFinal">—</div>
-              <div class="compare-card-sub" id="cmpASBFReturn">—</div>
-              <div class="compare-card-method">Pinjaman Sepenuh</div>
-            </div>
-            <div class="compare-card" id="cmpCardFD">
-              <div class="compare-card-badge">FD Bank</div>
-              <div class="compare-card-val" id="cmpFDFinal">—</div>
-              <div class="compare-card-sub" id="cmpFDReturn">—</div>
-              <div class="compare-card-method">DCA Bulanan</div>
-            </div>
-            <div class="compare-card" id="cmpCardEPF">
-              <div class="compare-card-badge">EPF/KWSP</div>
-              <div class="compare-card-val" id="cmpEPFFinal">—</div>
-              <div class="compare-card-sub" id="cmpEPFReturn">—</div>
-              <div class="compare-card-method">DCA Bulanan</div>
-            </div>
+            <div class="compare-card" id="cmpCardASB"><div class="compare-card-badge" data-i18n="badge_asb">ASB Biasa</div><div class="compare-card-val" id="cmpASBFinal">—</div><div class="compare-card-sub" id="cmpASBReturn">—</div><div class="compare-card-method" data-i18n="cmp_method_dca">DCA Bulanan</div></div>
+            <div class="compare-card" id="cmpCardASBF"><div class="compare-card-badge" data-i18n="badge_asbf">ASBF</div><div class="compare-card-val" id="cmpASBFFinal">—</div><div class="compare-card-sub" id="cmpASBFReturn">—</div><div class="compare-card-method" data-i18n="cmp_method_loan">Pinjaman Sepenuh</div></div>
+            <div class="compare-card" id="cmpCardFD"><div class="compare-card-badge" data-i18n="badge_fd">FD Bank</div><div class="compare-card-val" id="cmpFDFinal">—</div><div class="compare-card-sub" id="cmpFDReturn">—</div><div class="compare-card-method" data-i18n="cmp_method_dca">DCA Bulanan</div></div>
+            <div class="compare-card" id="cmpCardEPF"><div class="compare-card-badge" data-i18n="badge_epf">EPF/KWSP</div><div class="compare-card-val" id="cmpEPFFinal">—</div><div class="compare-card-sub" id="cmpEPFReturn">—</div><div class="compare-card-method" data-i18n="cmp_method_dca">DCA Bulanan</div></div>
           </div>
-          <div class="breakeven-row">
-            <i class="ph ph-intersect"></i>
-            <span id="cmpBreakeven">—</span>
-          </div>
-          <div class="chart-block">
-            <div class="chart-header">
-              <span class="chart-title">Pertumbuhan Semua Instrumen</span>
-              <span class="chart-legend">
-                <span class="leg-item"><span class="leg-dot bull"></span>ASB</span>
-                <span class="leg-item"><span class="leg-dot base"></span>ASBF (bersih)</span>
-                <span class="leg-item"><span class="leg-dot slate"></span>FD</span>
-                <span class="leg-item"><span class="leg-dot bear"></span>EPF</span>
-              </span>
-            </div>
-            <div class="chart-wrap h300"><canvas id="cmpChart"></canvas></div>
-          </div>
-          <div class="table-section-title">Analisis Sensitiviti (Kadar Dividen)</div>
-          <div class="data-table">
-            <table>
-              <thead>
-                <tr><th>Kadar Dividen</th><th>ASB Biasa</th><th>ASBF (bersih)</th><th>FD</th><th>Pemenang</th></tr>
-              </thead>
-              <tbody id="sensitivityBody"></tbody>
-            </table>
-          </div>
+          <div class="breakeven-row"><i class="ph ph-intersect"></i><span id="cmpBreakeven">—</span></div>
+          <div class="chart-block"><div class="chart-header"><span class="chart-title" data-i18n="cmp_chart_title">Pertumbuhan Semua Instrumen</span><span class="chart-legend"><span class="leg-item"><span class="leg-dot bull"></span>ASB</span><span class="leg-item"><span class="leg-dot base"></span>ASBF</span><span class="leg-item"><span class="leg-dot slate"></span>FD</span><span class="leg-item"><span class="leg-dot bear"></span>EPF</span></span></div><div class="chart-wrap h300"><canvas id="cmpChart"></canvas></div></div>
+          <div class="table-section-title" data-i18n="cmp_sensitivity">Analisis Sensitiviti (Kadar Dividen)</div>
+          <div class="data-table"><table><thead><tr><th data-i18n="cmp_th_rate">Kadar Dividen</th><th data-i18n="cmp_th_asb">ASB Biasa</th><th data-i18n="cmp_th_asbf">ASBF (bersih)</th><th data-i18n="cmp_th_fd">FD</th><th data-i18n="cmp_th_winner">Pemenang</th></tr></thead><tbody id="sensitivityBody"></tbody></table></div>
         </div>
       </div>
     </section>
@@ -441,69 +244,23 @@
     <section class="tab-panel" id="panel-forecast">
       <div class="calc-layout">
         <div class="inputs-panel">
-          <div class="panel-header">
-            <h2 class="panel-title">Ramalan Jangka Panjang</h2>
-            <p class="panel-desc">Unjuran 3 senario dengan pelarasan inflasi</p>
-          </div>
-          <div class="input-group">
-            <label class="input-label">Deposit Awal <span class="input-val" id="fcInitVal">RM 10,000</span></label>
-            <input type="range" class="slider" id="fcInit" min="0" max="300000" step="1000" value="10000">
-            <div class="range-bounds"><span>RM 0</span><span>RM 300k</span></div>
-          </div>
-          <div class="input-group">
-            <label class="input-label">Sumbangan Bulanan <span class="input-val" id="fcMonthlyVal">RM 500</span></label>
-            <input type="range" class="slider" id="fcMonthly" min="0" max="5000" step="50" value="500">
-            <div class="range-bounds"><span>RM 0</span><span>RM 5k</span></div>
-          </div>
-          <div class="input-group">
-            <label class="input-label">Tempoh Ramalan <span class="input-val" id="fcYearsVal">30 tahun</span></label>
-            <input type="range" class="slider" id="fcYears" min="5" max="50" step="1" value="30">
-            <div class="range-bounds"><span>5 thn</span><span>50 thn</span></div>
-          </div>
-          <div class="input-group">
-            <label class="input-label">Kadar Inflasi <span class="input-val" id="fcInflationVal">3.00%</span></label>
-            <input type="range" class="slider" id="fcInflation" min="0" max="8" step="0.5" value="3">
-            <div class="range-bounds"><span>0%</span><span>8%</span></div>
-          </div>
+          <div class="panel-header"><h2 class="panel-title" data-i18n="fc_title">Ramalan Jangka Panjang</h2><p class="panel-desc" data-i18n="fc_desc">Unjuran 3 senario dengan pelarasan inflasi</p></div>
+          <div class="input-group"><label class="input-label"><span data-i18n="fc_initial">Deposit Awal</span> <span class="input-val" id="fcInitVal">RM 10,000</span></label><input type="range" class="slider" id="fcInit" min="0" max="300000" step="1000" value="10000"><div class="range-bounds"><span>RM 0</span><span>RM 300k</span></div></div>
+          <div class="input-group"><label class="input-label"><span data-i18n="fc_monthly">Sumbangan Bulanan</span> <span class="input-val" id="fcMonthlyVal">RM 500</span></label><input type="range" class="slider" id="fcMonthly" min="0" max="5000" step="50" value="500"><div class="range-bounds"><span>RM 0</span><span>RM 5k</span></div></div>
+          <div class="input-group"><label class="input-label"><span data-i18n="fc_years">Tempoh Ramalan</span> <span class="input-val" id="fcYearsVal">30 tahun</span></label><input type="range" class="slider" id="fcYears" min="5" max="50" step="1" value="30"><div class="range-bounds"><span>5</span><span>50</span></div></div>
+          <div class="input-group"><label class="input-label"><span data-i18n="fc_inflation">Kadar Inflasi</span> <span class="input-val" id="fcInflationVal">3.00%</span></label><input type="range" class="slider" id="fcInflation" min="0" max="8" step="0.5" value="3"><div class="range-bounds"><span>0%</span><span>8%</span></div></div>
           <div class="scenario-rates">
-            <div class="scenario-rate-title">Kadar Senario</div>
-            <div class="scenario-rate-row">
-              <label class="scenario-lbl bear">Pesimis</label>
-              <input type="number" class="scenario-input" id="fcBear" value="3" min="0.5" max="15" step="0.5">
-              <span>%</span>
-            </div>
-            <div class="scenario-rate-row">
-              <label class="scenario-lbl base">Sederhana</label>
-              <input type="number" class="scenario-input" id="fcBase" value="5" min="0.5" max="15" step="0.5">
-              <span>%</span>
-            </div>
-            <div class="scenario-rate-row">
-              <label class="scenario-lbl bull">Optimis</label>
-              <input type="number" class="scenario-input" id="fcBull" value="7" min="0.5" max="15" step="0.5">
-              <span>%</span>
-            </div>
+            <div class="scenario-rate-title" data-i18n="fc_scenario_title">Kadar Senario</div>
+            <div class="scenario-rate-row"><label class="scenario-lbl bear" data-i18n="lbl_pessimis">Pesimis</label><input type="number" class="scenario-input" id="fcBear" value="3" min="0.5" max="15" step="0.5"><span>%</span></div>
+            <div class="scenario-rate-row"><label class="scenario-lbl base" data-i18n="lbl_moderate">Sederhana</label><input type="number" class="scenario-input" id="fcBase" value="5" min="0.5" max="15" step="0.5"><span>%</span></div>
+            <div class="scenario-rate-row"><label class="scenario-lbl bull" data-i18n="lbl_optimis">Optimis</label><input type="number" class="scenario-input" id="fcBull" value="7" min="0.5" max="15" step="0.5"><span>%</span></div>
           </div>
         </div>
         <div class="results-panel">
           <div id="fcSummary"></div>
-          <div class="chart-block">
-            <div class="chart-header">
-              <span class="chart-title">Unjuran Nilai Nominal</span>
-              <span class="chart-legend">
-                <span class="leg-item"><span class="leg-dot bull"></span>Optimis</span>
-                <span class="leg-item"><span class="leg-dot base"></span>Sederhana</span>
-                <span class="leg-item"><span class="leg-dot bear"></span>Pesimis</span>
-                <span class="leg-item"><span class="leg-dot slate"></span>Dilaburkan</span>
-              </span>
-            </div>
-            <div class="chart-wrap h300"><canvas id="fcChart"></canvas></div>
-          </div>
-          <div class="chart-block">
-            <div class="chart-header"><span class="chart-title">Nilai Benar (Selepas Inflasi)</span></div>
-            <div class="chart-wrap h200"><canvas id="fcRealChart"></canvas></div>
-          </div>
+          <div class="chart-block"><div class="chart-header"><span class="chart-title" data-i18n="fc_chart1">Unjuran Nilai Nominal</span><span class="chart-legend"><span class="leg-item"><span class="leg-dot bull"></span><span data-i18n="lbl_optimis">Optimis</span></span><span class="leg-item"><span class="leg-dot base"></span><span data-i18n="lbl_moderate">Sederhana</span></span><span class="leg-item"><span class="leg-dot bear"></span><span data-i18n="lbl_pessimis">Pesimis</span></span><span class="leg-item"><span class="leg-dot slate"></span><span data-i18n="lbl_invested">Dilaburkan</span></span></span></div><div class="chart-wrap h300"><canvas id="fcChart"></canvas></div></div>
+          <div class="chart-block"><div class="chart-header"><span class="chart-title" data-i18n="fc_chart2">Nilai Benar (Selepas Inflasi)</span></div><div class="chart-wrap h200"><canvas id="fcRealChart"></canvas></div></div>
           <div class="milestone-grid" id="fcMilestones"></div>
-          <div id="fcSummaryBottom"></div>
         </div>
       </div>
     </section>
@@ -512,136 +269,70 @@
     <section class="tab-panel" id="panel-goal">
       <div class="calc-layout">
         <div class="inputs-panel">
-          <div class="panel-header">
-            <h2 class="panel-title">Perancang Matlamat Kewangan</h2>
-            <p class="panel-desc">Kira DCA bulanan yang diperlukan + nombor FIRE anda</p>
-          </div>
+          <div class="panel-header"><h2 class="panel-title" data-i18n="goal_title">Perancang Matlamat Kewangan</h2><p class="panel-desc" data-i18n="goal_desc">Kira DCA bulanan yang diperlukan + nombor FIRE anda</p></div>
           <div class="goal-types">
-            <button class="goal-type-btn active" data-goal="retirement"><i class="ph ph-armchair"></i><span>Persaraan</span></button>
-            <button class="goal-type-btn" data-goal="education"><i class="ph ph-graduation-cap"></i><span>Pendidikan</span></button>
-            <button class="goal-type-btn" data-goal="property"><i class="ph ph-house"></i><span>Hartanah</span></button>
-            <button class="goal-type-btn" data-goal="emergency"><i class="ph ph-first-aid-kit"></i><span>Kecemasan</span></button>
-            <button class="goal-type-btn" data-goal="custom"><i class="ph ph-pencil"></i><span>Lain</span></button>
+            <button class="goal-type-btn active" data-goal="retirement"><i class="ph ph-armchair"></i><span data-i18n="goal_btn_retirement">Persaraan</span></button>
+            <button class="goal-type-btn" data-goal="education"><i class="ph ph-graduation-cap"></i><span data-i18n="goal_btn_education">Pendidikan</span></button>
+            <button class="goal-type-btn" data-goal="property"><i class="ph ph-house"></i><span data-i18n="goal_btn_property">Hartanah</span></button>
+            <button class="goal-type-btn" data-goal="emergency"><i class="ph ph-first-aid-kit"></i><span data-i18n="goal_btn_emergency">Kecemasan</span></button>
+            <button class="goal-type-btn" data-goal="custom"><i class="ph ph-pencil"></i><span data-i18n="goal_btn_custom">Lain</span></button>
           </div>
-          <div class="input-group">
-            <label class="input-label">Sasaran (RM) <span class="input-val" id="goalAmtVal">RM 500,000</span></label>
-            <input type="range" class="slider" id="goalAmt" min="10000" max="3000000" step="10000" value="500000">
-            <div class="range-bounds"><span>RM 10k</span><span>RM 3j</span></div>
-          </div>
-          <div class="input-group">
-            <label class="input-label">Simpanan Semasa <span class="input-val" id="goalCurrentVal">RM 10,000</span></label>
-            <input type="range" class="slider" id="goalCurrent" min="0" max="500000" step="1000" value="10000">
-            <div class="range-bounds"><span>RM 0</span><span>RM 500k</span></div>
-          </div>
-          <div class="input-group">
-            <label class="input-label">Tempoh Capai Matlamat <span class="input-val" id="goalYearsVal">20 tahun</span></label>
-            <input type="range" class="slider" id="goalYears" min="1" max="40" step="1" value="20">
-            <div class="range-bounds"><span>1 thn</span><span>40 thn</span></div>
-          </div>
-          <div class="input-group">
-            <label class="input-label">Kadar Pulangan Dijangka <span class="input-val" id="goalRateVal">5.00%</span></label>
-            <input type="range" class="slider" id="goalRate" min="1" max="10" step="0.25" value="5">
-            <div class="range-bounds"><span>1%</span><span>10%</span></div>
-          </div>
-          <div class="highlight-result">
-            <div class="highlight-label">DCA Bulanan Diperlukan</div>
-            <div class="highlight-val accent" id="goalRequiredDCA">RM 0</div>
-            <div class="highlight-sub" id="goalDCASub">—</div>
-          </div>
-          <div class="divider-text"><span>Nombor FIRE</span></div>
-          <div class="input-group">
-            <label class="input-label">Perbelanjaan Tahunan <span class="input-val" id="fireExpVal">RM 36,000</span></label>
-            <input type="range" class="slider" id="fireExp" min="12000" max="300000" step="1000" value="36000">
-            <div class="range-bounds"><span>RM 12k</span><span>RM 300k</span></div>
-          </div>
-          <div class="input-group">
-            <label class="input-label">Kadar Pengeluaran <span class="input-val" id="fireWithdrawVal">4.00%</span></label>
-            <input type="range" class="slider" id="fireWithdraw" min="1" max="8" step="0.5" value="4">
-            <div class="range-bounds"><span>1%</span><span>8%</span></div>
-          </div>
-          <div class="highlight-result">
-            <div class="highlight-label">Nombor FIRE Anda</div>
-            <div class="highlight-val" id="fireNumber">RM 0</div>
-            <div class="highlight-sub" id="fireSub">—</div>
-          </div>
+          <div class="input-group"><label class="input-label"><span data-i18n="goal_target">Sasaran (RM)</span> <span class="input-val" id="goalAmtVal">RM 500,000</span></label><input type="range" class="slider" id="goalAmt" min="10000" max="3000000" step="10000" value="500000"><div class="range-bounds"><span>RM 10k</span><span>RM 3j</span></div></div>
+          <div class="input-group"><label class="input-label"><span data-i18n="goal_current">Simpanan Semasa</span> <span class="input-val" id="goalCurrentVal">RM 10,000</span></label><input type="range" class="slider" id="goalCurrent" min="0" max="500000" step="1000" value="10000"><div class="range-bounds"><span>RM 0</span><span>RM 500k</span></div></div>
+          <div class="input-group"><label class="input-label"><span data-i18n="goal_years">Tempoh Capai Matlamat</span> <span class="input-val" id="goalYearsVal">20 tahun</span></label><input type="range" class="slider" id="goalYears" min="1" max="40" step="1" value="20"><div class="range-bounds"><span>1</span><span>40</span></div></div>
+          <div class="input-group"><label class="input-label"><span data-i18n="goal_rate">Kadar Pulangan Dijangka</span> <span class="input-val" id="goalRateVal">5.00%</span></label><input type="range" class="slider" id="goalRate" min="1" max="10" step="0.25" value="5"><div class="range-bounds"><span>1%</span><span>10%</span></div></div>
+          <div class="highlight-result"><div class="highlight-label" data-i18n="goal_dca_label">DCA Bulanan Diperlukan</div><div class="highlight-val accent" id="goalRequiredDCA">RM 0</div><div class="highlight-sub" id="goalDCASub">—</div></div>
+          <div class="divider-text"><span data-i18n="goal_fire_section">Nombor FIRE</span></div>
+          <div class="input-group"><label class="input-label"><span data-i18n="goal_fire_exp">Perbelanjaan Tahunan</span> <span class="input-val" id="fireExpVal">RM 36,000</span></label><input type="range" class="slider" id="fireExp" min="12000" max="300000" step="1000" value="36000"><div class="range-bounds"><span>RM 12k</span><span>RM 300k</span></div></div>
+          <div class="input-group"><label class="input-label"><span data-i18n="goal_fire_rate">Kadar Pengeluaran</span> <span class="input-val" id="fireWithdrawVal">4.00%</span></label><input type="range" class="slider" id="fireWithdraw" min="1" max="8" step="0.5" value="4"><div class="range-bounds"><span>1%</span><span>8%</span></div></div>
+          <div class="highlight-result"><div class="highlight-label" data-i18n="goal_fire_label">Nombor FIRE Anda</div><div class="highlight-val" id="fireNumber">RM 0</div><div class="highlight-sub" id="fireSub">—</div></div>
         </div>
         <div class="results-panel">
           <div id="goalBreakdown"></div>
-          <div class="chart-block">
-            <div class="chart-header">
-              <span class="chart-title">Trajektori Capai Matlamat</span>
-              <span class="chart-legend">
-                <span class="leg-item"><span class="leg-dot bull"></span>Simpanan</span>
-                <span class="leg-item"><span class="leg-dot bear"></span>Sasaran</span>
-              </span>
-            </div>
-            <div class="chart-wrap h280"><canvas id="goalChart"></canvas></div>
-          </div>
-          <div class="chart-block">
-            <div class="chart-header"><span class="chart-title">Kemajuan FIRE</span></div>
-            <div class="chart-wrap h200"><canvas id="fireChart"></canvas></div>
-          </div>
+          <div class="chart-block"><div class="chart-header"><span class="chart-title" data-i18n="goal_chart">Trajektori Capai Matlamat</span><span class="chart-legend"><span class="leg-item"><span class="leg-dot bull"></span><span data-i18n="lbl_savings">Simpanan</span></span><span class="leg-item"><span class="leg-dot bear"></span><span data-i18n="lbl_target">Sasaran</span></span></span></div><div class="chart-wrap h280"><canvas id="goalChart"></canvas></div></div>
+          <div class="chart-block"><div class="chart-header"><span class="chart-title" data-i18n="goal_fire_chart">Kemajuan FIRE</span></div><div class="chart-wrap h200"><canvas id="fireChart"></canvas></div></div>
         </div>
       </div>
     </section>
 
-    <!-- ============ ZAKAT (SIMPLIFIED) ============ -->
+    <!-- ============ ZAKAT ============ -->
     <section class="tab-panel" id="panel-zakat">
       <div class="calc-layout">
         <div class="inputs-panel">
-          <div class="panel-header">
-            <h2 class="panel-title">Kalkulator Zakat ASB</h2>
-            <p class="panel-desc">Set kadar %, nilai dikira secara automatik dari tab Simpanan</p>
-          </div>
-          <div class="input-group">
-            <label class="input-label">Kadar Zakat <span class="input-val" id="zakatRateVal">2.5%</span></label>
-            <input type="range" class="slider" id="zakatRate" min="0.5" max="5" step="0.1" value="2.5">
-            <div class="range-bounds"><span>0.5%</span><span>5%</span></div>
-          </div>
+          <div class="panel-header"><h2 class="panel-title" data-i18n="zakat_title">Kalkulator Zakat ASB</h2><p class="panel-desc" data-i18n="zakat_desc">Set kadar %, nilai dikira secara automatik dari tab Simpanan</p></div>
+          <div class="input-group"><label class="input-label"><span data-i18n="zakat_rate">Kadar Zakat</span> <span class="input-val" id="zakatRateVal">2.5%</span></label><input type="range" class="slider" id="zakatRate" min="0.5" max="5" step="0.1" value="2.5"><div class="range-bounds"><span>0.5%</span><span>5%</span></div></div>
           <div class="basis-select">
-            <label class="basis-label">Asas Pengiraan</label>
+            <label class="basis-label" data-i18n="zakat_basis">Asas Pengiraan</label>
             <div class="basis-options">
-              <label class="radio-option">
-                <input type="radio" name="zakatBasis" value="balance" checked>
-                <span class="radio-custom"></span>
-                Baki Simpanan
-              </label>
-              <label class="radio-option">
-                <input type="radio" name="zakatBasis" value="dividend">
-                <span class="radio-custom"></span>
-                Dividen Sahaja
-              </label>
-              <label class="radio-option">
-                <input type="radio" name="zakatBasis" value="both">
-                <span class="radio-custom"></span>
-                Baki + Dividen
-              </label>
+              <label class="radio-option"><input type="radio" name="zakatBasis" value="balance" checked><span class="radio-custom"></span><span data-i18n="zakat_balance">Baki Simpanan</span></label>
+              <label class="radio-option"><input type="radio" name="zakatBasis" value="dividend"><span class="radio-custom"></span><span data-i18n="zakat_dividend">Dividen Sahaja</span></label>
+              <label class="radio-option"><input type="radio" name="zakatBasis" value="both"><span class="radio-custom"></span><span data-i18n="zakat_both">Baki + Dividen</span></label>
             </div>
           </div>
-          <div class="divider-text"><span>Override Manual (opsyenal)</span></div>
+          <div class="divider-text"><span data-i18n="zakat_your_values">Nilai ASB Anda</span></div>
           <div class="input-group">
-            <label class="input-label">Nilai Dikenakan Zakat (RM)</label>
-            <input type="number" class="input-field" id="zakatManualBase" placeholder="Kosong = auto dari tab Simpanan" min="0">
+            <label class="input-label" data-i18n="zakat_bal_label">Baki Simpanan ASB (RM)</label>
+            <input type="number" class="input-field" id="zakatBalance" placeholder="cth: 50000" min="0">
           </div>
-          <div class="highlight-result">
-            <div class="highlight-label">Zakat Perlu Dibayar</div>
-            <div class="highlight-val accent" id="zakatAmount">RM 0</div>
-            <div class="highlight-sub" id="zakatSub">—</div>
+          <div class="input-group">
+            <label class="input-label" data-i18n="zakat_div_label">Dividen Tahun Ini (RM)</label>
+            <input type="number" class="input-field" id="zakatDividend" placeholder="cth: 2500" min="0">
           </div>
+          <button class="auto-fill-btn" onclick="autoFillZakat()">
+            <i class="ph ph-arrows-clockwise"></i>
+            <span data-i18n="zakat_auto_fill">Auto-isi dari tab Simpanan</span>
+          </button>
+          <div class="highlight-result"><div class="highlight-label" data-i18n="zakat_amount_label">Zakat Perlu Dibayar</div><div class="highlight-val accent" id="zakatAmount">RM 0</div><div class="highlight-sub" id="zakatSub">—</div></div>
           <div class="zakat-breakdown" id="zakatBreakdown">
-            <div class="zbd-row"><span>Asas Pengiraan</span><span id="zbdBase">—</span></div>
-            <div class="zbd-row"><span>Nilai Asas</span><span id="zbdBaseVal">—</span></div>
-            <div class="zbd-row"><span>Kadar Zakat</span><span id="zbdRate">—</span></div>
-            <div class="zbd-row highlight"><span>Zakat Tahunan</span><span id="zbdAmount">—</span></div>
+            <div class="zbd-row"><span data-i18n="zbd_basis">Asas Pengiraan</span><span id="zbdBase">—</span></div>
+            <div class="zbd-row"><span data-i18n="zbd_value">Nilai Asas</span><span id="zbdBaseVal">—</span></div>
+            <div class="zbd-row"><span data-i18n="zbd_rate">Kadar Zakat</span><span id="zbdRate">—</span></div>
+            <div class="zbd-row highlight"><span data-i18n="zbd_total">Zakat Tahunan</span><span id="zbdAmount">—</span></div>
           </div>
         </div>
         <div class="results-panel">
-          <div class="chart-block">
-            <div class="chart-header"><span class="chart-title">Unjuran Zakat Tahunan</span></div>
-            <div class="chart-wrap h300"><canvas id="zakatChart"></canvas></div>
-          </div>
-          <div class="zakat-info">
-            <h3 class="zakat-info-title">Bayar Zakat Secara Online</h3>
+          <div class="chart-block"><div class="chart-header"><span class="chart-title" data-i18n="zakat_chart_title">Unjuran Zakat Tahunan</span></div><div class="chart-wrap h300"><canvas id="zakatChart"></canvas></div></div>
+          <div class="zakat-info"><h3 class="zakat-info-title" data-i18n="zakat_links_title">Bayar Zakat Secara Online</h3>
             <div class="zakat-links">
               <a href="https://www.lzs.com.my" target="_blank" class="zakat-link">LZS Selangor</a>
               <a href="https://www.baitumalwp.gov.my" target="_blank" class="zakat-link">MAIWP (KL)</a>
@@ -652,10 +343,7 @@
               <a href="https://www.zakatperak.com.my" target="_blank" class="zakat-link">Perak</a>
               <a href="https://www.maiamp.gov.my" target="_blank" class="zakat-link">Penang</a>
             </div>
-            <div class="zakat-note">
-              <i class="ph ph-warning"></i>
-              <p>Kaedah pengiraan zakat ASB berbeza mengikut negeri dan fatwa. Rujuk lembaga zakat negeri anda untuk kepastian hukum.</p>
-            </div>
+            <div class="zakat-note"><i class="ph ph-warning"></i><p data-i18n="zakat_note">Kaedah pengiraan zakat ASB berbeza mengikut negeri dan fatwa. Rujuk lembaga zakat negeri anda untuk kepastian hukum.</p></div>
           </div>
         </div>
       </div>
@@ -663,56 +351,36 @@
 
     <!-- ============ HISTORY ============ -->
     <section class="tab-panel" id="panel-history">
-      <div class="panel-header hist-panel-header">
-        <div>
-          <h2 class="panel-title">Sejarah Dividen ASB</h2>
-          <p class="panel-desc">Data dividen &amp; bonus PNB 2010–2024 · Auto-dikemas kini bila ada pengumuman baharu</p>
-        </div>
-        <div class="live-badge live-static" id="histLiveBadge" style="display:none">
-          <span class="live-dot"></span>
-          <span id="histLiveBadgeText">Data statik</span>
-        </div>
+      <div class="hist-panel-header panel-header">
+        <div><h2 class="panel-title" data-i18n="hist_title">Sejarah Dividen ASB</h2><p class="panel-desc" data-i18n="hist_desc">Data dividen &amp; bonus PNB 2010–2024 · Auto-dikemas kini bila ada pengumuman baharu</p></div>
+        <div class="live-badge live-static" id="histLiveBadge" style="display:none"><span class="live-dot"></span><span id="histLiveBadgeText">—</span></div>
       </div>
       <div class="stats-grid stats-grid-4">
-        <div class="stat-card"><div class="stat-label">Purata 2010–2024</div><div class="stat-value accent" id="histAvgAll">—</div><div class="stat-sub">Keseluruhan</div></div>
-        <div class="stat-card"><div class="stat-label">Purata 5 Tahun</div><div class="stat-value" id="histAvg5">—</div><div class="stat-sub">2020–2024</div></div>
-        <div class="stat-card"><div class="stat-label">Tertinggi</div><div class="stat-value" id="histHigh">—</div><div class="stat-sub" id="histHighYear">—</div></div>
-        <div class="stat-card"><div class="stat-label">Terendah</div><div class="stat-value" id="histLow">—</div><div class="stat-sub" id="histLowYear">—</div></div>
+        <div class="stat-card"><div class="stat-label" data-i18n="hist_avg_all">Purata 2010–2024</div><div class="stat-value accent" id="histAvgAll">—</div><div class="stat-sub" data-i18n="hist_overall">Keseluruhan</div></div>
+        <div class="stat-card"><div class="stat-label" data-i18n="hist_avg5">Purata 5 Tahun</div><div class="stat-value" id="histAvg5">—</div><div class="stat-sub">2020–2024</div></div>
+        <div class="stat-card"><div class="stat-label" data-i18n="hist_high">Tertinggi</div><div class="stat-value" id="histHigh">—</div><div class="stat-sub" id="histHighYear">—</div></div>
+        <div class="stat-card"><div class="stat-label" data-i18n="hist_low">Terendah</div><div class="stat-value" id="histLow">—</div><div class="stat-sub" id="histLowYear">—</div></div>
       </div>
-      <div class="chart-block">
-        <div class="chart-header">
-          <span class="chart-title">Dividen &amp; Bonus Tahunan (%)</span>
-          <span class="chart-legend">
-            <span class="leg-item"><span class="leg-dot base"></span>Dividen</span>
-            <span class="leg-item"><span class="leg-dot bull"></span>Bonus</span>
-          </span>
-        </div>
-        <div class="chart-wrap h300"><canvas id="histChart"></canvas></div>
-      </div>
-      <div class="data-table">
-        <table>
-          <thead>
-            <tr><th>Tahun</th><th>Dividen</th><th>Bonus</th><th>Jumlah</th><th>Trend</th></tr>
-          </thead>
-          <tbody id="histTableBody"></tbody>
-        </table>
-      </div>
+      <div class="chart-block"><div class="chart-header"><span class="chart-title" data-i18n="hist_chart_title">Dividen &amp; Bonus Tahunan (%)</span><span class="chart-legend"><span class="leg-item"><span class="leg-dot base"></span><span data-i18n="th_dividend">Dividen</span></span><span class="leg-item"><span class="leg-dot bull"></span><span data-i18n="hist_col_bonus">Bonus</span></span></span></div><div class="chart-wrap h300"><canvas id="histChart"></canvas></div></div>
+      <div class="data-table"><table><thead><tr><th data-i18n="hist_col_year">Tahun</th><th data-i18n="hist_col_div">Dividen</th><th data-i18n="hist_col_bonus">Bonus</th><th data-i18n="hist_col_total">Jumlah</th><th data-i18n="hist_col_trend">Trend</th></tr></thead><tbody id="histTableBody"></tbody></table></div>
     </section>
 
     <!-- ============ NEWS ============ -->
     <section class="tab-panel" id="panel-news">
-      <div class="panel-header">
-        <h2 class="panel-title">Berita ASB &amp; Pelaburan</h2>
-        <p class="panel-desc">Berita terkini berkaitan ASB, PNB dan pasaran kewangan Malaysia</p>
+      <div class="panel-header news-panel-header">
+        <div>
+          <h2 class="panel-title" data-i18n="news_title">Berita ASB &amp; Pelaburan</h2>
+          <p class="panel-desc" data-i18n="news_desc">Berita terkini berkaitan ASB, PNB dan pasaran kewangan Malaysia</p>
+        </div>
+        <button class="hdr-btn" onclick="refreshNews()">
+          <i class="ph ph-arrows-clockwise"></i>
+          <span data-i18n="news_refresh">Muat Semula</span>
+        </button>
       </div>
       <div class="news-filters-wrap">
         <div class="news-lang-toggle">
-          <button class="lang-btn active" data-lang="bm">
-            <span>BM</span> Bahasa Melayu
-          </button>
-          <button class="lang-btn" data-lang="en">
-            <span>EN</span> English
-          </button>
+          <button class="lang-btn active" data-lang="bm"><span>BM</span><span data-i18n="news_bm">Bahasa Melayu</span></button>
+          <button class="lang-btn" data-lang="en"><span>EN</span><span data-i18n="news_en">English</span></button>
         </div>
         <div class="news-filters" id="newsTopicsBM">
           <button class="news-filter-btn active" data-topic="ASB PNB dividen Malaysia" data-lang="bm">ASB / PNB</button>
@@ -730,17 +398,18 @@
         </div>
       </div>
       <div class="news-grid" id="newsGrid">
-        <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
-        <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+      <a href="https://www.pnb.com.my" target="_blank" rel="noopener noreferrer" class="news-card news-card-static"><div class="news-source">PNB Malaysia</div><div class="news-title">Laman web rasmi PNB — pengumuman agihan dividen ASB terkini</div><div class="news-date" data-i18n="fallback_visit">Ketik untuk lawati</div></a>
+      <a href="https://www.bharian.com.my/bisnes" target="_blank" rel="noopener noreferrer" class="news-card news-card-static"><div class="news-source">Berita Harian Bisnes</div><div class="news-title">Berita ekonomi dan pelaburan terkini Malaysia</div><div class="news-date" data-i18n="fallback_visit">Ketik untuk lawati</div></a>
+      <a href="https://www.theedgemarkets.com" target="_blank" rel="noopener noreferrer" class="news-card news-card-static"><div class="news-source">The Edge Markets</div><div class="news-title">Berita pasaran modal dan pelaburan Malaysia</div><div class="news-date" data-i18n="fallback_visit">Ketik untuk lawati</div></a>
+      <a href="https://www.bernama.com/bm" target="_blank" rel="noopener noreferrer" class="news-card news-card-static"><div class="news-source">Bernama Ekonomi</div><div class="news-title">Berita kewangan dan ekonomi rasmi Malaysia</div><div class="news-date" data-i18n="fallback_visit">Ketik untuk lawati</div></a>
+      <a href="https://www.freemalaysiatoday.com/category/bisnes" target="_blank" rel="noopener noreferrer" class="news-card news-card-static"><div class="news-source">Free Malaysia Today</div><div class="news-title">Laporan perniagaan dan pelaburan semasa</div><div class="news-date" data-i18n="fallback_visit">Ketik untuk lawati</div></a>
+      <a href="https://biz.thestar.com.my" target="_blank" rel="noopener noreferrer" class="news-card news-card-static"><div class="news-source">The Star Business</div><div class="news-title">Berita perniagaan dan pelaburan Malaysia</div><div class="news-date" data-i18n="fallback_visit">Ketik untuk lawati</div></a>
       </div>
     </section>
 
   </main>
 
-  <!-- Slider tooltip -->
   <div class="slider-tooltip" id="sliderTooltip"></div>
-
-  <!-- Toast notification -->
   <div class="toast" id="toast"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>

@@ -1,3 +1,365 @@
+
+// ══════════════════════════════════════════════════════
+// STRINGS — Full BM / EN translation dictionary
+// ══════════════════════════════════════════════════════
+const STRINGS = {
+  bm: {
+    brand_sub:'Kalkulator Pelaburan',
+    hdr_share:'Kongsi Link',
+    tab_dashboard:'Dashboard', tab_savings:'Simpanan', tab_financing:'ASBF',
+    tab_comparison:'Banding', tab_forecast:'Ramalan', tab_goal:'Matlamat',
+    tab_zakat:'Zakat', tab_history:'Sejarah', tab_news:'Berita',
+    hero_label:'Unjuran Nilai Akhir (Kadar Sederhana)',
+    hero_eyebrow:'Nilai dikira berdasarkan tetapan di tab Simpanan — ubah untuk lihat unjuran anda',
+    stat_invested:'Jumlah Dilaburkan', stat_dividends:'Jumlah Dividen',
+    stat_monthly:'Sumbangan Bulanan', stat_zakat:'Zakat Tahun Ini',
+    chart_scenarios:'Pertumbuhan ASB — 3 Senario',
+    lbl_optimis:'Optimis', lbl_moderate:'Sederhana', lbl_pessimis:'Pesimis',
+    lbl_invested:'Dilaburkan', lbl_asb_value:'Nilai ASB', lbl_loan_bal:'Baki Pinjaman',
+    lbl_savings:'Simpanan', lbl_target:'Sasaran',
+    qc_savings:'Kira Simpanan', qc_financing:'Kira ASBF',
+    qc_forecast:'Lihat Ramalan', qc_goals:'Tetapkan Matlamat',
+    sav_title:'Kalkulator Simpanan ASB',
+    sav_desc:'Simulasi DCA bulanan dengan kaedah pengiraan PNB',
+    sav_initial:'Deposit Awal', sav_monthly:'Sumbangan Bulanan (DCA)',
+    sav_rate:'Kadar Dividen Dijangka', sav_bonus:'Bonus Tahunan',
+    sav_years:'Tempoh Pelaburan', sav_withdrawal_section:'Simulasi Pengeluaran',
+    sav_withdrawal:'Pengeluaran Sekali (RM)',
+    sav_withdrawal_hint:'Kesan pengeluaran terhadap nilai akhir',
+    sav_final_label:'Nilai Akhir (DCA)', sav_invested:'Jumlah Dilaburkan',
+    sav_dividend:'Jumlah Dividen', sav_roi:'ROI', sav_impact:'Impak Pengeluaran',
+    sav_compare:'DCA vs Lump Sum', sav_dca_label:'DCA Bulanan',
+    sav_lump_label:'Lump Sum Awal',
+    sav_dca_sub:'Salin RM/bulan sepanjang tempoh',
+    sav_lump_sub:'Laburkan semua duit dari awal',
+    sav_autosave:'Tetapan disimpan secara automatik',
+    sav_view_table:'Lihat Jadual Tahunan', sav_close_table:'Tutup Jadual',
+    sav_chart1:'Pertumbuhan ASB (RM)', sav_chart2:'Dividen Tahunan (RM)',
+    th_start_bal:'Baki Awal', th_deposit:'Deposit', th_dividend:'Dividen',
+    th_end_bal:'Baki Akhir', th_total_inv:'Jum. Dilaburkan',
+    th_interest:'Faedah', th_principal:'Prinsipal', th_net:'Nilai Bersih',
+    fin_title:'Kalkulator ASBF',
+    fin_desc:'Pembiayaan ASB — analisis bayaran, faedah dan keuntungan bersih',
+    fin_mode_loan:'Input Jumlah Pinjaman', fin_mode_pay:'Input Bayaran Bulanan',
+    fin_loan:'Jumlah Pinjaman', fin_payment:'Bayaran Bulanan',
+    fin_rate:'Kadar Faedah Pinjaman', fin_tenure:'Tempoh Pinjaman',
+    fin_div:'Kadar Dividen ASB', fin_net_label:'Keuntungan Bersih ASBF',
+    fin_spread:'Spread (Dividen − Faedah)',
+    fin_monthly:'Bayaran Bulanan', fin_asb_final:'Nilai ASB (Akhir)',
+    fin_interest:'Jumlah Faedah Dibayar', fin_total_paid:'Jumlah Bayaran',
+    fin_chart1:'Nilai ASB vs Baki Pinjaman', fin_chart2:'Komposisi Bayaran',
+    fin_view_table:'Lihat Jadual Amortisasi',
+    cmp_title:'Perbandingan Instrumen',
+    cmp_desc:'ASB Biasa vs ASBF vs FD vs EPF — pilih yang terbaik untuk anda',
+    cmp_budget:'Bajet Bulanan', cmp_div:'Kadar Dividen ASB',
+    cmp_loan:'Kadar Faedah ASBF', cmp_fd:'Kadar FD', cmp_epf:'Kadar EPF/KWSP',
+    cmp_years:'Tempoh', badge_asb:'ASB Biasa', badge_asbf:'ASBF',
+    badge_fd:'FD Bank', badge_epf:'EPF/KWSP',
+    cmp_method_dca:'DCA Bulanan', cmp_method_loan:'Pinjaman Sepenuh',
+    cmp_chart_title:'Pertumbuhan Semua Instrumen',
+    cmp_sensitivity:'Analisis Sensitiviti (Kadar Dividen)',
+    cmp_th_rate:'Kadar Dividen', cmp_th_asb:'ASB Biasa',
+    cmp_th_asbf:'ASBF (bersih)', cmp_th_fd:'FD', cmp_th_winner:'Pemenang',
+    fc_title:'Ramalan Jangka Panjang',
+    fc_desc:'Unjuran 3 senario dengan pelarasan inflasi',
+    fc_initial:'Deposit Awal', fc_monthly:'Sumbangan Bulanan',
+    fc_years:'Tempoh Ramalan', fc_inflation:'Kadar Inflasi',
+    fc_scenario_title:'Kadar Senario',
+    fc_chart1:'Unjuran Nilai Nominal', fc_chart2:'Nilai Benar (Selepas Inflasi)',
+    goal_title:'Perancang Matlamat Kewangan',
+    goal_desc:'Kira DCA bulanan yang diperlukan + nombor FIRE anda',
+    goal_target:'Sasaran (RM)', goal_current:'Simpanan Semasa',
+    goal_years:'Tempoh Capai Matlamat', goal_rate:'Kadar Pulangan Dijangka',
+    goal_dca_label:'DCA Bulanan Diperlukan', goal_fire_section:'Nombor FIRE',
+    goal_fire_exp:'Perbelanjaan Tahunan', goal_fire_rate:'Kadar Pengeluaran',
+    goal_fire_label:'Nombor FIRE Anda',
+    goal_chart:'Trajektori Capai Matlamat', goal_fire_chart:'Kemajuan FIRE',
+    goal_btn_retirement:'Persaraan', goal_btn_education:'Pendidikan',
+    goal_btn_property:'Hartanah', goal_btn_emergency:'Kecemasan',
+    goal_btn_custom:'Lain',
+    gbd_target:'Sasaran Matlamat', gbd_current:'Simpanan Semasa',
+    gbd_gap:'Jurang Tersisa', gbd_dca:'DCA Bulanan Perlu', gbd_final:'Nilai Akhir Dijangka',
+    gbd_progress:'Kemajuan Matlamat', gbd_fire:'Kemajuan FIRE',
+    zakat_title:'Kalkulator Zakat ASB',
+    zakat_desc:'Set kadar %, nilai dikira secara automatik dari tab Simpanan',
+    zakat_rate:'Kadar Zakat', zakat_basis:'Asas Pengiraan',
+    zakat_balance:'Baki Simpanan', zakat_dividend:'Dividen Sahaja',
+    zakat_both:'Baki + Dividen', zakat_override:'Override Manual (opsyenal)',
+    zakat_override_label:'Nilai Dikenakan Zakat (RM)',
+    zakat_override_ph:'Kosong = auto dari tab Simpanan',
+    zakat_amount_label:'Zakat Perlu Dibayar',
+    zakat_chart_title:'Unjuran Zakat Tahunan',
+    zbd_basis:'Asas Pengiraan', zbd_value:'Nilai Asas',
+    zbd_rate:'Kadar Zakat', zbd_total:'Zakat Tahunan',
+    zakat_links_title:'Bayar Zakat Secara Online',
+    zakat_note:'Kaedah pengiraan zakat ASB berbeza mengikut negeri dan fatwa. Rujuk lembaga zakat negeri anda untuk kepastian hukum.',
+    hist_title:'Sejarah Dividen ASB',
+    hist_desc:'Data dividen & bonus PNB 2010–2024 · Auto-dikemas kini bila ada pengumuman baharu',
+    hist_avg_all:'Purata 2010–2024', hist_avg5:'Purata 5 Tahun',
+    hist_high:'Tertinggi', hist_low:'Terendah', hist_overall:'Keseluruhan',
+    hist_chart_title:'Dividen & Bonus Tahunan (%)',
+    hist_col_year:'Tahun', hist_col_div:'Dividen',
+    hist_col_bonus:'Bonus', hist_col_total:'Jumlah', hist_col_trend:'Trend',
+    news_title:'Berita ASB & Pelaburan',
+    news_desc:'Berita terkini berkaitan ASB, PNB dan pasaran kewangan Malaysia',
+    news_bm:'Bahasa Melayu', news_en:'English',
+    // Dynamic strings used in JS
+    years_sfx:'tahun', month_sfx:'bulan',
+    dca_better:'DCA lebih baik', lump_better:'Lump Sum lebih baik', dca_equal:'Kedua-dua hampir sama',
+    dca_reason:'dividen dikompaunkan atas deposit bertahap',
+    lump_reason:'lebih banyak modal dikompaunkan dari awal',
+    no_withdrawal:'—', exceed_deposit:'Melebihi simpanan awal',
+    spread_positive:'melebihi faedah — menguntungkan',
+    spread_zero:'titik pulang modal', spread_negative:'melebihi dividen — rugi bersih',
+    net_profit:'Untung bersih selepas tolak faedah',
+    net_loss:'Rugi — faedah lebih tinggi dari dividen',
+    breakeven_yr:'ASBF mengatasi ASB Biasa pada tahun ke-',
+    breakeven_no:'ASB Biasa unggul keseluruhan tempoh',
+    milestone_reach:'Capai', milestone_over:'thn', milestone_beyond:'> thn',
+    milestone_real:'Nilai Benar akhir (inf:',
+    milestone_power:'Kuasa beli dilindungi',
+    dca_enough:'Dah cukup!', dca_invest_msg:'Labur',
+    dca_per_month:'/bulan untuk capai', dca_in:'dalam',
+    fire_sub_from:'perbelanjaan tahunan',
+    goal_progress:'Kemajuan Matlamat', goal_fire_prog:'Kemajuan FIRE',
+    toast_share:'Link disalin! Simpan sebagai bookmark atau kongsi.',
+    toast_url:'URL dikemas kini — salin dari bar alamat',
+    toast_share_fail:'Gagal — salin URL dari bar alamat',
+    toast_import:'Tetapan berjaya diimport!',
+    toast_import_fail:'Fail tidak sah',
+    reset_confirm:'Reset semua tetapan ke nilai asal?',
+    live_loading:'Mengambil data terkini...',
+    live_pending:'Dividen tahun ini belum diumumkan oleh PNB',
+    live_static:'Data disahkan (statik)',
+    fallback_notice:'Suapan langsung tidak tersedia — pautan sumber dipercayai',
+    fallback_visit:'Ketik untuk lawati',
+    winner_asb:'ASB Biasa', winner_asbf:'ASBF', winner_fd:'FD', winner_epf:'EPF',
+        zakat_your_values:'Nilai ASB Anda',
+    zakat_bal_label:'Baki Simpanan ASB (RM)',
+    zakat_div_label:'Dividen Tahun Ini (RM)',
+    zakat_auto_fill:'Auto-isi dari tab Simpanan',
+    news_refresh:'Muat Semula',
+  },
+  en: {
+    brand_sub:'Investment Calculator',
+    hdr_share:'Share Link',
+    tab_dashboard:'Dashboard', tab_savings:'Savings', tab_financing:'ASBF',
+    tab_comparison:'Compare', tab_forecast:'Forecast', tab_goal:'Goals',
+    tab_zakat:'Zakat', tab_history:'History', tab_news:'News',
+    hero_label:'Projected Final Value (Base Rate)',
+    hero_eyebrow:'Calculated from your Savings settings — adjust to see your projection',
+    stat_invested:'Total Invested', stat_dividends:'Total Dividends',
+    stat_monthly:'Monthly Contribution', stat_zakat:'Zakat This Year',
+    chart_scenarios:'ASB Growth — 3 Scenarios',
+    lbl_optimis:'Optimistic', lbl_moderate:'Moderate', lbl_pessimis:'Conservative',
+    lbl_invested:'Invested', lbl_asb_value:'ASB Value', lbl_loan_bal:'Loan Balance',
+    lbl_savings:'Savings', lbl_target:'Target',
+    qc_savings:'Calculate Savings', qc_financing:'Calculate ASBF',
+    qc_forecast:'View Forecast', qc_goals:'Set a Goal',
+    sav_title:'ASB Savings Calculator',
+    sav_desc:'Monthly DCA simulation using the official PNB calculation method',
+    sav_initial:'Initial Deposit', sav_monthly:'Monthly Contribution (DCA)',
+    sav_rate:'Expected Dividend Rate', sav_bonus:'Annual Bonus',
+    sav_years:'Investment Period', sav_withdrawal_section:'Withdrawal Simulation',
+    sav_withdrawal:'One-time Withdrawal (RM)',
+    sav_withdrawal_hint:'Impact of withdrawal on final value',
+    sav_final_label:'Final Value (DCA)', sav_invested:'Total Invested',
+    sav_dividend:'Total Dividends', sav_roi:'ROI', sav_impact:'Withdrawal Impact',
+    sav_compare:'DCA vs Lump Sum', sav_dca_label:'Monthly DCA',
+    sav_lump_label:'Lump Sum Upfront',
+    sav_dca_sub:'Invest monthly throughout the period',
+    sav_lump_sub:'Invest the total amount from day one',
+    sav_autosave:'Settings saved automatically',
+    sav_view_table:'View Annual Table', sav_close_table:'Close Table',
+    sav_chart1:'ASB Growth (RM)', sav_chart2:'Annual Dividends (RM)',
+    th_start_bal:'Opening Balance', th_deposit:'Deposit', th_dividend:'Dividend',
+    th_end_bal:'Closing Balance', th_total_inv:'Total Invested',
+    th_interest:'Interest', th_principal:'Principal', th_net:'Net Value',
+    fin_title:'ASBF Calculator',
+    fin_desc:'ASB Financing — analyse payments, interest and net profit',
+    fin_mode_loan:'Enter Loan Amount', fin_mode_pay:'Enter Monthly Payment',
+    fin_loan:'Loan Amount', fin_payment:'Monthly Payment',
+    fin_rate:'Loan Interest Rate', fin_tenure:'Loan Tenure',
+    fin_div:'ASB Dividend Rate', fin_net_label:'ASBF Net Profit',
+    fin_spread:'Spread (Dividend − Interest)',
+    fin_monthly:'Monthly Payment', fin_asb_final:'ASB Value (Final)',
+    fin_interest:'Total Interest Paid', fin_total_paid:'Total Payment',
+    fin_chart1:'ASB Value vs Loan Balance', fin_chart2:'Payment Composition',
+    fin_view_table:'View Amortisation Table',
+    cmp_title:'Instrument Comparison',
+    cmp_desc:'ASB vs ASBF vs Fixed Deposit vs EPF — find what works best for you',
+    cmp_budget:'Monthly Budget', cmp_div:'ASB Dividend Rate',
+    cmp_loan:'ASBF Interest Rate', cmp_fd:'Fixed Deposit Rate', cmp_epf:'EPF Rate',
+    cmp_years:'Duration', badge_asb:'ASB Regular', badge_asbf:'ASBF',
+    badge_fd:'Fixed Deposit', badge_epf:'EPF',
+    cmp_method_dca:'Monthly DCA', cmp_method_loan:'Full Financing',
+    cmp_chart_title:'All Instruments Growth',
+    cmp_sensitivity:'Sensitivity Analysis (Dividend Rate)',
+    cmp_th_rate:'Dividend Rate', cmp_th_asb:'ASB Regular',
+    cmp_th_asbf:'ASBF (net)', cmp_th_fd:'Fixed Deposit', cmp_th_winner:'Winner',
+    fc_title:'Long-Term Forecast',
+    fc_desc:'3-scenario projection with inflation adjustment',
+    fc_initial:'Initial Deposit', fc_monthly:'Monthly Contribution',
+    fc_years:'Forecast Period', fc_inflation:'Inflation Rate',
+    fc_scenario_title:'Scenario Rates',
+    fc_chart1:'Nominal Value Projection', fc_chart2:'Real Value (After Inflation)',
+    goal_title:'Financial Goal Planner',
+    goal_desc:'Calculate your required monthly DCA + FIRE number',
+    goal_target:'Target (RM)', goal_current:'Current Savings',
+    goal_years:'Time to Achieve Goal', goal_rate:'Expected Return Rate',
+    goal_dca_label:'Required Monthly DCA', goal_fire_section:'FIRE Number',
+    goal_fire_exp:'Annual Expenses', goal_fire_rate:'Withdrawal Rate',
+    goal_fire_label:'Your FIRE Number',
+    goal_chart:'Goal Achievement Trajectory', goal_fire_chart:'FIRE Progress',
+    goal_btn_retirement:'Retirement', goal_btn_education:'Education',
+    goal_btn_property:'Property', goal_btn_emergency:'Emergency',
+    goal_btn_custom:'Other',
+    gbd_target:'Goal Target', gbd_current:'Current Savings',
+    gbd_gap:'Remaining Gap', gbd_dca:'Required Monthly DCA', gbd_final:'Projected Final Value',
+    gbd_progress:'Goal Progress', gbd_fire:'FIRE Progress',
+    zakat_title:'ASB Zakat Calculator',
+    zakat_desc:'Set your rate % — value is auto-calculated from your Savings tab',
+    zakat_rate:'Zakat Rate', zakat_basis:'Calculation Basis',
+    zakat_balance:'Savings Balance', zakat_dividend:'Dividends Only',
+    zakat_both:'Balance + Dividends', zakat_override:'Manual Override (optional)',
+    zakat_override_label:'Zakatable Amount (RM)',
+    zakat_override_ph:'Leave empty = auto from Savings tab',
+    zakat_amount_label:'Zakat Payable',
+    zakat_chart_title:'Annual Zakat Projection',
+    zbd_basis:'Calculation Basis', zbd_value:'Base Value',
+    zbd_rate:'Zakat Rate', zbd_total:'Annual Zakat',
+    zakat_links_title:'Pay Zakat Online',
+    zakat_note:"ASB zakat calculation methods vary by state and religious ruling. Refer to your state's Lembaga Zakat for authoritative guidance.",
+    hist_title:'ASB Dividend History',
+    hist_desc:'PNB dividend & bonus data 2010–2024 · Auto-updated on new announcements',
+    hist_avg_all:'Average 2010–2024', hist_avg5:'5-Year Average',
+    hist_high:'Highest', hist_low:'Lowest', hist_overall:'Overall',
+    hist_chart_title:'Annual Dividend & Bonus (%)',
+    hist_col_year:'Year', hist_col_div:'Dividend',
+    hist_col_bonus:'Bonus', hist_col_total:'Total', hist_col_trend:'Trend',
+    news_title:'ASB & Investment News',
+    news_desc:"Latest news on ASB, PNB and Malaysia's financial markets",
+    news_bm:'Bahasa Melayu', news_en:'English',
+    years_sfx:'years', month_sfx:'month',
+    dca_better:'DCA is better', lump_better:'Lump Sum is better', dca_equal:'Both strategies are similar',
+    dca_reason:'dividends compound on each monthly deposit',
+    lump_reason:'more capital compounds from the start',
+    no_withdrawal:'—', exceed_deposit:'Exceeds initial deposit',
+    spread_positive:'exceeds interest — profitable',
+    spread_zero:'break-even point', spread_negative:'exceeds dividends — net loss',
+    net_profit:'Net profit after deducting interest of',
+    net_loss:'Loss — interest is higher than dividends',
+    breakeven_yr:'ASBF surpasses ASB Regular in year ',
+    breakeven_no:'ASB Regular leads throughout the entire period',
+    milestone_reach:'Reach', milestone_over:'yr', milestone_beyond:'> yr',
+    milestone_real:'Real value at end (inf:',
+    milestone_power:'Purchasing power retained',
+    dca_enough:"Already enough!", dca_invest_msg:'Invest',
+    dca_per_month:'/month to achieve', dca_in:'in',
+    fire_sub_from:'annual expenses',
+    goal_progress:'Goal Progress', goal_fire_prog:'FIRE Progress',
+    toast_share:'Link copied! Bookmark this page or share the URL.',
+    toast_url:'URL updated — copy from address bar',
+    toast_share_fail:'Failed — copy URL from address bar',
+    toast_import:'Settings imported successfully!',
+    toast_import_fail:'Invalid file',
+    reset_confirm:'Reset all settings to default?',
+    live_loading:'Fetching latest data...',
+    live_pending:'This year\'s dividend has not been announced by PNB yet',
+    live_static:'Data verified (static)',
+    fallback_notice:'Live feed unavailable — here are trusted sources',
+    fallback_visit:'Tap to visit',
+    winner_asb:'ASB Regular', winner_asbf:'ASBF', winner_fd:'Fixed Deposit', winner_epf:'EPF',
+        zakat_your_values:'Your ASB Values',
+    zakat_bal_label:'ASB Savings Balance (RM)',
+    zakat_div_label:'Annual Dividend (RM)',
+    zakat_auto_fill:'Auto-fill from Savings tab',
+    news_refresh:'Refresh',
+  }
+};
+
+function t(key) {
+  const lang = state?.lang || 'bm';
+  return STRINGS[lang]?.[key] ?? STRINGS.bm?.[key] ?? key;
+}
+
+function applyLanguage(lang) {
+  state.lang = lang;
+  // Update all static [data-i18n] elements
+  document.querySelectorAll('[data-i18n]').forEach(node => {
+    const str = t(node.dataset.i18n);
+    if (str && str !== node.dataset.i18n) node.textContent = str;
+  });
+  // Update placeholders
+  document.querySelectorAll('[data-i18n-ph]').forEach(node => {
+    const str = t(node.dataset.i18nPh);
+    if (str) node.placeholder = str;
+  });
+  // Update html lang attribute
+  document.documentElement.lang = lang === 'en' ? 'en' : 'ms';
+  // Toggle active state on lang buttons
+  document.querySelectorAll('.lang-toggle-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.lang === lang);
+  });
+  // Re-run dynamic content so t() picks new lang
+  updateAll();
+  localStorage.setItem('asb-pro-lang', lang);
+}
+
+function initLanguage() {
+  const saved = localStorage.getItem('asb-pro-lang') || 'bm';
+  state.lang = saved;
+  document.documentElement.lang = saved === 'en' ? 'en' : 'ms';
+  document.querySelectorAll('.lang-toggle-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.lang === saved);
+  });
+}
+
+// ══════════════════════════════════════════════════════
+// COLOR THEMES
+// ══════════════════════════════════════════════════════
+const THEMES = {
+  emerald: { accent:'#059669', accent2:'#10b981', bg:'rgba(5,150,105,0.08)', border:'rgba(5,150,105,0.25)' },
+  ocean:   { accent:'#0284c7', accent2:'#38bdf8', bg:'rgba(2,132,199,0.08)',  border:'rgba(2,132,199,0.25)' },
+  sunset:  { accent:'#ea580c', accent2:'#f97316', bg:'rgba(234,88,12,0.08)',  border:'rgba(234,88,12,0.25)' },
+  purple:  { accent:'#7c3aed', accent2:'#a78bfa', bg:'rgba(124,58,237,0.08)',border:'rgba(124,58,237,0.25)' },
+  rose:    { accent:'#e11d48', accent2:'#fb7185', bg:'rgba(225,29,72,0.08)',  border:'rgba(225,29,72,0.25)' },
+};
+
+function setColorTheme(name) {
+  const th = THEMES[name] || THEMES.emerald;
+  const root = document.documentElement;
+  root.dataset.color = name;
+  root.style.setProperty('--accent',         th.accent);
+  root.style.setProperty('--accent-2',        th.accent2);
+  root.style.setProperty('--accent-bg',       th.bg);
+  root.style.setProperty('--accent-border',   th.border);
+  root.style.setProperty('--brand-gradient',  `linear-gradient(135deg, ${th.accent}, ${th.accent2})`);
+  // Sync color dots active state
+  document.querySelectorAll('.color-dot').forEach(d => {
+    d.classList.toggle('active', d.dataset.color === name);
+  });
+  localStorage.setItem('asb-pro-color', name);
+  updateChartAccent(th.accent, th.accent2);
+}
+
+function updateChartAccent(accent, accent2) {
+  // Update chart colors that use accent (e.g. bar charts, line borders)
+  if (charts.savDiv?.data.datasets[0]) {
+    charts.savDiv.data.datasets[0].backgroundColor = accent;
+    charts.savDiv.update('none');
+  }
+  if (charts.zakat?.data.datasets[0]) {
+    charts.zakat.data.datasets[0].backgroundColor = accent;
+    charts.zakat.update('none');
+  }
+}
+
+function initColorTheme() {
+  const saved = localStorage.getItem('asb-pro-color') || 'emerald';
+  setColorTheme(saved);
+}
+
 /* =====================================================
    ASB Pro — All-Out Application Logic
    Kalkulator Pelaburan Bumiputera Malaysia
@@ -152,10 +514,10 @@ function setLiveBadge(status, msg) {
   badge.className = 'live-badge live-'+status;
   badge.style.display = 'flex';
   const labels = {
-    loading: 'Mengambil data terkini...',
+    loading: t('live_loading'),
     live:    msg || 'Data terkini',
-    pending: 'Dividen tahun ini belum diumumkan oleh PNB',
-    static:  'Data disahkan (statik)',
+    pending: t('live_pending'),
+    static:  t('live_static'),
   };
   text.textContent = labels[status] || status;
 }
@@ -174,7 +536,7 @@ const state = {
   goalType:'retirement', goalAmt:500000, goalCurrent:10000, goalYears:20, goalRate:5,
   fireExp:36000, fireWithdraw:4,
   // Zakat (simplified)
-  zakatRate:2.5, zakatBasis:'balance',
+  zakatRate:2.5, zakatBasis:'balance', zakatBalance:0, zakatDividend:0,
 };
 
 // Cached results
@@ -228,10 +590,11 @@ function animateCounter(element, to, formatter) {
 // ── STATE PERSISTENCE ──
 function saveState() {
   try {
-    // also persist free-text inputs that aren't in state
+    // also persist free-text inputs that aren't in state object
     const extra = {
-      zakatManualBase: el('zakatManualBase')?.value || '',
-      withdrawAmount:  el('withdrawAmount')?.value  || '',
+      zakatBalance:  el('zakatBalance')?.value  || '',
+      zakatDividend: el('zakatDividend')?.value || '',
+      withdrawAmount: el('withdrawAmount')?.value || '',
     };
     localStorage.setItem(STATE_KEY, JSON.stringify({ ...state, ...extra }));
   } catch {}
@@ -295,10 +658,12 @@ function applyStateToInputs() {
   document.querySelectorAll('input[name="zakatBasis"]').forEach(r => {
     r.checked = r.value === state.zakatBasis;
   });
+  if (state.zakatBalance  && el('zakatBalance'))  el('zakatBalance').value  = state.zakatBalance;
+  if (state.zakatDividend && el('zakatDividend')) el('zakatDividend').value = state.zakatDividend;
 }
 
 function resetState() {
-  if (!confirm('Reset semua tetapan ke nilai asal?')) return;
+  if (!confirm(t('reset_confirm'))) return;
   localStorage.removeItem(STATE_KEY);
   location.reload();
 }
@@ -310,10 +675,10 @@ function shareURL() {
     // Update browser URL bar so this page IS the share link — just bookmark or copy
     history.replaceState(null, '', `?s=${encoded}`);
     navigator.clipboard.writeText(url).then(
-      () => showToast('Link disalin! Simpan sebagai bookmark atau kongsi.'),
-      () => showToast('URL dikemas kini — salin dari bar alamat')
+      () => showToast(t('toast_share')),
+      () => showToast(t('toast_url'))
     );
-  } catch { showToast('Gagal — salin URL dari bar alamat'); }
+  } catch { showToast(t('toast_share_fail')); }
 }
 
 function exportSettings() {
@@ -331,8 +696,8 @@ function importSettings(file) {
       Object.assign(state, JSON.parse(e.target.result));
       applyStateToInputs();
       updateAll();
-      showToast('Tetapan berjaya diimport!');
-    } catch { showToast('Fail tidak sah'); }
+      showToast(t('toast_import'));
+    } catch { showToast(t('toast_import_fail')); }
   };
   reader.readAsText(file);
 }
@@ -632,23 +997,27 @@ function updateDashboard() {
   animateCounter(el('dashFinalVal'), last.balance, fmt);
   animateCounter(el('dashTotalInvest'), last.totalInvested, fmt);
   animateCounter(el('dashTotalReturn'), last.netReturns, fmt);
-  setText('dashFinalSub', `Berdasarkan RM${state.savMonthly.toLocaleString('en-MY')}/bln · ${years} thn · dividen ${state.savRate}%`);
+  setText('dashFinalSub', `${t('stat_monthly')}: RM${state.savMonthly.toLocaleString('en-MY')}/bln · ${years} thn · dividen ${state.savRate}%`);
   setText('dashInvestSub', `${years} tahun sumbangan`);
   setText('dashReturnSub', `ROI: ${((last.netReturns/last.totalInvested)*100).toFixed(1)}%`);
   setText('dashMonthly', fmt(state.savMonthly));
   setText('dashDivRate', `Kadar dividen: ${fmtPct(state.savRate)}`);
-  setText('dashPillMonthly', `Sumbangan: ${fmt(state.savMonthly)}/bulan`);
-  setText('dashPillYears', `Tempoh: ${years} tahun`);
-  setText('dashPillRate', `Dividen: ${fmtPct(state.savRate)}`);
+  setText('dashPillMonthly', `${t('stat_monthly')}: ${fmt(state.savMonthly)}/${t('month_sfx')}`);
+  setText('dashPillYears', `${t('tab_forecast')}: ${years} ${t('years_sfx')}`);
+  setText('dashPillRate', `${t('th_dividend')}: ${fmtPct(state.savRate)}`);
 
-  const manualZakat = parseFloat(el('zakatManualBase')?.value)||0;
-  const zakatBase = manualZakat > 0 ? manualZakat
-    : state.zakatBasis==='dividend' ? last.dividend
-    : state.zakatBasis==='both' ? (last.balance+last.dividend)
-    : last.balance;
+  // Zakat uses standalone user inputs (zakatBalance / zakatDividend)
+  const zBal = state.zakatBalance || 0;
+  const zDiv = state.zakatDividend || 0;
+  const zakatBase = state.zakatBasis==='dividend' ? zDiv
+    : state.zakatBasis==='both' ? (zBal+zDiv)
+    : zBal;
   const zakatAmt = zakatBase*(state.zakatRate/100);
-  setText('dashZakat', fmt(zakatAmt));
-  setText('dashZakatSub', `${state.zakatRate}% daripada ${fmt(zakatBase)}`);
+  const dashZakatEl = el('dashZakat');
+  if (dashZakatEl) animateCounter(dashZakatEl, zakatAmt, fmt);
+  setText('dashZakatSub', zakatBase > 0
+    ? `${state.zakatRate}% × ${fmt(zakatBase)}`
+    : 'Masukkan nilai di tab Zakat');
 }
 
 // ── UPDATE SAVINGS ──
@@ -698,11 +1067,11 @@ function updateSavings() {
   const verdictEl = el('dcaVsLumpVerdict');
   if (verdictEl) {
     if (dcaFinal>lumpFinal) {
-      verdictEl.innerHTML = `<strong>DCA lebih baik</strong> sebanyak ${fmt(diff)} — kerana dividen dikompaunkan atas deposit bertahap`;
+      verdictEl.innerHTML = `<strong>${t('dca_better')}</strong> +${fmt(diff)} — ${t('dca_reason')}`;
     } else if (lumpFinal>dcaFinal) {
-      verdictEl.innerHTML = `<strong>Lump Sum lebih baik</strong> sebanyak ${fmt(diff)} — lebih banyak modal dikompaunkan dari awal`;
+      verdictEl.innerHTML = `<strong>${t('lump_better')}</strong> +${fmt(diff)} — ${t('lump_reason')}`;
     } else {
-      verdictEl.innerHTML = 'Kedua-dua strategi menghasilkan nilai hampir sama';
+      verdictEl.innerHTML = t('dca_equal');
     }
   }
 
@@ -919,40 +1288,61 @@ function updateGoal() {
 
 // ── UPDATE ZAKAT (SIMPLIFIED) ──
 function updateZakat() {
-  if (!savData.length) return;
-  const last = savData[savData.length-1];
+  // STANDALONE — reads directly from user inputs, no Savings tab dependency
+  const zBal = parseFloat(el('zakatBalance')?.value)||state.zakatBalance||0;
+  const zDiv = parseFloat(el('zakatDividend')?.value)||state.zakatDividend||0;
+  state.zakatBalance  = zBal;
+  state.zakatDividend = zDiv;
 
-  // Manual override or auto from savings
-  const manualBase = parseFloat(el('zakatManualBase')?.value)||0;
   let base = 0;
-  if (manualBase>0) {
-    base = manualBase;
-  } else {
-    if (state.zakatBasis==='balance') base = last.balance;
-    else if (state.zakatBasis==='dividend') base = last.dividend;
-    else base = last.balance + last.dividend;
-  }
+  if (state.zakatBasis==='balance')  base = zBal;
+  else if (state.zakatBasis==='dividend') base = zDiv;
+  else base = zBal + zDiv;
 
   const zakatAmt = base*(state.zakatRate/100);
 
   animateCounter(el('zakatAmount'), zakatAmt, fmt);
-  setText('zakatSub', `${state.zakatRate}% × ${fmt(base)}`);
-  setText('zbdBase', state.zakatBasis==='balance'?'Baki Simpanan':state.zakatBasis==='dividend'?'Dividen Sahaja':'Baki + Dividen');
+  setText('zakatSub', base > 0 ? `${state.zakatRate}% × ${fmt(base)}` : 'Masukkan nilai di atas');
+  setText('zbdBase', state.zakatBasis==='balance'?t('zakat_balance'):state.zakatBasis==='dividend'?t('zakat_dividend'):t('zakat_both'));
   setText('zbdBaseVal', fmt(base));
   setText('zbdRate', fmtPct(state.zakatRate));
   setText('zbdAmount', fmt(zakatAmt));
 
-  // Yearly zakat projection
-  const labels = savData.map(r=>r.year.toString());
-  const zakatYearly = savData.map(r=>{
-    let b2 = state.zakatBasis==='balance' ? r.balance
-      : state.zakatBasis==='dividend' ? r.dividend
-      : r.balance+r.dividend;
+  // Yearly projection (simple: assume balance stays at zBal growing at savRate)
+  const years = state.savYears || 20;
+  const rate  = state.savRate  || 5;
+  const labels = Array.from({length:years},(_,i)=>(i+1).toString());
+  const zakatYearly = labels.map((_,i)=>{
+    const growthFactor = Math.pow(1+rate/100, i+1);
+    const projBal = zBal * growthFactor;
+    const projDiv = projBal * (rate/100);
+    const b2 = state.zakatBasis==='balance' ? projBal
+      : state.zakatBasis==='dividend' ? projDiv
+      : projBal + projDiv;
     return b2*(state.zakatRate/100);
   });
   updateChartData(charts.zakat, labels, [zakatYearly]);
-  // Sync dashboard zakat card
+  // Always sync dashboard
   updateDashboard();
+}
+
+// Pull values from Savings tab (optional shortcut)
+function autoFillZakat() {
+  if (!savData.length) {
+    showToast(state.lang==='en'
+      ? 'Go to Savings tab first to set your values'
+      : 'Pergi tab Simpanan dulu untuk tetapkan nilai');
+    return;
+  }
+  const last = savData[savData.length-1];
+  state.zakatBalance  = Math.round(last.balance);
+  state.zakatDividend = Math.round(last.dividend);
+  if (el('zakatBalance'))  el('zakatBalance').value  = state.zakatBalance;
+  if (el('zakatDividend')) el('zakatDividend').value = state.zakatDividend;
+  updateZakat();
+  showToast(state.lang==='en'
+    ? 'Values filled from Savings tab'
+    : 'Nilai diambil dari tab Simpanan');
 }
 
 // ── UPDATE HISTORY ──
@@ -1093,7 +1483,7 @@ function switchTab(tabId) {
   }
   if (tabId==='news') {
     const grid = el('newsGrid');
-    if (grid && grid.querySelector('.skeleton')) loadNews('ASB PNB Malaysia');
+    // news loads via refresh button only
   }
 }
 
@@ -1221,6 +1611,16 @@ function setupEventListeners() {
   // Theme
   el('themeToggle')?.addEventListener('click', toggleTheme);
 
+  // Language toggle
+  document.querySelectorAll('.lang-toggle-btn').forEach(btn => {
+    btn.addEventListener('click', () => applyLanguage(btn.dataset.lang));
+  });
+
+  // Color theme picker
+  document.querySelectorAll('.color-dot').forEach(dot => {
+    dot.addEventListener('click', () => setColorTheme(dot.dataset.color));
+  });
+
   // ASBF mode toggle
   el('asbfModeToggle')?.addEventListener('click', () => {
     state.finMode = 'loan';
@@ -1286,7 +1686,8 @@ function setupEventListeners() {
   });
 
   // Zakat manual input
-  el('zakatManualBase')?.addEventListener('input', () => updateZakat());
+  el('zakatBalance')?.addEventListener('input',  () => updateZakat());
+  el('zakatDividend')?.addEventListener('input', () => updateZakat());
 
   // Withdrawal amount
   el('withdrawAmount')?.addEventListener('input', () => updateSavings());
@@ -1339,9 +1740,29 @@ function setupEventListeners() {
 }
 
 // ── NEWS ──
+// News cache — don't re-fetch on tab switch
+let _newsCache = null;
+
+function refreshNews() {
+  _newsCache = null; // clear cache
+  const grid = el('newsGrid');
+  if (grid) grid.innerHTML = '<div class="skeleton"></div>'.repeat(6);
+  const activeBtn = document.querySelector('.news-filter-btn.active');
+  const activeLang = document.querySelector('.lang-btn.active');
+  loadNews(
+    activeBtn?.dataset.topic || 'ASB PNB dividen Malaysia',
+    activeLang?.dataset.lang || 'bm'
+  );
+}
+
 async function loadNews(topic, lang) {
   const grid = el('newsGrid');
   if (!grid) return;
+  // If cache hit and not force-refreshed, render immediately
+  if (_newsCache && _newsCache.topic === topic && _newsCache.lang === lang) {
+    grid.innerHTML = _newsCache.html;
+    return;
+  }
   grid.innerHTML = '<div class="skeleton"></div>'.repeat(6);
 
   const isEn = lang === 'en';
@@ -1351,7 +1772,7 @@ async function loadNews(topic, lang) {
 
   const renderItems = items => {
     if (!items || !items.length) throw new Error('empty');
-    grid.innerHTML = items.slice(0, 12).map(item => {
+    const html = items.slice(0, 12).map(item => {
       const title = (item.title||item.name||'').replace(/<!\[CDATA\[|\]\]>/g,'').trim();
       const link  = item.link||item.url||item.guid||'#';
       const date  = item.pubDate||item.isoDate||item.published||'';
@@ -1363,7 +1784,9 @@ async function loadNews(topic, lang) {
         <div class="news-date">${fmtDate(date)}</div>
       </a>`;
     }).filter(Boolean).join('') || null;
-    if (!grid.innerHTML) throw new Error('no renderable items');
+    if (!html) throw new Error('no renderable items');
+    grid.innerHTML = html;
+    _newsCache = { topic, lang, html }; // cache it
   };
 
   // Strategy 1: rss2json (most reliable for Google News)
@@ -1485,18 +1908,19 @@ function updateChartTheme(dark) {
 // ── INIT ──
 function init() {
   initTheme();
-  loadSavedState();      // 1. load persisted state FIRST
+  loadSavedState();
+  initLanguage();        // language before DOM render
+  initColorTheme();      // apply saved color theme
   initCharts();
-  applyStateToInputs();  // 2. sync DOM inputs from loaded state
-  setupSliders();        // 3. hook events (reads current input values)
+  applyStateToInputs();
+  setupSliders();
   setupSliderTooltip();
   setupEventListeners();
-  updateAll();
+  applyLanguage(state.lang || 'bm'); // apply full i18n after everything is ready
   setTimeout(() => {
     const active = document.querySelector('.tab-btn.active');
     if (active) moveTabIndicator(active);
   }, 80);
-  // Auto-fetch latest dividend (non-blocking)
   fetchLatestDividend();
 }
 
