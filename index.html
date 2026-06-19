@@ -21,6 +21,19 @@
         </div>
       </div>
       <div class="header-actions">
+        <button class="hdr-btn" onclick="shareURL()" title="Kongsi tetapan via link">
+          <i class="ph ph-share-network"></i><span>Kongsi</span>
+        </button>
+        <button class="hdr-btn" onclick="exportSettings()" title="Export tetapan JSON">
+          <i class="ph ph-download-simple"></i><span>Export</span>
+        </button>
+        <label class="hdr-btn" title="Import tetapan JSON">
+          <i class="ph ph-upload-simple"></i><span>Import</span>
+          <input type="file" accept=".json" style="display:none" onchange="importSettings(this.files[0])">
+        </label>
+        <button class="hdr-btn hdr-btn-ghost" onclick="resetState()" title="Reset semua tetapan">
+          <i class="ph ph-arrow-counter-clockwise"></i>
+        </button>
         <button class="icon-btn" id="themeToggle" title="Tukar tema">
           <i class="ph ph-moon" id="themeIcon"></i>
         </button>
@@ -48,9 +61,18 @@
     <!-- ============ DASHBOARD ============ -->
     <section class="tab-panel active" id="panel-dashboard">
       <div class="dashboard-hero">
-        <div class="hero-label">Unjuran Nilai Akhir (Sederhana)</div>
+        <div class="hero-eyebrow">
+          <i class="ph ph-info"></i>
+          Nilai ini dikira berdasarkan tetapan di tab Simpanan — tukar untuk lihat unjuran anda
+        </div>
+        <div class="hero-label">Unjuran Nilai Akhir (Kadar Sederhana)</div>
         <div class="hero-val" id="dashFinalVal">RM 0</div>
         <div class="hero-sub" id="dashFinalSub">—</div>
+        <div class="hero-pills">
+          <span class="hero-pill" id="dashPillMonthly">—</span>
+          <span class="hero-pill" id="dashPillYears">—</span>
+          <span class="hero-pill" id="dashPillRate">—</span>
+        </div>
       </div>
       <div class="stats-grid stats-grid-4">
         <div class="stat-card">
@@ -86,7 +108,7 @@
         <div class="chart-wrap h300"><canvas id="dashChart"></canvas></div>
       </div>
       <div class="dashboard-quick">
-        <div class="quick-card" onclick="switchTab('savings')">
+        <div class="quick-card" onclick="switchTab('savings')" title="Tetapkan deposit, sumbangan bulanan dan kadar dividen">
           <i class="ph ph-trend-up"></i>
           <span>Kira Simpanan</span>
           <i class="ph ph-arrow-right quick-arrow"></i>
@@ -152,6 +174,9 @@
             <div class="highlight-label">Nilai Akhir (DCA)</div>
             <div class="highlight-val accent" id="savFinalVal">RM 0</div>
             <div class="highlight-sub" id="savLastDiv">—</div>
+          </div>
+          <div class="autosave-note">
+            <i class="ph ph-cloud-check"></i> Tetapan disimpan secara automatik
           </div>
         </div>
         <div class="results-panel">

@@ -27,6 +27,7 @@ let DIVIDEND_HISTORY = [
 // Cache key & TTL
 const DIV_CACHE_KEY = 'asb-pro-div-live';
 const DIV_CACHE_TTL = 12 * 60 * 60 * 1000; // 12 jam
+const STATE_KEY    = 'asb-pro-state';
 
 async function fetchLatestDividend() {
   const currentYear = new Date().getFullYear();
@@ -222,6 +223,98 @@ function animateCounter(element, to, formatter) {
     else element.textContent = formatter(to);
   };
   requestAnimationFrame(step);
+}
+
+// ── STATE PERSISTENCE ──
+function saveState() {
+  try { localStorage.setItem(STATE_KEY, JSON.stringify(state)); } catch {}
+}
+
+function loadSavedState() {
+  // Priority: URL param > localStorage > defaults
+  try {
+    const params = new URLSearchParams(location.search);
+    const urlState = params.get('s');
+    if (urlState) {
+      Object.assign(state, JSON.parse(atob(urlState)));
+      history.replaceState(null,'', location.pathname); // clean URL
+      return;
+    }
+  } catch {}
+  try {
+    const saved = JSON.parse(localStorage.getItem(STATE_KEY)||'null');
+    if (saved) Object.assign(state, saved);
+  } catch {}
+}
+
+function applyStateToInputs() {
+  // Sync all slider/input values from state to DOM
+  const map = {
+    savInitial:'savInitial', savMonthly:'savMonthly', savRate:'savRate',
+    savBonus:'savBonus', savYears:'savYears',
+    finLoan:'finLoan', finPayment:'finPayment', finRate:'finRate',
+    finTenure:'finTenure', finDiv:'finDiv',
+    cmpBudget:'cmpBudget', cmpDiv:'cmpDiv', cmpLoanRate:'cmpLoanRate',
+    cmpFDRate:'cmpFDRate', cmpEPFRate:'cmpEPFRate', cmpYears:'cmpYears',
+    fcInit:'fcInit', fcMonthly:'fcMonthly', fcYears:'fcYears', fcInflation:'fcInflation',
+    goalAmt:'goalAmt', goalCurrent:'goalCurrent', goalYears:'goalYears', goalRate:'goalRate',
+    fireExp:'fireExp', fireWithdraw:'fireWithdraw',
+    zakatRate:'zakatRate',
+  };
+  Object.entries(map).forEach(([stateKey, inputId]) => {
+    const inp = el(inputId);
+    if (inp && state[stateKey] != null) inp.value = state[stateKey];
+  });
+  // Scenario number inputs
+  ['fcBear','fcBase','fcBull'].forEach(k => {
+    const inp = el(k); if (inp) inp.value = state[k];
+  });
+  // ASBF mode
+  if (state.finMode === 'payment') {
+    el('asbfModeToggle')?.classList.remove('active');
+    el('asbfPaymentModeBtn')?.classList.add('active');
+    el('asbfPaymentGroup')?.classList.remove('hidden');
+    el('asbfLoanGroup')?.classList.add('hidden');
+  }
+  // Zakat basis radio
+  document.querySelectorAll('input[name="zakatBasis"]').forEach(r => {
+    r.checked = r.value === state.zakatBasis;
+  });
+}
+
+function resetState() {
+  if (!confirm('Reset semua tetapan ke nilai asal?')) return;
+  localStorage.removeItem(STATE_KEY);
+  location.reload();
+}
+
+function shareURL() {
+  try {
+    const encoded = btoa(JSON.stringify(state));
+    const url = `${location.origin}${location.pathname}?s=${encoded}`;
+    navigator.clipboard.writeText(url).then(() => showToast('Link tetapan disalin — kongsi dengan sesiapa!'));
+  } catch { showToast('Gagal salin link'); }
+}
+
+function exportSettings() {
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'asb-pro-tetapan.json';
+  a.click();
+}
+
+function importSettings(file) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      Object.assign(state, JSON.parse(e.target.result));
+      applyStateToInputs();
+      updateAll();
+      showToast('Tetapan berjaya diimport!');
+    } catch { showToast('Fail tidak sah'); }
+  };
+  reader.readAsText(file);
 }
 
 // ── THEME ──
@@ -519,11 +612,14 @@ function updateDashboard() {
   animateCounter(el('dashFinalVal'), last.balance, fmt);
   animateCounter(el('dashTotalInvest'), last.totalInvested, fmt);
   animateCounter(el('dashTotalReturn'), last.netReturns, fmt);
-  setText('dashFinalSub', `Selepas ${years} tahun pada kadar ${state.savRate}%`);
+  setText('dashFinalSub', `Berdasarkan RM${state.savMonthly.toLocaleString('en-MY')}/bln · ${years} thn · dividen ${state.savRate}%`);
   setText('dashInvestSub', `${years} tahun sumbangan`);
   setText('dashReturnSub', `ROI: ${((last.netReturns/last.totalInvested)*100).toFixed(1)}%`);
   setText('dashMonthly', fmt(state.savMonthly));
   setText('dashDivRate', `Kadar dividen: ${fmtPct(state.savRate)}`);
+  setText('dashPillMonthly', `Sumbangan: ${fmt(state.savMonthly)}/bulan`);
+  setText('dashPillYears', `Tempoh: ${years} tahun`);
+  setText('dashPillRate', `Dividen: ${fmtPct(state.savRate)}`);
 
   const zakatBase = state.zakatBasis==='dividend' ? last.dividend
     : state.zakatBasis==='both' ? (last.balance+last.dividend)
@@ -864,6 +960,7 @@ function updateHistory() {
 
 // ── UPDATE ALL ──
 function updateAll() {
+  saveState();
   updateSavings();
   updateFinancing();
   updateComparison();
@@ -1163,33 +1260,57 @@ function setupEventListeners() {
 async function loadNews(topic) {
   const grid = el('newsGrid');
   if (!grid) return;
+  grid.innerHTML = '<div class="skeleton"></div>'.repeat(6);
+
+  // Try rss2json first (more reliable than allorigins)
   const rssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(topic)}&hl=ms&gl=MY&ceid=MY:ms`;
-  const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(rssUrl)}`;
-  try {
-    const resp = await fetch(proxyUrl);
-    const data = await resp.json();
-    if (!data.contents) throw new Error('No contents');
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(data.contents, 'text/xml');
-    const items = Array.from(doc.querySelectorAll('item')).slice(0, 12);
-    if (!items.length) throw new Error('No items');
+  const r2jUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}&count=12`;
+
+  const renderItems = items => {
+    if (!items.length) throw new Error('empty');
     grid.innerHTML = items.map(item => {
-      const rawTitle = item.querySelector('title')?.textContent||''; const title = rawTitle.replace('<![[CDATA[[','').replace(']]>','').trim();
-      const link = item.querySelector('link')?.textContent?.trim()||'#';
-      const pubDate = item.querySelector('pubDate')?.textContent?.trim()||'';
-      const source = item.querySelector('source')?.textContent?.trim()||'Tidak diketahui';
+      const title = (item.title||'').replace(/<!\[CDATA\[|\]\]>/g,'').trim();
+      const link  = item.link||item.url||'#';
+      const date  = item.pubDate||item.published||'';
+      const src   = item.author||item.source||'PNB / Kewangan';
       return `<a href="${link}" target="_blank" rel="noopener noreferrer" class="news-card">
-        <div class="news-source">${source}</div>
-        <div class="news-title">${title.length>120?title.slice(0,117)+'…':title}</div>
-        <div class="news-date">${fmtDate(pubDate)}</div>
+        <div class="news-source">${src.length>30?src.slice(0,28)+'…':src}</div>
+        <div class="news-title">${title.length>130?title.slice(0,127)+'…':title}</div>
+        <div class="news-date">${fmtDate(date)}</div>
       </a>`;
     }).join('');
-  } catch {
-    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--text-3)">
-      <i class="ph ph-wifi-slash" style="font-size:2rem;display:block;margin-bottom:0.5rem"></i>
-      Gagal memuatkan berita. Semak sambungan internet.
-    </div>`;
-  }
+  };
+
+  // Strategy 1: rss2json
+  try {
+    const resp = await fetch(r2jUrl, { signal: AbortSignal.timeout(8000) });
+    const data = await resp.json();
+    if (data.status === 'ok' && data.items?.length) { renderItems(data.items); return; }
+  } catch {}
+
+  // Strategy 2: allorigins fallback with XML parse
+  try {
+    const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(rssUrl)}`;
+    const resp  = await fetch(proxy, { signal: AbortSignal.timeout(8000) });
+    const data  = await resp.json();
+    if (!data.contents) throw new Error('no contents');
+    const doc   = new DOMParser().parseFromString(data.contents, 'text/xml');
+    const raw   = Array.from(doc.querySelectorAll('item')).slice(0, 12).map(item => ({
+      title   : item.querySelector('title')?.textContent||'',
+      link    : item.querySelector('link')?.nextSibling?.textContent || item.querySelector('guid')?.textContent || '#',
+      pubDate : item.querySelector('pubDate')?.textContent||'',
+      source  : item.querySelector('source')?.textContent||'Berita',
+    }));
+    renderItems(raw.map(r => ({ title:r.title, link:r.link, pubDate:r.pubDate, author:r.source })));
+    return;
+  } catch {}
+
+  // Fail state
+  grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:3rem 1rem;color:var(--text-3)">
+    <i class="ph ph-newspaper" style="font-size:2.5rem;display:block;margin-bottom:0.75rem;opacity:0.4"></i>
+    <div style="font-size:0.85rem;margin-bottom:0.5rem">Berita tidak dapat dimuatkan</div>
+    <div style="font-size:0.75rem;color:var(--text-4)">Cuba semak sambungan internet atau<br>klik butang topik sekali lagi</div>
+  </div>`;
 }
 
 // ── THEME ──
@@ -1241,8 +1362,10 @@ function updateChartTheme(dark) {
 // ── INIT ──
 function init() {
   initTheme();
+  loadSavedState();      // 1. load persisted state FIRST
   initCharts();
-  setupSliders();
+  applyStateToInputs();  // 2. sync DOM inputs from loaded state
+  setupSliders();        // 3. hook events (reads current input values)
   setupSliderTooltip();
   setupEventListeners();
   updateAll();
