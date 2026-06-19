@@ -134,7 +134,14 @@ const STRINGS = {
     fallback_notice:'Suapan langsung tidak tersedia — pautan sumber dipercayai',
     fallback_visit:'Ketik untuk lawati',
     winner_asb:'ASB Biasa', winner_asbf:'ASBF', winner_fd:'FD', winner_epf:'EPF',
-        zakat_your_values:'Nilai ASB Anda',
+            fin_mode_hint_loan:'Masukkan jumlah yang anda pinjam — kami kira bayaran bulanan anda',
+    fin_mode_hint_pay:'Masukkan berapa mampu bayar sebulan — kami kira jumlah pinjaman maksimum',
+    cmpEPFRateVal_default:'6.30%',
+        manual_div_title:'Masukkan Dividen Terkini',
+    manual_div_sub:'PNB belum kemaskini laman web — isi sendiri bila diumumkan',
+    manual_div_year:'Tahun', manual_div_rate:'Dividen (%)', manual_div_bonus:'Bonus (%)',
+    manual_div_save:'Simpan & Kemas Kini',
+    zakat_your_values:'Nilai ASB Anda',
     zakat_bal_label:'Baki Simpanan ASB (RM)',
     zakat_div_label:'Dividen Tahun Ini (RM)',
     zakat_auto_fill:'Auto-isi dari tab Simpanan',
@@ -270,7 +277,14 @@ const STRINGS = {
     fallback_notice:'Live feed unavailable — here are trusted sources',
     fallback_visit:'Tap to visit',
     winner_asb:'ASB Regular', winner_asbf:'ASBF', winner_fd:'Fixed Deposit', winner_epf:'EPF',
-        zakat_your_values:'Your ASB Values',
+            fin_mode_hint_loan:'Enter the loan amount — we calculate your monthly payment',
+    fin_mode_hint_pay:'Enter what you can afford monthly — we calculate the maximum loan',
+    cmpEPFRateVal_default:'6.30%',
+        manual_div_title:'Enter Latest Dividend',
+    manual_div_sub:'PNB has not updated their website yet — fill in once announced',
+    manual_div_year:'Year', manual_div_rate:'Dividend (%)', manual_div_bonus:'Bonus (%)',
+    manual_div_save:'Save & Update',
+    zakat_your_values:'Your ASB Values',
     zakat_bal_label:'ASB Savings Balance (RM)',
     zakat_div_label:'Annual Dividend (RM)',
     zakat_auto_fill:'Auto-fill from Savings tab',
@@ -392,99 +406,126 @@ const DIV_CACHE_TTL = 12 * 60 * 60 * 1000; // 12 jam
 const STATE_KEY    = 'asb-pro-state';
 
 async function fetchLatestDividend() {
-  const currentYear = new Date().getFullYear();
+  const nowYear = new Date().getFullYear();
+  const targetYear = nowYear - 1; // last fully announced dividend year
 
-  // 1. Check localStorage cache (valid 12h)
+  // 1. Check localStorage cache
   try {
     const cached = JSON.parse(localStorage.getItem(DIV_CACHE_KEY)||'null');
-    if (cached && cached.year === currentYear && (Date.now()-cached.ts) < DIV_CACHE_TTL) {
-      applyLiveDividend(cached.year, cached.dividend, cached.bonus, cached.src, false);
+    if (cached && cached.year === targetYear && (Date.now()-cached.ts) < DIV_CACHE_TTL) {
+      applyLiveDividend(cached.year, cached.dividend, cached.bonus||0, cached.src, false);
       return;
     }
   } catch {}
 
+  const existing = DIVIDEND_HISTORY.find(r => r.year === targetYear);
+  if (existing && existing.dividend > 0) setLiveBadge('static');
+
   setLiveBadge('loading');
 
-  // 2. Try PNB website (agihan announcement page)
-  const pnbUrls = [
-    'https://www.pnb.com.my/index.php/pengumuman-agihan',
-    'https://www.pnb.com.my/amanah-saham-bumiputera',
-    'https://www.pnb.com.my/',
-  ];
-
-  for (const url of pnbUrls) {
-    try {
-      const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
-      const resp = await fetch(proxy, { signal: AbortSignal.timeout(7000) });
-      const data = await resp.json();
-      if (!data.contents) continue;
-
-      const text = data.contents;
-      // Pattern: "5.50 sen", "5.50%", "agihan 5.50", "dividen 5.50"
-      const patterns = [
-        /agihan.*?(\d{1,2}[.,]\d{2})\s*(?:sen|%|peratus)/gi,
-        /dividen.*?(\d{1,2}[.,]\d{2})\s*(?:sen|%|peratus)/gi,
-        /(\d{1,2}[.,]\d{2})\s*sen\s*bagi\s*setiap\s*unit/gi,
-        /ASB.*?(\d{1,2}[.,]\d{2})\s*(?:sen|%)/gi,
-      ];
-
-      for (const pat of patterns) {
-        const m = [...text.matchAll(pat)];
-        if (m.length) {
-          const rate = parseFloat(m[0][1].replace(',','.'));
-          if (rate > 0.5 && rate < 15) {
-            // Look for bonus pattern near same paragraph
-            const bonusPat = /bonus.*?(\d{1,2}[.,]\d{2})\s*(?:sen|%)/gi;
-            const bm = [...text.matchAll(bonusPat)];
-            const bonus = bm.length ? parseFloat(bm[0][1].replace(',','.')) : 0;
-            applyLiveDividend(currentYear, rate, bonus, 'PNB Website', true);
-            return;
-          }
-        }
-      }
-    } catch {}
+  // Extract dividend + bonus from raw text
+  function parseDivBonus(text) {
+    // Dividend patterns: "5.00 sen", "agihan 5.00%", "dividen 5.00 peratus"
+    const divPatterns = [
+      /agihan[^.]{0,60}?(\d{1,2}[.,]\d{2,4})\s*(?:sen|%|peratus)/i,
+      /dividen[^.]{0,60}?(\d{1,2}[.,]\d{2,4})\s*(?:sen|%|peratus)/i,
+      /(\d{1,2}[.,]\d{2,4})\s*sen\s*bagi\s*setiap\s*unit/i,
+      /ASB[^.]{0,60}?(\d{1,2}[.,]\d{2,4})\s*(?:sen|%)/i,
+    ];
+    // Bonus patterns: "bonus 0.25 sen", "0.25% bonus"
+    const bonusPatterns = [
+      /bonus[^.]{0,40}?(\d[.,]\d{2,4})\s*(?:sen|%|peratus)/i,
+      /(\d[.,]\d{2,4})\s*(?:sen|%)\s*bonus/i,
+    ];
+    let dividend = 0, bonus = 0;
+    for (const pat of divPatterns) {
+      const m = text.match(pat);
+      if (m) { const v = parseFloat(m[1].replace(',','.')); if (v > 1 && v < 15) { dividend = v; break; } }
+    }
+    for (const pat of bonusPatterns) {
+      const m = text.match(pat);
+      if (m) { const v = parseFloat(m[1].replace(',','.')); if (v >= 0 && v < 2) { bonus = v; break; } }
+    }
+    return dividend > 0 ? { dividend, bonus } : null;
   }
 
-  // 3. Fallback: Google News RSS — cari tajuk dengan kadar %
-  try {
-    const queries = [
-      `ASB dividen ${currentYear} sen PNB`,
-      `"amanah saham bumiputera" agihan ${currentYear}`,
-    ];
-    for (const q of queries) {
-      const rss = `https://news.google.com/rss/search?q=${encodeURIComponent(q)}&hl=ms&gl=MY&ceid=MY:ms`;
-      const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(rss)}`;
-      const resp = await fetch(proxy, { signal: AbortSignal.timeout(7000) });
-      const data = await resp.json();
-      if (!data.contents) continue;
+  // 2. Try PNB website (domain confirmed stable)
+  const pnbPages = [
+    'https://www.pnb.com.my/index.php/pengumuman-agihan',
+    'https://www.pnb.com.my/index.php/amanah-saham-bumiputera',
+    'https://www.pnb.com.my/',
+  ];
+  const proxies = [
+    u => `https://api.allorigins.win/get?url=${encodeURIComponent(u)}`,
+    u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
+  ];
 
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(data.contents, 'text/xml');
-      const items = Array.from(doc.querySelectorAll('item')).slice(0, 8);
-
-      for (const item of items) {
-        const raw = (item.querySelector('title')?.textContent||'') + ' ' + (item.querySelector('description')?.textContent||'');
-        // Match "5.50 sen", "5.50 peratus", "5.50%"
-        const m = raw.match(/(\d{1,2}[.,]\d{2})\s*(?:sen|peratus|%)/i);
-        if (m) {
-          const rate = parseFloat(m[1].replace(',','.'));
-          if (rate > 0.5 && rate < 15) {
-            applyLiveDividend(currentYear, rate, 0, 'Google News', true);
-            return;
-          }
+  for (const page of pnbPages) {
+    for (const proxyFn of proxies) {
+      try {
+        const resp = await fetch(proxyFn(page), { signal: AbortSignal.timeout(8000) });
+        let text = '';
+        const proxyUrl = proxyFn(page);
+        if (proxyUrl.includes('allorigins')) {
+          const d = await resp.json(); text = d.contents || '';
+        } else {
+          text = await resp.text();
         }
+        const found = parseDivBonus(text);
+        if (found) { applyLiveDividend(targetYear, found.dividend, found.bonus, 'PNB Website', true); return; }
+      } catch {}
+    }
+  }
+
+  // 3. Google News RSS fallback — look for headline with rate
+  try {
+    const q = `ASB dividen bonus ${targetYear} PNB sen peratus`;
+    const rss = `https://news.google.com/rss/search?q=${encodeURIComponent(q)}&hl=ms&gl=MY&ceid=MY:ms`;
+    const r2j = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rss)}&count=10`;
+    const resp = await fetch(r2j, { signal: AbortSignal.timeout(8000) });
+    const data = await resp.json();
+    if (data.status === 'ok') {
+      for (const item of (data.items||[])) {
+        const raw = (item.title||'') + ' ' + (item.description||'');
+        const found = parseDivBonus(raw);
+        if (found) { applyLiveDividend(targetYear, found.dividend, found.bonus, 'Berita', true); return; }
       }
     }
   } catch {}
 
-  // 4. Nothing found — show "belum diumumkan" badge if current year not in static data
-  const hasCurrentYear = DIVIDEND_HISTORY.some(r => r.year === currentYear);
-  if (!hasCurrentYear) {
+  // 4. All failed — show manual entry form
+  if (!DIVIDEND_HISTORY.some(r => r.year === targetYear)) {
     setLiveBadge('pending');
+    showManualDividendForm(targetYear);
   } else {
     setLiveBadge('static');
   }
 }
+
+function showManualDividendForm(year) {
+  const card = document.getElementById('manualDivCard');
+  if (!card) return;
+  const inp = document.getElementById('manualDivYear');
+  if (inp) inp.value = year || (new Date().getFullYear() - 1);
+  card.classList.remove('hidden');
+  setTimeout(() => card.scrollIntoView({ behavior:'smooth', block:'nearest' }), 200);
+}
+
+function saveManualDividend() {
+  const year    = parseInt(document.getElementById('manualDivYear')?.value);
+  const divRate = parseFloat(document.getElementById('manualDivRate')?.value);
+  const bonus   = parseFloat(document.getElementById('manualDivBonus')?.value)||0;
+  if (!year || !divRate || divRate < 0.5 || divRate > 15) {
+    showToast(state.lang==='en' ? 'Enter a valid dividend %' : 'Masukkan kadar dividen yang sah');
+    return;
+  }
+  applyLiveDividend(year, divRate, bonus, 'Manual', true);
+  document.getElementById('manualDivCard')?.classList.add('hidden');
+  showToast(state.lang==='en'
+    ? `Saved: ${year} dividend ${divRate}% + ${bonus}% bonus`
+    : `Disimpan: Dividen ${year} ${divRate}% + ${bonus}% bonus`);
+}
+
 
 function applyLiveDividend(year, dividend, bonus, source, isNew) {
   const existing = DIVIDEND_HISTORY.findIndex(r => r.year === year);
@@ -504,7 +545,8 @@ function applyLiveDividend(year, dividend, bonus, source, isNew) {
   updateHistory();
   updateDashboard();
 
-  setLiveBadge('live', `${year}: ${dividend.toFixed(2)}% (${source})`);
+  const bonusStr = bonus > 0 ? ` + ${bonus.toFixed(2)}% bonus` : '';
+  setLiveBadge('live', `${year}: ${dividend.toFixed(2)}%${bonusStr} (${source})`);
 }
 
 function setLiveBadge(status, msg) {
@@ -529,7 +571,7 @@ const state = {
   // Financing
   finLoan:100000, finPayment:500, finRate:4, finTenure:30, finDiv:5, finMode:'loan',
   // Comparison
-  cmpBudget:500, cmpDiv:5, cmpLoanRate:4, cmpFDRate:3.5, cmpEPFRate:5.5, cmpYears:20,
+  cmpBudget:500, cmpDiv:5, cmpLoanRate:4, cmpFDRate:3.5, cmpEPFRate:6.3, cmpYears:20,
   // Forecast
   fcInit:10000, fcMonthly:500, fcYears:30, fcInflation:3, fcBear:3, fcBase:5, fcBull:7,
   // Goal
@@ -672,12 +714,22 @@ function shareURL() {
   try {
     const encoded = btoa(JSON.stringify(state));
     const url = `${location.origin}${location.pathname}?s=${encoded}`;
-    // Update browser URL bar so this page IS the share link — just bookmark or copy
     history.replaceState(null, '', `?s=${encoded}`);
-    navigator.clipboard.writeText(url).then(
-      () => showToast(t('toast_share')),
-      () => showToast(t('toast_url'))
-    );
+    // Native share sheet on mobile (iOS/Android)
+    if (navigator.share) {
+      navigator.share({
+        title: 'ASB Pro — ' + (state.lang==='en' ? 'My Settings' : 'Tetapan Saya'),
+        text: state.lang==='en'
+          ? 'Check out my ASB investment projection!'
+          : 'Tengok unjuran pelaburan ASB saya!',
+        url,
+      }).catch(()=>{}); // user dismissed share sheet — no error toast
+    } else {
+      navigator.clipboard.writeText(url).then(
+        () => showToast(t('toast_share')),
+        () => showToast(t('toast_url'))
+      );
+    }
   } catch { showToast(t('toast_share_fail')); }
 }
 
@@ -1238,15 +1290,30 @@ function updateForecast() {
 function updateGoal() {
   const { goalAmt, goalCurrent, goalYears, goalRate, fireExp, fireWithdraw } = state;
   const reqDCA = calcRequiredDCA(goalAmt, goalCurrent, goalYears, goalRate);
-  const fireNum = fireExp/(fireWithdraw/100);
-  const stillNeeded = Math.max(0, fireNum-goalCurrent);
+  const fireNum = fireWithdraw > 0
+    ? fireExp/(fireWithdraw/100)
+    : null; // 0% = no withdrawal, no FIRE number needed
+  const stillNeeded = fireNum ? Math.max(0, fireNum-goalCurrent) : 0;
 
   setText('goalRequiredDCA', reqDCA<1 ? 'Dah cukup!' : fmt(reqDCA));
   setText('goalDCASub', reqDCA<1
     ? 'Simpanan semasa sudah mencukupi — teruskan melabur!'
     : `Labur ${fmt(reqDCA)}/bulan untuk capai ${fmt(goalAmt)} dalam ${goalYears} tahun`);
-  setText('fireNumber', fmt(fireNum));
-  setText('fireSub', `${fmt(fireExp)}/thn ÷ ${fmtPct(fireWithdraw)} = ${fmt(fireNum)}`);
+  if (fireNum === null) {
+    setText('fireNumber', state.lang==='en' ? 'No withdrawal needed' : 'Tiada pengeluaran diperlukan');
+    setText('fireSub', state.lang==='en'
+      ? 'Rate 0% — you need no FIRE number, just keep investing'
+      : 'Kadar 0% — terus melabur, tiada pengeluaran diperlukan');
+  } else {
+    setText('fireNumber', fmt(fireNum));
+    // Simple plain explanation
+    const yearsToFire = fireNum > 0 && state.goalCurrent > 0
+      ? Math.ceil(Math.log(fireNum/state.goalCurrent)/Math.log(1+state.goalRate/100))
+      : '?';
+    setText('fireSub', state.lang==='en'
+      ? `RM${(fireExp/1000).toFixed(0)}k/yr ÷ ${fmtPct(fireWithdraw)} = ${fmtK(fireNum)} needed to retire`
+      : `RM${(fireExp/1000).toFixed(0)}k/thn ÷ ${fmtPct(fireWithdraw)} = perlu ${fmtK(fireNum)} untuk bersara`);
+  }
 
   const trajectory = calcForecast(goalCurrent, reqDCA>0?reqDCA:0, goalRate, goalYears, 0);
   const labels = trajectory.map(r=>r.year.toString());
@@ -1256,13 +1323,14 @@ function updateGoal() {
   ]);
 
   // FIRE donut
-  const saved = Math.min(goalCurrent, fireNum);
-  charts.fire.data.datasets[0].data = [saved, Math.max(0,stillNeeded)];
+  const saved = fireNum ? Math.min(goalCurrent, fireNum) : goalCurrent;
+  const stillNeeded2 = fireNum ? Math.max(0, fireNum-goalCurrent) : 0;
+  charts.fire.data.datasets[0].data = [saved, stillNeeded2];
   charts.fire.data.datasets[0].backgroundColor = [C.bull, isDark()?'#374151':'#e4e4e7'];
   charts.fire.update('active');
 
   const pct = Math.min(100,(goalCurrent/goalAmt)*100);
-  const firePct = Math.min(100,(goalCurrent/fireNum)*100);
+  const firePct = fireNum ? Math.min(100,(goalCurrent/fireNum)*100) : 100;
   const bd = el('goalBreakdown');
   if (bd) bd.innerHTML = `
     <div class="chart-block" style="margin-bottom:0">
@@ -1483,7 +1551,7 @@ function switchTab(tabId) {
   }
   if (tabId==='news') {
     const grid = el('newsGrid');
-    // news loads via refresh button only
+    // News loads via refresh button — static cards already visible
   }
 }
 
@@ -1620,10 +1688,10 @@ function setupEventListeners() {
   el('colorPickerToggle')?.addEventListener('click', e => {
     e.stopPropagation();
     const panel = el('colorPickerPanel');
-    if (panel) panel.classList.toggle('open');
+    if (panel) panel.classList.toggle('picker-open');
   });
   document.addEventListener('click', () => {
-    el('colorPickerPanel')?.classList.remove('open');
+    el('colorPickerPanel')?.classList.remove('picker-open');
   });
   el('colorPickerPanel')?.addEventListener('click', e => e.stopPropagation());
 
@@ -1631,25 +1699,31 @@ function setupEventListeners() {
   document.querySelectorAll('.color-dot').forEach(dot => {
     dot.addEventListener('click', () => {
       setColorTheme(dot.dataset.color);
-      el('colorPickerPanel')?.classList.remove('open');
+      el('colorPickerPanel')?.classList.remove('picker-open');
     });
   });
 
   // ASBF mode toggle
   el('asbfModeToggle')?.addEventListener('click', () => {
     state.finMode = 'loan';
-    el('asbfModeToggle').classList.add('active');
-    el('asbfPaymentModeBtn').classList.remove('active');
-    el('asbfLoanGroup').classList.remove('hidden');
-    el('asbfPaymentGroup').classList.add('hidden');
+    el('asbfModeToggle')?.classList.add('active');
+    el('asbfPaymentModeBtn')?.classList.remove('active');
+    el('asbfLoanGroup')?.classList.remove('hidden');
+    el('asbfPaymentGroup')?.classList.add('hidden');
+    setText('asbfModeHint', (state.lang==='en'
+      ? '💡 Enter the loan amount — we calculate your monthly payment'
+      : '💡 Masukkan jumlah yang anda pinjam — kami kira bayaran bulanan anda'));
     updateFinancing();
   });
   el('asbfPaymentModeBtn')?.addEventListener('click', () => {
     state.finMode = 'payment';
-    el('asbfPaymentModeBtn').classList.add('active');
-    el('asbfModeToggle').classList.remove('active');
-    el('asbfPaymentGroup').classList.remove('hidden');
-    el('asbfLoanGroup').classList.add('hidden');
+    el('asbfPaymentModeBtn')?.classList.add('active');
+    el('asbfModeToggle')?.classList.remove('active');
+    el('asbfPaymentGroup')?.classList.remove('hidden');
+    el('asbfLoanGroup')?.classList.add('hidden');
+    setText('asbfModeHint', (state.lang==='en'
+      ? '💡 Enter what you can afford monthly — we calculate the maximum loan'
+      : '💡 Masukkan berapa mampu bayar sebulan — kami kira jumlah pinjaman maksimum'));
     updateFinancing();
   });
 
@@ -1715,34 +1789,18 @@ function setupEventListeners() {
     });
   });
 
-  // News language toggle
-  document.querySelectorAll('.lang-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));
-      btn.classList.add('active');
-      const lang = btn.dataset.lang;
-      el('newsTopicsBM')?.classList.toggle('hidden', lang !== 'bm');
-      el('newsTopicsEN')?.classList.toggle('hidden', lang !== 'en');
-      // Trigger active topic in new lang
-      const activeBtn = document.querySelector(`#newsTopics${lang.toUpperCase()} .news-filter-btn.active`)
-        || document.querySelector(`#newsTopics${lang.toUpperCase()} .news-filter-btn`);
-      if (activeBtn) {
-        document.querySelectorAll('.news-filter-btn').forEach(b=>b.classList.remove('active'));
-        activeBtn.classList.add('active');
-        loadNews(activeBtn.dataset.topic, lang);
-      }
-    });
-  });
-
-  // News topic filter buttons
+  // News topic filter — 4 topics, US/China always EN, ASB/Malaysia follow app lang
   document.querySelectorAll('.news-filter-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      const parentDiv = btn.closest('.news-filters');
-      parentDiv?.querySelectorAll('.news-filter-btn').forEach(b=>b.classList.remove('active'));
+      document.querySelectorAll('.news-filter-btn').forEach(b=>b.classList.remove('active'));
       btn.classList.add('active');
+      _newsCache = null;
       const grid = el('newsGrid');
       if (grid) grid.innerHTML = '<div class="skeleton"></div>'.repeat(6);
-      loadNews(btn.dataset.topic, btn.dataset.lang || 'bm');
+      const fixedLang = btn.dataset.lang; // 'en' for US/China, 'auto' for ASB/MY
+      const lang = (fixedLang === 'auto') ? (state.lang || 'bm') : 'en';
+      const topic = (lang === 'en' ? btn.dataset.topicEn : btn.dataset.topicBm) || btn.dataset.topicEn;
+      loadNews(topic, lang);
     });
   });
 
@@ -1758,15 +1816,16 @@ function setupEventListeners() {
 let _newsCache = null;
 
 function refreshNews() {
-  _newsCache = null; // clear cache
+  _newsCache = null;
   const grid = el('newsGrid');
   if (grid) grid.innerHTML = '<div class="skeleton"></div>'.repeat(6);
   const activeBtn = document.querySelector('.news-filter-btn.active');
-  const activeLang = document.querySelector('.lang-btn.active');
-  loadNews(
-    activeBtn?.dataset.topic || 'ASB PNB dividen Malaysia',
-    activeLang?.dataset.lang || 'bm'
-  );
+  const fixedLang = activeBtn?.dataset.lang || 'auto';
+  const lang = (fixedLang === 'auto') ? (state.lang || 'bm') : 'en';
+  const topic = (lang === 'en' ? activeBtn?.dataset.topicEn : activeBtn?.dataset.topicBm)
+    || activeBtn?.dataset.topicEn
+    || 'ASB PNB Malaysia dividend';
+  loadNews(topic, lang);
 }
 
 async function loadNews(topic, lang) {

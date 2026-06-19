@@ -1380,3 +1380,114 @@ tbody tr:hover { background: var(--surface-2); }
   border-color: var(--text-1);
   box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--text-1);
 }
+
+/* ── COLOR PICKER: use picker-open class (not open) ── */
+#colorPickerPanel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  display: flex;
+  gap: 8px;
+  padding: 10px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-6px) scale(0.95);
+  transition: opacity 0.18s, transform 0.18s;
+  z-index: 300;
+}
+#colorPickerPanel.picker-open {
+  opacity: 1;
+  pointer-events: all;
+  transform: translateY(0) scale(1);
+}
+
+/* ── ASBF MODE HINT ── */
+.mode-hint {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+  padding: 0.55rem 0.75rem;
+  background: var(--accent-bg);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  color: var(--text-2);
+  line-height: 1.4;
+}
+.mode-hint i { color: var(--accent); flex-shrink: 0; margin-top: 1px; }
+
+/* ── COMPARISON — mobile fix ── */
+@media (max-width: 768px) {
+  .compare-cards-4 {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (max-width: 400px) {
+  .compare-cards-4 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── FIRE number context ── */
+#fireSub {
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+/* ── MANUAL DIVIDEND ENTRY CARD ── */
+.manual-div-card {
+  background: var(--surface);
+  border: 1.5px dashed var(--accent-border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  margin-top: 0.75rem;
+  box-shadow: var(--shadow);
+}
+.manual-div-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+.manual-div-header i {
+  font-size: 1.4rem;
+  color: var(--accent);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.manual-div-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-1);
+  margin-bottom: 0.2rem;
+}
+.manual-div-sub {
+  font-size: 0.74rem;
+  color: var(--text-3);
+  line-height: 1.4;
+}
+.manual-div-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr auto;
+  gap: 0.6rem;
+  align-items: end;
+}
+.manual-div-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.manual-div-field label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-3);
+}
+@media (max-width: 600px) {
+  .manual-div-form {
+    grid-template-columns: 1fr 1fr;
+  }
+}

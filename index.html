@@ -188,8 +188,12 @@
         <div class="inputs-panel">
           <div class="panel-header"><h2 class="panel-title" data-i18n="fin_title">Kalkulator ASBF</h2><p class="panel-desc" data-i18n="fin_desc">Pembiayaan ASB — analisis bayaran, faedah dan keuntungan bersih</p></div>
           <div class="toggle-mode-row">
-            <button class="mode-btn active" id="asbfModeToggle" data-mode="loan"><i class="ph ph-currency-dollar"></i><span data-i18n="fin_mode_loan">Input Jumlah Pinjaman</span></button>
-            <button class="mode-btn" id="asbfPaymentModeBtn" data-mode="payment"><i class="ph ph-calculator"></i><span data-i18n="fin_mode_pay">Input Bayaran Bulanan</span></button>
+            <button class="mode-btn active" id="asbfModeToggle" data-mode="loan"><i class="ph ph-currency-dollar"></i><span data-i18n="fin_mode_loan">Tahu Jumlah Pinjaman</span></button>
+            <button class="mode-btn" id="asbfPaymentModeBtn" data-mode="payment"><i class="ph ph-calculator"></i><span data-i18n="fin_mode_pay">Tahu Bayaran Bulanan</span></button>
+          </div>
+          <div class="mode-hint" id="asbfModeHint">
+            <i class="ph ph-lightbulb"></i>
+            <span data-i18n="fin_mode_hint_loan">Masukkan jumlah yang anda pinjam — kami kira bayaran bulanan anda</span>
           </div>
           <div id="asbfLoanGroup">
             <div class="input-group"><label class="input-label"><span data-i18n="fin_loan">Jumlah Pinjaman</span> <span class="input-val" id="finLoanVal">RM 100,000</span></label><input type="range" class="slider" id="finLoan" min="10000" max="1000000" step="5000" value="100000"><div class="range-bounds"><span>RM 10k</span><span>RM 1j</span></div></div>
@@ -227,7 +231,7 @@
           <div class="input-group"><label class="input-label"><span data-i18n="cmp_div">Kadar Dividen ASB</span> <span class="input-val" id="cmpDivVal">5.00%</span></label><input type="range" class="slider" id="cmpDiv" min="1" max="10" step="0.25" value="5"><div class="range-bounds"><span>1%</span><span>10%</span></div></div>
           <div class="input-group"><label class="input-label"><span data-i18n="cmp_loan">Kadar Faedah ASBF</span> <span class="input-val" id="cmpLoanRateVal">4.00%</span></label><input type="range" class="slider" id="cmpLoanRate" min="1" max="8" step="0.25" value="4"><div class="range-bounds"><span>1%</span><span>8%</span></div></div>
           <div class="input-group"><label class="input-label"><span data-i18n="cmp_fd">Kadar FD</span> <span class="input-val" id="cmpFDRateVal">3.50%</span></label><input type="range" class="slider" id="cmpFDRate" min="1" max="6" step="0.25" value="3.5"><div class="range-bounds"><span>1%</span><span>6%</span></div></div>
-          <div class="input-group"><label class="input-label"><span data-i18n="cmp_epf">Kadar EPF/KWSP</span> <span class="input-val" id="cmpEPFRateVal">5.50%</span></label><input type="range" class="slider" id="cmpEPFRate" min="2" max="9" step="0.25" value="5.5"><div class="range-bounds"><span>2%</span><span>9%</span></div></div>
+          <div class="input-group"><label class="input-label"><span data-i18n="cmp_epf">Kadar EPF/KWSP</span> <span class="input-val" id="cmpEPFRateVal">5.50%</span></label><input type="range" class="slider" id="cmpEPFRate" min="2" max="9" step="0.25" value="6.3"><div class="range-bounds"><span>2%</span><span>9%</span></div></div>
           <div class="input-group"><label class="input-label"><span data-i18n="cmp_years">Tempoh</span> <span class="input-val" id="cmpYearsVal">20 tahun</span></label><input type="range" class="slider" id="cmpYears" min="1" max="40" step="1" value="20"><div class="range-bounds"><span>1</span><span>40</span></div></div>
         </div>
         <div class="results-panel">
@@ -289,7 +293,7 @@
           <div class="highlight-result"><div class="highlight-label" data-i18n="goal_dca_label">DCA Bulanan Diperlukan</div><div class="highlight-val accent" id="goalRequiredDCA">RM 0</div><div class="highlight-sub" id="goalDCASub">—</div></div>
           <div class="divider-text"><span data-i18n="goal_fire_section">Nombor FIRE</span></div>
           <div class="input-group"><label class="input-label"><span data-i18n="goal_fire_exp">Perbelanjaan Tahunan</span> <span class="input-val" id="fireExpVal">RM 36,000</span></label><input type="range" class="slider" id="fireExp" min="12000" max="300000" step="1000" value="36000"><div class="range-bounds"><span>RM 12k</span><span>RM 300k</span></div></div>
-          <div class="input-group"><label class="input-label"><span data-i18n="goal_fire_rate">Kadar Pengeluaran</span> <span class="input-val" id="fireWithdrawVal">4.00%</span></label><input type="range" class="slider" id="fireWithdraw" min="1" max="8" step="0.5" value="4"><div class="range-bounds"><span>1%</span><span>8%</span></div></div>
+          <div class="input-group"><label class="input-label"><span data-i18n="goal_fire_rate">Kadar Pengeluaran</span> <span class="input-val" id="fireWithdrawVal">4.00%</span></label><input type="range" class="slider" id="fireWithdraw" min="0" max="8" step="0.5" value="4"><div class="range-bounds"><span>0%</span><span>8%</span></div></div>
           <div class="highlight-result"><div class="highlight-label" data-i18n="goal_fire_label">Nombor FIRE Anda</div><div class="highlight-val" id="fireNumber">RM 0</div><div class="highlight-sub" id="fireSub">—</div></div>
         </div>
         <div class="results-panel">
@@ -339,14 +343,18 @@
           <div class="chart-block"><div class="chart-header"><span class="chart-title" data-i18n="zakat_chart_title">Unjuran Zakat Tahunan</span></div><div class="chart-wrap h300"><canvas id="zakatChart"></canvas></div></div>
           <div class="zakat-info"><h3 class="zakat-info-title" data-i18n="zakat_links_title">Bayar Zakat Secara Online</h3>
             <div class="zakat-links">
-              <a href="https://www.lzs.com.my" target="_blank" class="zakat-link">LZS Selangor</a>
-              <a href="https://www.baitumalwp.gov.my" target="_blank" class="zakat-link">MAIWP (KL)</a>
-              <a href="https://www.mains.gov.my" target="_blank" class="zakat-link">MAINS (N9)</a>
-              <a href="https://zakat.com.my" target="_blank" class="zakat-link">Zakat Johor</a>
+              <a href="https://www.lzs.com.my" target="_blank" class="zakat-link">Selangor (LZS)</a>
+              <a href="https://www.baitumalwp.gov.my" target="_blank" class="zakat-link">W.P. KL (MAIWP)</a>
+              <a href="https://www.mains.gov.my" target="_blank" class="zakat-link">N. Sembilan (MAINS)</a>
+              <a href="https://www.maiperak.gov.my" target="_blank" class="zakat-link">Perak (MAIP)</a>
+              <a href="https://www.mainpp.gov.my" target="_blank" class="zakat-link">Pulau Pinang (MAINPP)</a>
               <a href="https://zakat.terengganu.gov.my" target="_blank" class="zakat-link">Terengganu</a>
-              <a href="https://www.zakatkedah.com.my" target="_blank" class="zakat-link">Kedah</a>
-              <a href="https://www.zakatperak.com.my" target="_blank" class="zakat-link">Perak</a>
-              <a href="https://www.maiamp.gov.my" target="_blank" class="zakat-link">Penang</a>
+              <a href="https://www.maim.gov.my" target="_blank" class="zakat-link">Melaka (MAIM)</a>
+              <a href="https://www.muip.gov.my" target="_blank" class="zakat-link">Pahang (MUIP)</a>
+              <a href="https://www.maikedah.gov.my" target="_blank" class="zakat-link">Kedah (MAIK)</a>
+              <a href="https://www.jais.gov.my" target="_blank" class="zakat-link">Johor (JAIS)</a>
+              <a href="https://www.muis.gov.my" target="_blank" class="zakat-link">Sabah (MUIS)</a>
+              <a href="https://www.muissarawak.com.my" target="_blank" class="zakat-link">Sarawak (MUISSARAWAK)</a>
             </div>
             <div class="zakat-note"><i class="ph ph-warning"></i><p data-i18n="zakat_note">Kaedah pengiraan zakat ASB berbeza mengikut negeri dan fatwa. Rujuk lembaga zakat negeri anda untuk kepastian hukum.</p></div>
           </div>
@@ -368,6 +376,34 @@
       </div>
       <div class="chart-block"><div class="chart-header"><span class="chart-title" data-i18n="hist_chart_title">Dividen &amp; Bonus Tahunan (%)</span><span class="chart-legend"><span class="leg-item"><span class="leg-dot base"></span><span data-i18n="th_dividend">Dividen</span></span><span class="leg-item"><span class="leg-dot bull"></span><span data-i18n="hist_col_bonus">Bonus</span></span></span></div><div class="chart-wrap h300"><canvas id="histChart"></canvas></div></div>
       <div class="data-table"><table><thead><tr><th data-i18n="hist_col_year">Tahun</th><th data-i18n="hist_col_div">Dividen</th><th data-i18n="hist_col_bonus">Bonus</th><th data-i18n="hist_col_total">Jumlah</th><th data-i18n="hist_col_trend">Trend</th></tr></thead><tbody id="histTableBody"></tbody></table></div>
+      <!-- Manual dividend entry (shown when auto-fetch pending) -->
+      <div class="manual-div-card hidden" id="manualDivCard">
+        <div class="manual-div-header">
+          <i class="ph ph-pencil-simple"></i>
+          <div>
+            <div class="manual-div-title" data-i18n="manual_div_title">Masukkan Dividen Terkini</div>
+            <div class="manual-div-sub" data-i18n="manual_div_sub">PNB belum update laman web — isi sendiri bila dah diumumkan</div>
+          </div>
+        </div>
+        <div class="manual-div-form">
+          <div class="manual-div-field">
+            <label data-i18n="manual_div_year">Tahun</label>
+            <input type="number" id="manualDivYear" class="input-field" min="2010" max="2030">
+          </div>
+          <div class="manual-div-field">
+            <label data-i18n="manual_div_rate">Dividen (%)</label>
+            <input type="number" id="manualDivRate" class="input-field" min="0" max="15" step="0.01" placeholder="cth: 5.00">
+          </div>
+          <div class="manual-div-field">
+            <label data-i18n="manual_div_bonus">Bonus (%)</label>
+            <input type="number" id="manualDivBonus" class="input-field" min="0" max="2" step="0.01" placeholder="cth: 0.25">
+          </div>
+          <button class="auto-fill-btn" onclick="saveManualDividend()">
+            <i class="ph ph-floppy-disk"></i>
+            <span data-i18n="manual_div_save">Simpan &amp; Kemas Kini</span>
+          </button>
+        </div>
+      </div>
     </section>
 
     <!-- ============ NEWS ============ -->
@@ -382,25 +418,11 @@
           <span data-i18n="news_refresh">Muat Semula</span>
         </button>
       </div>
-      <div class="news-filters-wrap">
-        <div class="news-lang-toggle">
-          <button class="lang-btn active" data-lang="bm"><span>BM</span><span data-i18n="news_bm">Bahasa Melayu</span></button>
-          <button class="lang-btn" data-lang="en"><span>EN</span><span data-i18n="news_en">English</span></button>
-        </div>
-        <div class="news-filters" id="newsTopicsBM">
-          <button class="news-filter-btn active" data-topic="ASB PNB dividen Malaysia" data-lang="bm">ASB / PNB</button>
-          <button class="news-filter-btn" data-topic="pelaburan saham Malaysia terkini" data-lang="bm">Pelaburan</button>
-          <button class="news-filter-btn" data-topic="hartanah Malaysia 2025" data-lang="bm">Hartanah</button>
-          <button class="news-filter-btn" data-topic="ekonomi Malaysia ringgit 2025" data-lang="bm">Ekonomi</button>
-          <button class="news-filter-btn" data-topic="KWSP EPF simpanan Malaysia" data-lang="bm">KWSP / EPF</button>
-        </div>
-        <div class="news-filters hidden" id="newsTopicsEN">
-          <button class="news-filter-btn active" data-topic="ASB PNB Malaysia dividend" data-lang="en">ASB / PNB</button>
-          <button class="news-filter-btn" data-topic="Malaysia investment stock market" data-lang="en">Investment</button>
-          <button class="news-filter-btn" data-topic="Malaysia property real estate" data-lang="en">Property</button>
-          <button class="news-filter-btn" data-topic="Malaysia economy ringgit 2025" data-lang="en">Economy</button>
-          <button class="news-filter-btn" data-topic="EPF Malaysia savings retirement" data-lang="en">EPF</button>
-        </div>
+      <div class="news-filters" id="newsTopics">
+        <button class="news-filter-btn active" data-topic-bm="ASB PNB dividen Malaysia" data-topic-en="ASB PNB Malaysia dividend returns" data-lang="auto">ASB / PNB</button>
+        <button class="news-filter-btn" data-topic-bm="ekonomi Malaysia saham ringgit" data-topic-en="Malaysia economy market ringgit" data-lang="auto">Malaysia</button>
+        <button class="news-filter-btn" data-topic-en="US stock market S&amp;P500 nasdaq economy" data-lang="en">US Market</button>
+        <button class="news-filter-btn" data-topic-en="China economy stock market shanghai" data-lang="en">China Market</button>
       </div>
       <div class="news-grid" id="newsGrid">
       <a href="https://www.pnb.com.my" target="_blank" rel="noopener noreferrer" class="news-card news-card-static"><div class="news-source">PNB Malaysia</div><div class="news-title">Laman web rasmi PNB — pengumuman agihan dividen ASB terkini</div><div class="news-date" data-i18n="fallback_visit">Ketik untuk lawati</div></a>
