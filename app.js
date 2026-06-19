@@ -742,26 +742,34 @@ function resetState() {
   location.reload();
 }
 
-function shareURL() {
-  // Clean URL — just the app link, no long encoded settings
+async function shareURL() {
+  // Clean URL — just the app link
   const url = `${location.origin}${location.pathname}`;
   const shareText = state.lang==='en'
-    ? 'Free ASB investment calculator — plan your savings, financing & retirement!'
-    : 'Kalkulator pelaburan ASB percuma — rancang simpanan, ASBF & persaraan!';
-  try {
-    if (navigator.share) {
-      navigator.share({
-        title: 'ASB Pro',
-        text: shareText,
-        url,
-      }).catch(()=>{});
-    } else {
-      navigator.clipboard.writeText(url).then(
-        () => showToast(t('toast_share')),
-        () => showToast(t('toast_url'))
-      );
+    ? 'Free ASB investment calculator — plan your savings, financing & retirement! '
+    : 'Kalkulator pelaburan ASB percuma — rancang simpanan, ASBF & persaraan! ';
+
+  // navigator.share with ONLY text containing the URL.
+  // (Combining separate `url` + `text` causes some Android browsers to
+  //  attach a page screenshot/PNG instead of sharing the link.)
+  if (navigator.share) {
+    try {
+      await navigator.share({ text: shareText + url });
+      return;
+    } catch (e) {
+      // User cancelled (AbortError) — do nothing
+      if (e && e.name === 'AbortError') return;
+      // Otherwise fall through to clipboard
     }
-  } catch { showToast(t('toast_share_fail')); }
+  }
+
+  // Fallback: copy to clipboard
+  try {
+    await navigator.clipboard.writeText(url);
+    showToast(t('toast_share'));
+  } catch {
+    showToast(t('toast_url'));
+  }
 }
 
 function exportSettings() {
@@ -1865,9 +1873,9 @@ function refreshNews() {
 const NEWS_FEEDS = {
   // Google News topic-specific RSS — reliable via rss2json, fresh content
   'asb':      'https://news.google.com/rss/search?q=ASB+PNB+dividen+pelaburan&hl=ms&gl=MY&ceid=MY:ms',
-  'malaysia': 'https://news.google.com/rss/search?q=ekonomi+Malaysia+ringgit+saham&hl=ms&gl=MY&ceid=MY:ms',
-  'us':       'https://news.google.com/rss/search?q=US+stock+market+S%26P500+nasdaq&hl=en&gl=US&ceid=US:en',
-  'china':    'https://news.google.com/rss/search?q=China+economy+stock+market&hl=en&gl=US&ceid=US:en',
+  'malaysia': 'https://news.google.com/rss/search?q=(pelaburan+OR+kewangan+OR+saham+OR+%22unit+amanah%22+OR+KWSP+OR+ekonomi+OR+ringgit+OR+Bursa)+Malaysia&hl=ms&gl=MY&ceid=MY:ms',
+  'us':       'https://news.google.com/rss/search?q=US+stock+market+S%26P500+nasdaq+investing&hl=en&gl=US&ceid=US:en',
+  'china':    'https://news.google.com/rss/search?q=China+economy+stock+market+investment&hl=en&gl=US&ceid=US:en',
   'default':  'https://news.google.com/rss/search?q=ASB+PNB+Malaysia&hl=ms&gl=MY&ceid=MY:ms',
 };
 
