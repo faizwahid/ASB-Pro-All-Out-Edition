@@ -1834,8 +1834,8 @@ async function loadNews(topic, lang) {
     { src:'Berita Harian',      title:'Berita ekonomi dan pelaburan terkini Malaysia',                   url:'https://www.bharian.com.my/bisnes' },
     { src:'Utusan Malaysia',    title:'Laporan ekonomi dan kewangan Malaysia',                           url:'https://www.utusan.com.my/ekonomi' },
     { src:'Bernama',            title:'Berita kewangan dan ekonomi rasmi Malaysia',                      url:'https://www.bernama.com/bm' },
-    { src:'The Malaysian Reserve','Berita pasaran modal dan ekuiti Malaysia',                           url:'https://themalaysianreserve.com' },
-    { src:'Free Malaysia Today','Laporan perniagaan dan pelaburan',                                     url:'https://www.freemalaysiatoday.com/category/bisnes' },
+    { src:'The Malaysian Reserve', title:'Berita pasaran modal dan ekuiti Malaysia',                           url:'https://themalaysianreserve.com' },
+    { src:'Free Malaysia Today', title:'Laporan perniagaan dan pelaburan',                                     url:'https://www.freemalaysiatoday.com/category/bisnes' },
   ];
   const EN_LINKS = [
     { src:'PNB Malaysia',       title:'Official PNB website — latest ASB/ASN dividend announcements',   url:'https://www.pnb.com.my' },
