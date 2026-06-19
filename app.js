@@ -134,7 +134,15 @@ const STRINGS = {
     fallback_notice:'Suapan langsung tidak tersedia — pautan sumber dipercayai',
     fallback_visit:'Ketik untuk lawati',
     winner_asb:'ASB Biasa', winner_asbf:'ASBF', winner_fd:'FD', winner_epf:'EPF',
-                fin_calc_loan_label:'Jumlah Pinjaman Maksimum Yang Boleh Dipohon:',
+                    goal_fire_exp:'Nak Keluarkan Sebulan Bila Bersara',
+    goal_fire_advanced:'Tetapan Lanjutan (opsyenal)',
+    goal_fire_rate_hint:'Pakar kewangan cadang 4% sebagai kadar selamat',
+    goal_fire_rate:'Kadar Pengeluaran Selamat (%)',
+    zakat_via_bank:'Melalui App Perbankan',
+    zakat_via_bank_desc:'Maybank, CIMB, RHB, Public Bank — cari pilihan "Zakat" dalam Transfer/Bayaran',
+    zakat_lzs_desc:'Portal zakat online LZS — boleh bayar atas talian tanpa pergi kaunter',
+    zakat_maiwp_desc:'Portal rasmi zakat Wilayah Persekutuan',
+    fin_calc_loan_label:'Jumlah Pinjaman Maksimum Yang Boleh Dipohon:',
     sav_initial:'Simpanan/Deposit Awal',
     sav_monthly:'Tabung Setiap Bulan',
     sav_rate:'Anggaran Dividen Tahunan (%)',
@@ -282,7 +290,15 @@ const STRINGS = {
     fallback_notice:'Live feed unavailable — here are trusted sources',
     fallback_visit:'Tap to visit',
     winner_asb:'ASB Regular', winner_asbf:'ASBF', winner_fd:'Fixed Deposit', winner_epf:'EPF',
-                fin_calc_loan_label:'Maximum Loan Amount You Can Apply For:',
+                    goal_fire_exp:'Monthly Withdrawal in Retirement',
+    goal_fire_advanced:'Advanced Settings (optional)',
+    goal_fire_rate_hint:'Financial experts recommend 4% as a safe withdrawal rate',
+    goal_fire_rate:'Safe Withdrawal Rate (%)',
+    zakat_via_bank:'Via Banking App',
+    zakat_via_bank_desc:'Maybank, CIMB, RHB, Public Bank — find "Zakat" under Transfer/Payment',
+    zakat_lzs_desc:'LZS online zakat portal — pay digitally without visiting a counter',
+    zakat_maiwp_desc:'Official zakat portal for Federal Territory',
+    fin_calc_loan_label:'Maximum Loan Amount You Can Apply For:',
     sav_initial:'Initial Savings / Deposit',
     sav_monthly:'Monthly Contribution',
     sav_rate:'Expected Annual Dividend (%)',
@@ -538,6 +554,13 @@ function saveManualDividend() {
 
 
 function applyLiveDividend(year, dividend, bonus, source, isNew) {
+  // Never add data for the current or future year — dividend not yet announced
+  const safeMaxYear = new Date().getFullYear() - 1;
+  if (year > safeMaxYear) {
+    console.warn(`[ASB] Ignoring dividend for ${year} — not yet announced`);
+    setLiveBadge('pending');
+    return;
+  }
   const existing = DIVIDEND_HISTORY.findIndex(r => r.year === year);
   if (existing >= 0) {
     DIVIDEND_HISTORY[existing] = { year, dividend, bonus };
@@ -586,7 +609,7 @@ const state = {
   fcInit:10000, fcMonthly:500, fcYears:30, fcInflation:3, fcBear:3, fcBase:5, fcBull:7,
   // Goal
   goalType:'retirement', goalAmt:500000, goalCurrent:10000, goalYears:20, goalRate:5,
-  fireExp:36000, fireWithdraw:4,
+  fireExp:3000, // monthly withdrawal amount fireWithdraw:4,
   // Zakat (simplified)
   zakatRate:2.5, zakatBasis:'balance', zakatBalance:0, zakatDividend:0,
 };
@@ -653,6 +676,14 @@ function saveState() {
 }
 
 function loadSavedState() {
+  // Clear stale dividend cache if it's for current/future year
+  try {
+    const cached = JSON.parse(localStorage.getItem(DIV_CACHE_KEY)||'null');
+    const safeMax = new Date().getFullYear() - 1;
+    if (cached && cached.year > safeMax) {
+      localStorage.removeItem(DIV_CACHE_KEY);
+    }
+  } catch {}
   // Priority: URL param > localStorage > defaults
   try {
     const params = new URLSearchParams(location.search);
@@ -1317,29 +1348,30 @@ function updateForecast() {
 function updateGoal() {
   const { goalAmt, goalCurrent, goalYears, goalRate, fireExp, fireWithdraw } = state;
   const reqDCA = calcRequiredDCA(goalAmt, goalCurrent, goalYears, goalRate);
+  // FIRE: convert monthly withdrawal to annual for calculation
+  // state.fireExp now stores MONTHLY amount (more intuitive for users)
+  const annualExp = (state.fireExp || 0) * 12;
   const fireNum = fireWithdraw > 0
-    ? fireExp/(fireWithdraw/100)
-    : null; // 0% = no withdrawal, no FIRE number needed
-  const stillNeeded = fireNum ? Math.max(0, fireNum-goalCurrent) : 0;
+    ? annualExp / (fireWithdraw / 100)
+    : null;
+  const stillNeeded = fireNum ? Math.max(0, fireNum - goalCurrent) : 0;
 
   setText('goalRequiredDCA', reqDCA<1 ? 'Dah cukup!' : fmt(reqDCA));
   setText('goalDCASub', reqDCA<1
     ? 'Simpanan semasa sudah mencukupi — teruskan melabur!'
     : `Labur ${fmt(reqDCA)}/bulan untuk capai ${fmt(goalAmt)} dalam ${goalYears} tahun`);
   if (fireNum === null) {
-    setText('fireNumber', state.lang==='en' ? 'No withdrawal needed' : 'Tiada pengeluaran diperlukan');
+    setText('fireNumber', state.lang==='en' ? 'Keep investing — no withdrawal' : 'Terus melabur sahaja');
     setText('fireSub', state.lang==='en'
-      ? 'Rate 0% — you need no FIRE number, just keep investing'
-      : 'Kadar 0% — terus melabur, tiada pengeluaran diperlukan');
+      ? 'With 0% withdrawal rate, just keep growing your savings'
+      : 'Kadar 0% — simpan terus, keluarkan bila perlu sahaja');
   } else {
     setText('fireNumber', fmt(fireNum));
-    // Simple plain explanation
-    const yearsToFire = fireNum > 0 && state.goalCurrent > 0
-      ? Math.ceil(Math.log(fireNum/state.goalCurrent)/Math.log(1+state.goalRate/100))
-      : '?';
+    // Plain language: what this number means
+    const monthly = fmt(state.fireExp);
     setText('fireSub', state.lang==='en'
-      ? `RM${(fireExp/1000).toFixed(0)}k/yr ÷ ${fmtPct(fireWithdraw)} = ${fmtK(fireNum)} needed to retire`
-      : `RM${(fireExp/1000).toFixed(0)}k/thn ÷ ${fmtPct(fireWithdraw)} = perlu ${fmtK(fireNum)} untuk bersara`);
+      ? `To withdraw ${monthly}/month forever without running out of money`
+      : `Supaya boleh keluarkan ${monthly}/bulan seumur hidup tanpa kehabisan wang`);
   }
 
   const trajectory = calcForecast(goalCurrent, reqDCA>0?reqDCA:0, goalRate, goalYears, 0);
@@ -1607,7 +1639,7 @@ function setupSliders() {
     { id:'goalCurrent', key:'goalCurrent', disp:'goalCurrentVal',fmt:v=>`RM ${(+v).toLocaleString('en-MY')}` },
     { id:'goalYears',   key:'goalYears',   disp:'goalYearsVal',  fmt:v=>`${v} tahun` },
     { id:'goalRate',    key:'goalRate',    disp:'goalRateVal',   fmt:v=>`${(+v).toFixed(2)}%` },
-    { id:'fireExp',     key:'fireExp',     disp:'fireExpVal',    fmt:v=>`RM ${(+v).toLocaleString('en-MY')}` },
+    { id:'fireExp',     key:'fireExp',     disp:'fireExpVal',    fmt:v=>`RM ${(+v).toLocaleString('en-MY')}` }, // monthly withdrawal
     { id:'fireWithdraw',key:'fireWithdraw',disp:'fireWithdrawVal',fmt:v=>`${(+v).toFixed(2)}%` },
     { id:'zakatRate',   key:'zakatRate',   disp:'zakatRateVal',  fmt:v=>`${(+v).toFixed(1)}%` },
   ];
@@ -1853,10 +1885,18 @@ function refreshNews() {
   loadNews(topic, lang);
 }
 
+// Topic → RSS feed mapping (direct feeds, more reliable than Google News search)
+const NEWS_FEEDS = {
+  'asb':     'https://www.bernama.com/services/bernama_rss.php?cat=biz',
+  'malaysia':'https://www.freemalaysiatoday.com/feed/',
+  'us':      'https://feeds.content.dowjones.io/public/rss/mw_topstories',
+  'china':   'https://www.scmp.com/rss/4/feed',
+  'default': 'https://www.bernama.com/services/bernama_rss.php?cat=biz',
+};
+
 async function loadNews(topic, lang) {
   const grid = el('newsGrid');
   if (!grid) return;
-  // If cache hit and not force-refreshed, render immediately
   if (_newsCache && _newsCache.topic === topic && _newsCache.lang === lang) {
     grid.innerHTML = _newsCache.html;
     return;
@@ -1864,9 +1904,19 @@ async function loadNews(topic, lang) {
   grid.innerHTML = '<div class="skeleton"></div>'.repeat(6);
 
   const isEn = lang === 'en';
-  const hl   = isEn ? 'en' : 'ms';
-  const ceid = isEn ? 'MY:en' : 'MY:ms';
-  const rssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(topic)}&hl=${hl}&gl=MY&ceid=${ceid}`;
+
+  // Pick the best RSS feed based on topic keyword
+  let rssUrl;
+  const tl = topic.toLowerCase();
+  if (tl.includes('asb') || tl.includes('pnb') || tl.includes('divid')) {
+    rssUrl = NEWS_FEEDS.asb;
+  } else if (tl.includes('us') || tl.includes('s&p') || tl.includes('nasdaq') || tl.includes('wall')) {
+    rssUrl = NEWS_FEEDS.us;
+  } else if (tl.includes('china') || tl.includes('shanghai') || tl.includes('scmp')) {
+    rssUrl = NEWS_FEEDS.china;
+  } else {
+    rssUrl = NEWS_FEEDS.malaysia;
+  }
 
   const renderItems = items => {
     if (!items || !items.length) throw new Error('empty');
@@ -2040,6 +2090,18 @@ function init() {
   // Non-blocking
   fetchLatestDividend();
 }
+
+
+// ── EXPOSE FUNCTIONS GLOBALLY (required for inline HTML onclick handlers) ──
+window.shareURL          = shareURL;
+window.resetState        = resetState;
+window.refreshNews       = refreshNews;
+window.switchTab         = switchTab;
+window.autoFillZakat     = autoFillZakat;
+window.saveManualDividend= saveManualDividend;
+window.toggleColorPicker = function() {
+  document.getElementById('colorPickerPanel')?.classList.toggle('picker-open');
+};
 
 // Use window load to guarantee Chart.js CDN is ready
 if (document.readyState === 'complete') {

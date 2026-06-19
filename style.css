@@ -1511,3 +1511,70 @@ tbody tr:hover { background: var(--surface-2); }
   font-size: 0.9rem;
   margin-left: auto;
 }
+
+/* ── FIRE ADVANCED COLLAPSIBLE ── */
+.fire-advanced {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.fire-advanced summary {
+  padding: 0.55rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-3);
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--surface-2);
+  user-select: none;
+}
+.fire-advanced summary::before {
+  content: '▸';
+  font-size: 0.65rem;
+  transition: transform 0.18s;
+}
+.fire-advanced[open] summary::before { transform: rotate(90deg); }
+.fire-advanced > div { padding: 0 0.75rem; }
+
+/* ── ZAKAT PAY OPTIONS ── */
+.zakat-pay-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-bottom: 0.75rem;
+}
+.zakat-pay-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  transition: all var(--transition);
+  text-decoration: none;
+}
+.zakat-pay-link:hover {
+  border-color: var(--accent-border);
+  background: var(--accent-bg);
+}
+.zakat-pay-card > i:first-child {
+  font-size: 1.3rem;
+  color: var(--accent);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.zakat-pay-title {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-1);
+  margin-bottom: 0.2rem;
+}
+.zakat-pay-desc {
+  font-size: 0.72rem;
+  color: var(--text-3);
+  line-height: 1.4;
+}
