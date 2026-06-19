@@ -743,32 +743,41 @@ function resetState() {
 }
 
 async function shareURL() {
-  // Clean URL — just the app link
   const url = `${location.origin}${location.pathname}`;
+  const title = 'ASB Pro';
   const shareText = state.lang==='en'
-    ? 'Free ASB investment calculator — plan your savings, financing & retirement! '
-    : 'Kalkulator pelaburan ASB percuma — rancang simpanan, ASBF & persaraan! ';
+    ? 'Free ASB investment calculator'
+    : 'Kalkulator pelaburan ASB percuma';
 
-  // navigator.share with ONLY text containing the URL.
-  // (Combining separate `url` + `text` causes some Android browsers to
-  //  attach a page screenshot/PNG instead of sharing the link.)
-  if (navigator.share) {
+  // Build share payload with ONLY url (no text) — purest link share.
+  // Use navigator.canShare to verify the browser accepts this as a link
+  // before calling share, so it won't fall back to a page screenshot.
+  const payload = { title, url };
+
+  if (navigator.canShare && navigator.canShare(payload)) {
     try {
-      await navigator.share({ text: shareText + url });
+      await navigator.share(payload);
       return;
     } catch (e) {
-      // User cancelled (AbortError) — do nothing
+      if (e && e.name === 'AbortError') return; // user cancelled
+    }
+  } else if (navigator.share) {
+    // Older browsers without canShare — try url-only share
+    try {
+      await navigator.share({ url });
+      return;
+    } catch (e) {
       if (e && e.name === 'AbortError') return;
-      // Otherwise fall through to clipboard
     }
   }
 
-  // Fallback: copy to clipboard
+  // Fallback: copy link to clipboard
   try {
     await navigator.clipboard.writeText(url);
     showToast(t('toast_share'));
   } catch {
-    showToast(t('toast_url'));
+    // Last resort: prompt so user can copy manually
+    window.prompt(state.lang==='en' ? 'Copy this link:' : 'Salin pautan ini:', url);
   }
 }
 
