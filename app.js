@@ -684,16 +684,7 @@ function loadSavedState() {
       localStorage.removeItem(DIV_CACHE_KEY);
     }
   } catch {}
-  // Priority: URL param > localStorage > defaults
-  try {
-    const params = new URLSearchParams(location.search);
-    const urlState = params.get('s');
-    if (urlState) {
-      Object.assign(state, JSON.parse(atob(urlState)));
-      history.replaceState(null,'', location.pathname); // clean URL
-      return;
-    }
-  } catch {}
+  // Load from localStorage (settings auto-saved per device)
   try {
     const saved = JSON.parse(localStorage.getItem(STATE_KEY)||'null');
     if (saved) {
@@ -752,19 +743,18 @@ function resetState() {
 }
 
 function shareURL() {
+  // Clean URL — just the app link, no long encoded settings
+  const url = `${location.origin}${location.pathname}`;
+  const shareText = state.lang==='en'
+    ? 'Free ASB investment calculator — plan your savings, financing & retirement!'
+    : 'Kalkulator pelaburan ASB percuma — rancang simpanan, ASBF & persaraan!';
   try {
-    const encoded = btoa(JSON.stringify(state));
-    const url = `${location.origin}${location.pathname}?s=${encoded}`;
-    history.replaceState(null, '', `?s=${encoded}`);
-    // Native share sheet on mobile (iOS/Android)
     if (navigator.share) {
       navigator.share({
-        title: 'ASB Pro — ' + (state.lang==='en' ? 'My Settings' : 'Tetapan Saya'),
-        text: state.lang==='en'
-          ? 'Check out my ASB investment projection!'
-          : 'Tengok unjuran pelaburan ASB saya!',
+        title: 'ASB Pro',
+        text: shareText,
         url,
-      }).catch(()=>{}); // user dismissed share sheet — no error toast
+      }).catch(()=>{});
     } else {
       navigator.clipboard.writeText(url).then(
         () => showToast(t('toast_share')),
@@ -1741,20 +1731,17 @@ function setupEventListeners() {
     btn.addEventListener('click', () => applyLanguage(btn.dataset.lang));
   });
 
-  // Color picker toggle (palette button)
-  el('colorPickerToggle')?.addEventListener('click', e => {
-    e.stopPropagation();
-    const panel = el('colorPickerPanel');
-    if (panel) panel.classList.toggle('picker-open');
+  // Color picker — toggle handled by inline onclick="toggleColorPicker()"
+  // Close popup when clicking outside it
+  document.addEventListener('click', e => {
+    const wrap = e.target.closest('.color-picker-wrap');
+    if (!wrap) el('colorPickerPanel')?.classList.remove('picker-open');
   });
-  document.addEventListener('click', () => {
-    el('colorPickerPanel')?.classList.remove('picker-open');
-  });
-  el('colorPickerPanel')?.addEventListener('click', e => e.stopPropagation());
 
-  // Color theme picker dots
+  // Color dots — pick theme + close
   document.querySelectorAll('.color-dot').forEach(dot => {
-    dot.addEventListener('click', () => {
+    dot.addEventListener('click', e => {
+      e.stopPropagation();
       setColorTheme(dot.dataset.color);
       el('colorPickerPanel')?.classList.remove('picker-open');
     });
@@ -1846,18 +1833,12 @@ function setupEventListeners() {
     });
   });
 
-  // News topic filter — 4 topics, US/China always EN, ASB/Malaysia follow app lang
+  // News topic filter — uses data-feed attribute
   document.querySelectorAll('.news-filter-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.news-filter-btn').forEach(b=>b.classList.remove('active'));
       btn.classList.add('active');
-      _newsCache = null;
-      const grid = el('newsGrid');
-      if (grid) grid.innerHTML = '<div class="skeleton"></div>'.repeat(6);
-      const fixedLang = btn.dataset.lang; // 'en' for US/China, 'auto' for ASB/MY
-      const lang = (fixedLang === 'auto') ? (state.lang || 'bm') : 'en';
-      const topic = (lang === 'en' ? btn.dataset.topicEn : btn.dataset.topicBm) || btn.dataset.topicEn;
-      loadNews(topic, lang);
+      loadNews(btn.dataset.feed);
     });
   });
 
@@ -1877,46 +1858,30 @@ function refreshNews() {
   const grid = el('newsGrid');
   if (grid) grid.innerHTML = '<div class="skeleton"></div>'.repeat(6);
   const activeBtn = document.querySelector('.news-filter-btn.active');
-  const fixedLang = activeBtn?.dataset.lang || 'auto';
-  const lang = (fixedLang === 'auto') ? (state.lang || 'bm') : 'en';
-  const topic = (lang === 'en' ? activeBtn?.dataset.topicEn : activeBtn?.dataset.topicBm)
-    || activeBtn?.dataset.topicEn
-    || 'ASB PNB Malaysia dividend';
-  loadNews(topic, lang);
+  loadNews(activeBtn?.dataset.feed || 'asb');
 }
 
 // Topic → RSS feed mapping (direct feeds, more reliable than Google News search)
 const NEWS_FEEDS = {
-  'asb':     'https://www.bernama.com/services/bernama_rss.php?cat=biz',
-  'malaysia':'https://www.freemalaysiatoday.com/feed/',
-  'us':      'https://feeds.content.dowjones.io/public/rss/mw_topstories',
-  'china':   'https://www.scmp.com/rss/4/feed',
-  'default': 'https://www.bernama.com/services/bernama_rss.php?cat=biz',
+  // Google News topic-specific RSS — reliable via rss2json, fresh content
+  'asb':      'https://news.google.com/rss/search?q=ASB+PNB+dividen+pelaburan&hl=ms&gl=MY&ceid=MY:ms',
+  'malaysia': 'https://news.google.com/rss/search?q=ekonomi+Malaysia+ringgit+saham&hl=ms&gl=MY&ceid=MY:ms',
+  'us':       'https://news.google.com/rss/search?q=US+stock+market+S%26P500+nasdaq&hl=en&gl=US&ceid=US:en',
+  'china':    'https://news.google.com/rss/search?q=China+economy+stock+market&hl=en&gl=US&ceid=US:en',
+  'default':  'https://news.google.com/rss/search?q=ASB+PNB+Malaysia&hl=ms&gl=MY&ceid=MY:ms',
 };
 
-async function loadNews(topic, lang) {
+async function loadNews(feedKey) {
   const grid = el('newsGrid');
   if (!grid) return;
-  if (_newsCache && _newsCache.topic === topic && _newsCache.lang === lang) {
+  feedKey = feedKey || 'asb';
+  if (_newsCache && _newsCache.feed === feedKey) {
     grid.innerHTML = _newsCache.html;
     return;
   }
   grid.innerHTML = '<div class="skeleton"></div>'.repeat(6);
 
-  const isEn = lang === 'en';
-
-  // Pick the best RSS feed based on topic keyword
-  let rssUrl;
-  const tl = topic.toLowerCase();
-  if (tl.includes('asb') || tl.includes('pnb') || tl.includes('divid')) {
-    rssUrl = NEWS_FEEDS.asb;
-  } else if (tl.includes('us') || tl.includes('s&p') || tl.includes('nasdaq') || tl.includes('wall')) {
-    rssUrl = NEWS_FEEDS.us;
-  } else if (tl.includes('china') || tl.includes('shanghai') || tl.includes('scmp')) {
-    rssUrl = NEWS_FEEDS.china;
-  } else {
-    rssUrl = NEWS_FEEDS.malaysia;
-  }
+  const rssUrl = NEWS_FEEDS[feedKey] || NEWS_FEEDS.default;
 
   const renderItems = items => {
     if (!items || !items.length) throw new Error('empty');
@@ -1924,7 +1889,7 @@ async function loadNews(topic, lang) {
       const title = (item.title||item.name||'').replace(/<!\[CDATA\[|\]\]>/g,'').trim();
       const link  = item.link||item.url||item.guid||'#';
       const date  = item.pubDate||item.isoDate||item.published||'';
-      const src   = (item.author||item.source||'').split(',')[0]||'Kewangan';
+      const src   = (item.author||item.source||'').split(',')[0]||'Berita';
       if (!title) return '';
       return `<a href="${link}" target="_blank" rel="noopener noreferrer" class="news-card">
         <div class="news-source">${src.length>35?src.slice(0,33)+'…':src}</div>
@@ -1934,7 +1899,7 @@ async function loadNews(topic, lang) {
     }).filter(Boolean).join('') || null;
     if (!html) throw new Error('no renderable items');
     grid.innerHTML = html;
-    _newsCache = { topic, lang, html }; // cache it
+    _newsCache = { feed: feedKey, html }; // cache by feed
   };
 
   // Strategy 1: rss2json (most reliable for Google News)
@@ -1993,17 +1958,18 @@ async function loadNews(topic, lang) {
     { src:'Malay Mail Biz',     title:'Malaysia business and financial headlines',                       url:'https://www.malaymail.com/section/money' },
     { src:'New Straits Times',  title:'NST business and investment section',                             url:'https://www.nst.com.my/business' },
   ];
-  const links = isEn ? EN_LINKS : BM_LINKS;
+  const useEn = (feedKey === 'us' || feedKey === 'china' || state.lang === 'en');
+  const links = useEn ? EN_LINKS : BM_LINKS;
   grid.innerHTML = `
     <div class="news-fallback-notice" style="grid-column:1/-1">
       <i class="ph ph-info"></i>
-      <span>${isEn ? 'Live feed unavailable — here are trusted sources' : 'Suapan langsung tidak tersedia — pautan sumber dipercayai'}</span>
+      <span>${useEn ? 'Live feed unavailable — trusted sources below' : 'Suapan langsung tak tersedia — sumber dipercayai di bawah'}</span>
     </div>
     ${links.map(l=>`
     <a href="${l.url}" target="_blank" rel="noopener noreferrer" class="news-card news-card-static">
       <div class="news-source">${l.src}</div>
       <div class="news-title">${l.title}</div>
-      <div class="news-date">${isEn ? 'Tap to visit' : 'Ketik untuk lawati'}</div>
+      <div class="news-date">${useEn ? 'Tap to visit' : 'Ketik untuk lawati'}</div>
     </a>`).join('')}`;
 }
 
@@ -2099,22 +2065,24 @@ window.refreshNews       = refreshNews;
 window.switchTab         = switchTab;
 window.autoFillZakat     = autoFillZakat;
 window.saveManualDividend= saveManualDividend;
-window.toggleColorPicker = function() {
-  document.getElementById('colorPickerPanel')?.classList.toggle('picker-open');
+window.toggleColorPicker = function(ev) {
+  if (ev) ev.stopPropagation();
+  const panel = document.getElementById('colorPickerPanel');
+  if (panel) panel.classList.toggle('picker-open');
 };
 
-// Use window load to guarantee Chart.js CDN is ready
-if (document.readyState === 'complete') {
+// Run init once — guard against double execution
+let _asbStarted = false;
+function startApp() {
+  if (_asbStarted) return;
+  _asbStarted = true;
   init();
-} else {
-  window.addEventListener('load', init);
-  // Fallback: also try DOMContentLoaded in case load fires late
-  document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(() => {
-      if (typeof Chart !== 'undefined' && !window._asbInited) init();
-    }, 500);
-  });
 }
-window._asbInited = false;
-const _origInit = init;
-window.init = function() { window._asbInited = true; _origInit(); };
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+  // DOM already parsed — run now (Chart.js loads async, init handles its absence)
+  startApp();
+} else {
+  document.addEventListener('DOMContentLoaded', startApp);
+}
+// Safety net: also try on full window load
+window.addEventListener('load', startApp);

@@ -23,7 +23,7 @@
       <div class="header-actions">
         <!-- Color theme picker -->
         <div class="color-picker-wrap">
-          <button class="icon-btn" id="colorPickerToggle" title="Pilih tema warna" onclick="toggleColorPicker()">
+          <button class="icon-btn" id="colorPickerToggle" title="Pilih tema warna" onclick="toggleColorPicker(event)">
             <i class="ph ph-palette"></i>
           </button>
           <div class="color-picker" id="colorPickerPanel">
@@ -440,10 +440,10 @@
         </button>
       </div>
       <div class="news-filters" id="newsTopics">
-        <button class="news-filter-btn active" data-topic-bm="ASB PNB dividen Malaysia" data-topic-en="ASB PNB Malaysia dividend returns" data-lang="auto">ASB / PNB</button>
-        <button class="news-filter-btn" data-topic-bm="ekonomi Malaysia saham ringgit" data-topic-en="Malaysia economy market ringgit" data-lang="auto">Malaysia</button>
-        <button class="news-filter-btn" data-topic-en="US stock market S&amp;P500 nasdaq economy" data-lang="en">US Market</button>
-        <button class="news-filter-btn" data-topic-en="China economy stock market shanghai" data-lang="en">China Market</button>
+        <button class="news-filter-btn active" data-feed="asb">ASB / PNB</button>
+        <button class="news-filter-btn" data-feed="malaysia">Malaysia</button>
+        <button class="news-filter-btn" data-feed="us">US Market</button>
+        <button class="news-filter-btn" data-feed="china">China Market</button>
       </div>
       <div class="news-grid" id="newsGrid">
       <a href="https://www.pnb.com.my" target="_blank" rel="noopener noreferrer" class="news-card news-card-static"><div class="news-source">PNB Malaysia</div><div class="news-title">Laman web rasmi PNB — pengumuman agihan dividen ASB terkini</div><div class="news-date" data-i18n="fallback_visit">Ketik untuk lawati</div></a>
