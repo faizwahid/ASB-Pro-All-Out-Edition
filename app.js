@@ -227,7 +227,14 @@ function animateCounter(element, to, formatter) {
 
 // ── STATE PERSISTENCE ──
 function saveState() {
-  try { localStorage.setItem(STATE_KEY, JSON.stringify(state)); } catch {}
+  try {
+    // also persist free-text inputs that aren't in state
+    const extra = {
+      zakatManualBase: el('zakatManualBase')?.value || '',
+      withdrawAmount:  el('withdrawAmount')?.value  || '',
+    };
+    localStorage.setItem(STATE_KEY, JSON.stringify({ ...state, ...extra }));
+  } catch {}
 }
 
 function loadSavedState() {
@@ -243,7 +250,15 @@ function loadSavedState() {
   } catch {}
   try {
     const saved = JSON.parse(localStorage.getItem(STATE_KEY)||'null');
-    if (saved) Object.assign(state, saved);
+    if (saved) {
+      const { zakatManualBase, withdrawAmount, ...rest } = saved;
+      Object.assign(state, rest);
+      // Restore text inputs after DOM ready
+      requestAnimationFrame(() => {
+        if (zakatManualBase && el('zakatManualBase')) el('zakatManualBase').value = zakatManualBase;
+        if (withdrawAmount  && el('withdrawAmount'))  el('withdrawAmount').value  = withdrawAmount;
+      });
+    }
   } catch {}
 }
 
@@ -292,8 +307,13 @@ function shareURL() {
   try {
     const encoded = btoa(JSON.stringify(state));
     const url = `${location.origin}${location.pathname}?s=${encoded}`;
-    navigator.clipboard.writeText(url).then(() => showToast('Link tetapan disalin — kongsi dengan sesiapa!'));
-  } catch { showToast('Gagal salin link'); }
+    // Update browser URL bar so this page IS the share link — just bookmark or copy
+    history.replaceState(null, '', `?s=${encoded}`);
+    navigator.clipboard.writeText(url).then(
+      () => showToast('Link disalin! Simpan sebagai bookmark atau kongsi.'),
+      () => showToast('URL dikemas kini — salin dari bar alamat')
+    );
+  } catch { showToast('Gagal — salin URL dari bar alamat'); }
 }
 
 function exportSettings() {
@@ -621,12 +641,14 @@ function updateDashboard() {
   setText('dashPillYears', `Tempoh: ${years} tahun`);
   setText('dashPillRate', `Dividen: ${fmtPct(state.savRate)}`);
 
-  const zakatBase = state.zakatBasis==='dividend' ? last.dividend
+  const manualZakat = parseFloat(el('zakatManualBase')?.value)||0;
+  const zakatBase = manualZakat > 0 ? manualZakat
+    : state.zakatBasis==='dividend' ? last.dividend
     : state.zakatBasis==='both' ? (last.balance+last.dividend)
     : last.balance;
   const zakatAmt = zakatBase*(state.zakatRate/100);
   setText('dashZakat', fmt(zakatAmt));
-  setText('dashZakatSub', `${state.zakatRate}% × asas zakat`);
+  setText('dashZakatSub', `${state.zakatRate}% daripada ${fmt(zakatBase)}`);
 }
 
 // ── UPDATE SAVINGS ──
@@ -929,6 +951,8 @@ function updateZakat() {
     return b2*(state.zakatRate/100);
   });
   updateChartData(charts.zakat, labels, [zakatYearly]);
+  // Sync dashboard zakat card
+  updateDashboard();
 }
 
 // ── UPDATE HISTORY ──
@@ -1111,12 +1135,50 @@ function setupSliders() {
     if (!slider) return;
     // Set initial display
     if (display) display.textContent = f(slider.value);
+
+    // Slider drag
     slider.addEventListener('input', e => {
       const v = parseFloat(e.target.value);
       state[key] = v;
       if (display) display.textContent = f(v);
       updateAll();
     });
+
+    // Click value badge → inline edit (type exact number)
+    if (display) {
+      display.title = 'Klik untuk taip nilai terus';
+      display.style.cursor = 'pointer';
+      display.addEventListener('click', () => {
+        const cur = state[key];
+        const inp = document.createElement('input');
+        inp.type = 'number';
+        inp.value = cur;
+        inp.min = slider.min; inp.max = slider.max; inp.step = slider.step;
+        inp.className = 'inline-edit-input';
+        display.replaceWith(inp);
+        inp.focus(); inp.select();
+        const commit = () => {
+          const v = parseFloat(inp.value);
+          const clamped = isNaN(v) ? cur : Math.max(+slider.min, Math.min(+slider.max, v));
+          state[key] = clamped;
+          slider.value = clamped;
+          // Restore display span
+          const newSpan = document.createElement('span');
+          newSpan.className = display.className;
+          newSpan.id = display.id;
+          newSpan.title = display.title;
+          newSpan.style.cursor = 'pointer';
+          newSpan.textContent = f(clamped);
+          inp.replaceWith(newSpan);
+          // Re-attach click listener on new span
+          newSpan.addEventListener('click', () => newSpan.dispatchEvent(new Event('_reinit')));
+          display.id = ''; // old ref now orphaned
+          updateAll();
+        };
+        inp.addEventListener('blur', commit);
+        inp.addEventListener('keydown', e => { if(e.key==='Enter') commit(); if(e.key==='Escape') inp.blur(); });
+      });
+    }
   });
 }
 
@@ -1238,14 +1300,34 @@ function setupEventListeners() {
     });
   });
 
-  // News filter buttons
+  // News language toggle
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      const lang = btn.dataset.lang;
+      el('newsTopicsBM')?.classList.toggle('hidden', lang !== 'bm');
+      el('newsTopicsEN')?.classList.toggle('hidden', lang !== 'en');
+      // Trigger active topic in new lang
+      const activeBtn = document.querySelector(`#newsTopics${lang.toUpperCase()} .news-filter-btn.active`)
+        || document.querySelector(`#newsTopics${lang.toUpperCase()} .news-filter-btn`);
+      if (activeBtn) {
+        document.querySelectorAll('.news-filter-btn').forEach(b=>b.classList.remove('active'));
+        activeBtn.classList.add('active');
+        loadNews(activeBtn.dataset.topic, lang);
+      }
+    });
+  });
+
+  // News topic filter buttons
   document.querySelectorAll('.news-filter-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      document.querySelectorAll('.news-filter-btn').forEach(b=>b.classList.remove('active'));
+      const parentDiv = btn.closest('.news-filters');
+      parentDiv?.querySelectorAll('.news-filter-btn').forEach(b=>b.classList.remove('active'));
       btn.classList.add('active');
       const grid = el('newsGrid');
       if (grid) grid.innerHTML = '<div class="skeleton"></div>'.repeat(6);
-      loadNews(btn.dataset.topic);
+      loadNews(btn.dataset.topic, btn.dataset.lang || 'bm');
     });
   });
 
@@ -1257,60 +1339,101 @@ function setupEventListeners() {
 }
 
 // ── NEWS ──
-async function loadNews(topic) {
+async function loadNews(topic, lang) {
   const grid = el('newsGrid');
   if (!grid) return;
   grid.innerHTML = '<div class="skeleton"></div>'.repeat(6);
 
-  // Try rss2json first (more reliable than allorigins)
-  const rssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(topic)}&hl=ms&gl=MY&ceid=MY:ms`;
-  const r2jUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}&count=12`;
+  const isEn = lang === 'en';
+  const hl   = isEn ? 'en' : 'ms';
+  const ceid = isEn ? 'MY:en' : 'MY:ms';
+  const rssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(topic)}&hl=${hl}&gl=MY&ceid=${ceid}`;
 
   const renderItems = items => {
-    if (!items.length) throw new Error('empty');
-    grid.innerHTML = items.map(item => {
-      const title = (item.title||'').replace(/<!\[CDATA\[|\]\]>/g,'').trim();
-      const link  = item.link||item.url||'#';
-      const date  = item.pubDate||item.published||'';
-      const src   = item.author||item.source||'PNB / Kewangan';
+    if (!items || !items.length) throw new Error('empty');
+    grid.innerHTML = items.slice(0, 12).map(item => {
+      const title = (item.title||item.name||'').replace(/<!\[CDATA\[|\]\]>/g,'').trim();
+      const link  = item.link||item.url||item.guid||'#';
+      const date  = item.pubDate||item.isoDate||item.published||'';
+      const src   = (item.author||item.source||'').split(',')[0]||'Kewangan';
+      if (!title) return '';
       return `<a href="${link}" target="_blank" rel="noopener noreferrer" class="news-card">
-        <div class="news-source">${src.length>30?src.slice(0,28)+'…':src}</div>
-        <div class="news-title">${title.length>130?title.slice(0,127)+'…':title}</div>
+        <div class="news-source">${src.length>35?src.slice(0,33)+'…':src}</div>
+        <div class="news-title">${title.length>140?title.slice(0,137)+'…':title}</div>
         <div class="news-date">${fmtDate(date)}</div>
       </a>`;
-    }).join('');
+    }).filter(Boolean).join('') || null;
+    if (!grid.innerHTML) throw new Error('no renderable items');
   };
 
-  // Strategy 1: rss2json
+  // Strategy 1: rss2json (most reliable for Google News)
   try {
-    const resp = await fetch(r2jUrl, { signal: AbortSignal.timeout(8000) });
-    const data = await resp.json();
+    const r2j = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}&count=12`;
+    const res  = await fetch(r2j, { signal: AbortSignal.timeout(7000) });
+    const data = await res.json();
     if (data.status === 'ok' && data.items?.length) { renderItems(data.items); return; }
   } catch {}
 
-  // Strategy 2: allorigins fallback with XML parse
+  // Strategy 2: corsproxy.io
   try {
-    const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(rssUrl)}`;
-    const resp  = await fetch(proxy, { signal: AbortSignal.timeout(8000) });
-    const data  = await resp.json();
-    if (!data.contents) throw new Error('no contents');
-    const doc   = new DOMParser().parseFromString(data.contents, 'text/xml');
-    const raw   = Array.from(doc.querySelectorAll('item')).slice(0, 12).map(item => ({
-      title   : item.querySelector('title')?.textContent||'',
-      link    : item.querySelector('link')?.nextSibling?.textContent || item.querySelector('guid')?.textContent || '#',
-      pubDate : item.querySelector('pubDate')?.textContent||'',
-      source  : item.querySelector('source')?.textContent||'Berita',
+    const proxy = `https://corsproxy.io/?${encodeURIComponent(rssUrl)}`;
+    const res   = await fetch(proxy, { signal: AbortSignal.timeout(7000) });
+    const xml   = await res.text();
+    const doc   = new DOMParser().parseFromString(xml, 'text/xml');
+    const items = Array.from(doc.querySelectorAll('item')).map(n => ({
+      title  : n.querySelector('title')?.textContent||'',
+      link   : n.querySelector('link')?.nextSibling?.textContent || n.querySelector('guid')?.textContent || '#',
+      pubDate: n.querySelector('pubDate')?.textContent||'',
+      source : n.querySelector('source')?.textContent||'',
     }));
-    renderItems(raw.map(r => ({ title:r.title, link:r.link, pubDate:r.pubDate, author:r.source })));
-    return;
+    if (items.length) { renderItems(items); return; }
   } catch {}
 
-  // Fail state
-  grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:3rem 1rem;color:var(--text-3)">
-    <i class="ph ph-newspaper" style="font-size:2.5rem;display:block;margin-bottom:0.75rem;opacity:0.4"></i>
-    <div style="font-size:0.85rem;margin-bottom:0.5rem">Berita tidak dapat dimuatkan</div>
-    <div style="font-size:0.75rem;color:var(--text-4)">Cuba semak sambungan internet atau<br>klik butang topik sekali lagi</div>
-  </div>`;
+  // Strategy 3: allorigins fallback
+  try {
+    const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(rssUrl)}`;
+    const res   = await fetch(proxy, { signal: AbortSignal.timeout(7000) });
+    const data  = await res.json();
+    if (!data.contents) throw new Error('empty');
+    const doc   = new DOMParser().parseFromString(data.contents, 'text/xml');
+    const items = Array.from(doc.querySelectorAll('item')).map(n => ({
+      title  : n.querySelector('title')?.textContent||'',
+      link   : n.querySelector('link')?.nextSibling?.textContent || n.querySelector('guid')?.textContent || '#',
+      pubDate: n.querySelector('pubDate')?.textContent||'',
+      source : n.querySelector('source')?.textContent||'',
+    }));
+    if (items.length) { renderItems(items); return; }
+  } catch {}
+
+  // Static curated fallback — always works
+  const BM_LINKS = [
+    { src:'PNB Malaysia',       title:'Laman web rasmi PNB — pengumuman agihan dividen ASB terkini',     url:'https://www.pnb.com.my' },
+    { src:'Berita Harian',      title:'Berita ekonomi dan pelaburan terkini Malaysia',                   url:'https://www.bharian.com.my/bisnes' },
+    { src:'Utusan Malaysia',    title:'Laporan ekonomi dan kewangan Malaysia',                           url:'https://www.utusan.com.my/ekonomi' },
+    { src:'Bernama',            title:'Berita kewangan dan ekonomi rasmi Malaysia',                      url:'https://www.bernama.com/bm' },
+    { src:'The Malaysian Reserve','Berita pasaran modal dan ekuiti Malaysia',                           url:'https://themalaysianreserve.com' },
+    { src:'Free Malaysia Today','Laporan perniagaan dan pelaburan',                                     url:'https://www.freemalaysiatoday.com/category/bisnes' },
+  ];
+  const EN_LINKS = [
+    { src:'PNB Malaysia',       title:'Official PNB website — latest ASB/ASN dividend announcements',   url:'https://www.pnb.com.my' },
+    { src:'The Edge Markets',   title:'Malaysia capital markets, equities and investment news',          url:'https://www.theedgemarkets.com' },
+    { src:'The Star Biz',       title:'Business and investment news for Malaysia',                       url:'https://biz.thestar.com.my' },
+    { src:'Bernama',            title:'Official Malaysian national news agency — economy coverage',      url:'https://www.bernama.com/en' },
+    { src:'Malay Mail Biz',     title:'Malaysia business and financial headlines',                       url:'https://www.malaymail.com/section/money' },
+    { src:'New Straits Times',  title:'NST business and investment section',                             url:'https://www.nst.com.my/business' },
+  ];
+  const links = isEn ? EN_LINKS : BM_LINKS;
+  grid.innerHTML = `
+    <div class="news-fallback-notice" style="grid-column:1/-1">
+      <i class="ph ph-info"></i>
+      <span>${isEn ? 'Live feed unavailable — here are trusted sources' : 'Suapan langsung tidak tersedia — pautan sumber dipercayai'}</span>
+    </div>
+    ${links.map(l=>`
+    <a href="${l.url}" target="_blank" rel="noopener noreferrer" class="news-card news-card-static">
+      <div class="news-source">${l.src}</div>
+      <div class="news-title">${l.title}</div>
+      <div class="news-date">${isEn ? 'Tap to visit' : 'Ketik untuk lawati'}</div>
+    </a>`).join('')}`;
 }
 
 // ── THEME ──

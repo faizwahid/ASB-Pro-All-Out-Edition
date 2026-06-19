@@ -1158,3 +1158,79 @@ tbody tr:hover { background: var(--surface-2); }
   padding: 0.25rem 0;
 }
 .autosave-note i { color: var(--accent); opacity: 0.7; }
+
+/* ── INLINE EDIT INPUT (click value badge to type) ── */
+.inline-edit-input {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--accent);
+  background: var(--surface);
+  border: 1.5px solid var(--accent);
+  border-radius: 4px;
+  padding: 0.1rem 0.35rem;
+  width: 90px;
+  outline: none;
+  -moz-appearance: textfield;
+}
+.inline-edit-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+/* ── NEWS BILINGUAL LAYOUT ── */
+.news-filters-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-bottom: 1.25rem;
+}
+.news-lang-toggle {
+  display: flex;
+  gap: 0.4rem;
+}
+.lang-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+  color: var(--text-3);
+  font-family: var(--font);
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.lang-btn span {
+  font-size: 0.68rem;
+  font-weight: 700;
+  background: var(--border);
+  padding: 0.1rem 0.35rem;
+  border-radius: 3px;
+  font-family: var(--mono);
+}
+.lang-btn.active {
+  background: var(--text-1);
+  border-color: var(--text-1);
+  color: var(--surface);
+}
+.lang-btn.active span {
+  background: rgba(255,255,255,0.2);
+}
+
+/* ── NEWS FALLBACK NOTICE ── */
+.news-fallback-notice {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.85rem;
+  background: var(--base-bg);
+  border: 1px solid rgba(217,119,6,0.2);
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  color: var(--base);
+  margin-bottom: 0.25rem;
+}
+.news-fallback-notice i { flex-shrink: 0; }
+.news-card-static { border-style: dashed; }
+.news-card-static .news-date { color: var(--accent); font-family: var(--font); }

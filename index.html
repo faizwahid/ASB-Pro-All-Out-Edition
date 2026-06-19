@@ -21,20 +21,13 @@
         </div>
       </div>
       <div class="header-actions">
-        <button class="hdr-btn" onclick="shareURL()" title="Kongsi tetapan via link">
-          <i class="ph ph-share-network"></i><span>Kongsi</span>
+        <button class="hdr-btn" onclick="shareURL()" title="Salin link tetapan anda — boleh bookmark atau hantar ke orang lain">
+          <i class="ph ph-link"></i><span>Kongsi Link</span>
         </button>
-        <button class="hdr-btn" onclick="exportSettings()" title="Export tetapan JSON">
-          <i class="ph ph-download-simple"></i><span>Export</span>
-        </button>
-        <label class="hdr-btn" title="Import tetapan JSON">
-          <i class="ph ph-upload-simple"></i><span>Import</span>
-          <input type="file" accept=".json" style="display:none" onchange="importSettings(this.files[0])">
-        </label>
-        <button class="hdr-btn hdr-btn-ghost" onclick="resetState()" title="Reset semua tetapan">
+        <button class="hdr-btn hdr-btn-ghost" onclick="resetState()" title="Buang semua tetapan, mula semula">
           <i class="ph ph-arrow-counter-clockwise"></i>
         </button>
-        <button class="icon-btn" id="themeToggle" title="Tukar tema">
+        <button class="icon-btn" id="themeToggle" title="Tukar tema cerah/gelap">
           <i class="ph ph-moon" id="themeIcon"></i>
         </button>
       </div>
@@ -712,11 +705,29 @@
         <h2 class="panel-title">Berita ASB &amp; Pelaburan</h2>
         <p class="panel-desc">Berita terkini berkaitan ASB, PNB dan pasaran kewangan Malaysia</p>
       </div>
-      <div class="news-filters">
-        <button class="news-filter-btn active" data-topic="ASB PNB Malaysia">ASB / PNB</button>
-        <button class="news-filter-btn" data-topic="pelaburan Malaysia saham">Pelaburan</button>
-        <button class="news-filter-btn" data-topic="hartanah Malaysia">Hartanah</button>
-        <button class="news-filter-btn" data-topic="ekonomi Malaysia ringgit">Ekonomi</button>
+      <div class="news-filters-wrap">
+        <div class="news-lang-toggle">
+          <button class="lang-btn active" data-lang="bm">
+            <span>BM</span> Bahasa Melayu
+          </button>
+          <button class="lang-btn" data-lang="en">
+            <span>EN</span> English
+          </button>
+        </div>
+        <div class="news-filters" id="newsTopicsBM">
+          <button class="news-filter-btn active" data-topic="ASB PNB dividen Malaysia" data-lang="bm">ASB / PNB</button>
+          <button class="news-filter-btn" data-topic="pelaburan saham Malaysia terkini" data-lang="bm">Pelaburan</button>
+          <button class="news-filter-btn" data-topic="hartanah Malaysia 2025" data-lang="bm">Hartanah</button>
+          <button class="news-filter-btn" data-topic="ekonomi Malaysia ringgit 2025" data-lang="bm">Ekonomi</button>
+          <button class="news-filter-btn" data-topic="KWSP EPF simpanan Malaysia" data-lang="bm">KWSP / EPF</button>
+        </div>
+        <div class="news-filters hidden" id="newsTopicsEN">
+          <button class="news-filter-btn active" data-topic="ASB PNB Malaysia dividend" data-lang="en">ASB / PNB</button>
+          <button class="news-filter-btn" data-topic="Malaysia investment stock market" data-lang="en">Investment</button>
+          <button class="news-filter-btn" data-topic="Malaysia property real estate" data-lang="en">Property</button>
+          <button class="news-filter-btn" data-topic="Malaysia economy ringgit 2025" data-lang="en">Economy</button>
+          <button class="news-filter-btn" data-topic="EPF Malaysia savings retirement" data-lang="en">EPF</button>
+        </div>
       </div>
       <div class="news-grid" id="newsGrid">
         <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
