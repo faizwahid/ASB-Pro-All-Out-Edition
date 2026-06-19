@@ -1337,3 +1337,46 @@ tbody tr:hover { background: var(--surface-2); }
   gap: 1rem;
   margin-bottom: 1.25rem;
 }
+
+/* ── COLOR PICKER POPUP ── */
+.color-picker-wrap {
+  position: relative;
+}
+.color-picker {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  display: flex;
+  gap: 6px;
+  padding: 8px 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-6px) scale(0.96);
+  transition: opacity 0.18s, transform 0.18s;
+  z-index: 200;
+  white-space: nowrap;
+}
+.color-picker.open {
+  opacity: 1;
+  pointer-events: all;
+  transform: translateY(0) scale(1);
+}
+.color-dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  outline: none;
+  flex-shrink: 0;
+}
+.color-dot:hover { transform: scale(1.2); }
+.color-dot.active {
+  border-color: var(--text-1);
+  box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--text-1);
+}

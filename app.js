@@ -1374,15 +1374,15 @@ function updateHistory() {
 
 // ── UPDATE ALL ──
 function updateAll() {
-  saveState();
-  updateSavings();
-  updateFinancing();
-  updateComparison();
-  updateForecast();
-  updateGoal();
-  updateZakat();
-  updateHistory();
-  updateDashboard();
+  try { saveState(); } catch(e) {}
+  try { updateSavings(); }    catch(e) { console.error('[ASB] updateSavings:', e); }
+  try { updateFinancing(); }  catch(e) { console.error('[ASB] updateFinancing:', e); }
+  try { updateComparison(); } catch(e) { console.error('[ASB] updateComparison:', e); }
+  try { updateForecast(); }   catch(e) { console.error('[ASB] updateForecast:', e); }
+  try { updateGoal(); }       catch(e) { console.error('[ASB] updateGoal:', e); }
+  try { updateZakat(); }      catch(e) { console.error('[ASB] updateZakat:', e); }
+  try { updateHistory(); }    catch(e) { console.error('[ASB] updateHistory:', e); }
+  try { updateDashboard(); }  catch(e) { console.error('[ASB] updateDashboard:', e); }
 }
 
 // ── TABLE BUILDERS ──
@@ -1616,9 +1616,23 @@ function setupEventListeners() {
     btn.addEventListener('click', () => applyLanguage(btn.dataset.lang));
   });
 
-  // Color theme picker
+  // Color picker toggle (palette button)
+  el('colorPickerToggle')?.addEventListener('click', e => {
+    e.stopPropagation();
+    const panel = el('colorPickerPanel');
+    if (panel) panel.classList.toggle('open');
+  });
+  document.addEventListener('click', () => {
+    el('colorPickerPanel')?.classList.remove('open');
+  });
+  el('colorPickerPanel')?.addEventListener('click', e => e.stopPropagation());
+
+  // Color theme picker dots
   document.querySelectorAll('.color-dot').forEach(dot => {
-    dot.addEventListener('click', () => setColorTheme(dot.dataset.color));
+    dot.addEventListener('click', () => {
+      setColorTheme(dot.dataset.color);
+      el('colorPickerPanel')?.classList.remove('open');
+    });
   });
 
   // ASBF mode toggle
@@ -1907,21 +1921,54 @@ function updateChartTheme(dark) {
 
 // ── INIT ──
 function init() {
-  initTheme();
-  loadSavedState();
-  initLanguage();        // language before DOM render
-  initColorTheme();      // apply saved color theme
-  initCharts();
-  applyStateToInputs();
-  setupSliders();
-  setupSliderTooltip();
-  setupEventListeners();
-  applyLanguage(state.lang || 'bm'); // apply full i18n after everything is ready
+  try {
+    initTheme();
+    loadSavedState();
+    initLanguage();
+    initColorTheme();
+  } catch(e) { console.error('[ASB] Phase 1 error:', e); }
+
+  // Charts in separate try-catch — failure here must NOT stop event listeners
+  try {
+    if (typeof Chart !== 'undefined') {
+      initCharts();
+    } else {
+      console.warn('[ASB] Chart.js not loaded — running without charts');
+    }
+  } catch(e) { console.error('[ASB] Chart init error:', e); }
+
+  try {
+    applyStateToInputs();
+    setupSliders();
+    setupSliderTooltip();
+    setupEventListeners();    // MUST always run
+  } catch(e) { console.error('[ASB] Setup error:', e); }
+
+  try {
+    applyLanguage(state.lang || 'bm');
+  } catch(e) { console.error('[ASB] Language error:', e); }
+
   setTimeout(() => {
     const active = document.querySelector('.tab-btn.active');
     if (active) moveTabIndicator(active);
   }, 80);
+
+  // Non-blocking
   fetchLatestDividend();
 }
 
-document.addEventListener('DOMContentLoaded', init);
+// Use window load to guarantee Chart.js CDN is ready
+if (document.readyState === 'complete') {
+  init();
+} else {
+  window.addEventListener('load', init);
+  // Fallback: also try DOMContentLoaded in case load fires late
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+      if (typeof Chart !== 'undefined' && !window._asbInited) init();
+    }, 500);
+  });
+}
+window._asbInited = false;
+const _origInit = init;
+window.init = function() { window._asbInited = true; _origInit(); };

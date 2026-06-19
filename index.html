@@ -22,12 +22,17 @@
       </div>
       <div class="header-actions">
         <!-- Color theme picker -->
-        <div class="color-picker" title="Pilih tema warna">
-          <button class="color-dot active" data-color="emerald" style="background:#059669" title="Emerald"></button>
-          <button class="color-dot" data-color="ocean"   style="background:#0284c7" title="Ocean Blue"></button>
-          <button class="color-dot" data-color="sunset"  style="background:#ea580c" title="Sunset"></button>
-          <button class="color-dot" data-color="purple"  style="background:#7c3aed" title="Purple"></button>
-          <button class="color-dot" data-color="rose"    style="background:#e11d48" title="Rose"></button>
+        <div class="color-picker-wrap">
+          <button class="icon-btn" id="colorPickerToggle" title="Pilih tema warna">
+            <i class="ph ph-palette"></i>
+          </button>
+          <div class="color-picker" id="colorPickerPanel">
+            <button class="color-dot active" data-color="emerald" style="background:#059669" title="Emerald"></button>
+            <button class="color-dot" data-color="ocean"   style="background:#0284c7" title="Ocean"></button>
+            <button class="color-dot" data-color="sunset"  style="background:#ea580c" title="Sunset"></button>
+            <button class="color-dot" data-color="purple"  style="background:#7c3aed" title="Purple"></button>
+            <button class="color-dot" data-color="rose"    style="background:#e11d48" title="Rose"></button>
+          </div>
         </div>
         <!-- Language toggle -->
         <div class="lang-toggle">
@@ -412,7 +417,22 @@
   <div class="slider-tooltip" id="sliderTooltip"></div>
   <div class="toast" id="toast"></div>
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <!-- Chart.js with backup CDN -->
+  <script>
+    function loadChartJS(cb) {
+      var s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js';
+      s.onload = cb;
+      s.onerror = function() {
+        var s2 = document.createElement('script');
+        s2.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.3/chart.umd.min.js';
+        s2.onload = cb; s2.onerror = cb;
+        document.head.appendChild(s2);
+      };
+      document.head.appendChild(s);
+    }
+    loadChartJS(function(){});
+  </script>
   <script src="app.js"></script>
 </body>
 </html>
