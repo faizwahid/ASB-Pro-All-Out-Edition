@@ -119,17 +119,17 @@
             <p class="panel-desc" data-i18n="sav_desc">Simulasi DCA bulanan dengan kaedah pengiraan PNB</p>
           </div>
           <div class="input-group">
-            <label class="input-label"><span data-i18n="sav_initial">Deposit Awal</span> <span class="input-val" id="savInitVal">RM 10,000</span></label>
+            <label class="input-label"><span data-i18n="sav_initial">Simpanan/Deposit Awal</span> <span class="input-val" id="savInitVal">RM 10,000</span></label>
             <input type="range" class="slider" id="savInitial" min="0" max="500000" step="1000" value="10000">
             <div class="range-bounds"><span>RM 0</span><span>RM 500k</span></div>
           </div>
           <div class="input-group">
-            <label class="input-label"><span data-i18n="sav_monthly">Sumbangan Bulanan (DCA)</span> <span class="input-val" id="savMonthlyVal">RM 500</span></label>
+            <label class="input-label"><span data-i18n="sav_monthly">Tabung Setiap Bulan</span> <span class="input-val" id="savMonthlyVal">RM 500</span></label>
             <input type="range" class="slider" id="savMonthly" min="0" max="5000" step="50" value="500">
             <div class="range-bounds"><span>RM 0</span><span>RM 5,000</span></div>
           </div>
           <div class="input-group">
-            <label class="input-label"><span data-i18n="sav_rate">Kadar Dividen Dijangka</span> <span class="input-val" id="savRateVal">5.00%</span></label>
+            <label class="input-label"><span data-i18n="sav_rate">Anggaran Dividen Tahunan (%)</span> <span class="input-val" id="savRateVal">5.00%</span></label>
             <input type="range" class="slider" id="savRate" min="1" max="10" step="0.25" value="5">
             <div class="range-bounds"><span>1%</span><span>10%</span></div>
           </div>
@@ -139,7 +139,7 @@
             <div class="range-bounds"><span>0%</span><span>1%</span></div>
           </div>
           <div class="input-group">
-            <label class="input-label"><span data-i18n="sav_years">Tempoh Pelaburan</span> <span class="input-val" id="savYearsVal">20 tahun</span></label>
+            <label class="input-label"><span data-i18n="sav_years">Berapa Tahun Nak Simpan?</span> <span class="input-val" id="savYearsVal">20 tahun</span></label>
             <input type="range" class="slider" id="savYears" min="1" max="40" step="1" value="20">
             <div class="range-bounds"><span>1</span><span>40</span></div>
           </div>
@@ -208,6 +208,12 @@
           <div class="spread-card" id="spreadCard"><div class="spread-label" data-i18n="fin_spread">Spread (Dividen − Faedah)</div><div class="spread-val" id="spreadVal">0.00%</div><div class="spread-note" id="spreadNote">—</div></div>
         </div>
         <div class="results-panel">
+          <!-- Calculated loan amount — shown in payment mode -->
+          <div class="calc-loan-row" id="finCalcLoanRow" style="display:none">
+            <i class="ph ph-info"></i>
+            <span data-i18n="fin_calc_loan_label">Jumlah Pinjaman Maksimum:</span>
+            <strong id="finCalcLoanAmt">RM 0</strong>
+          </div>
           <div class="stats-grid stats-grid-2">
             <div class="stat-card"><div class="stat-label" data-i18n="fin_monthly">Bayaran Bulanan</div><div class="stat-value" id="finMonthlyPay">RM 0</div></div>
             <div class="stat-card"><div class="stat-label" data-i18n="fin_asb_final">Nilai ASB (Akhir)</div><div class="stat-value accent" id="finASBFinal">RM 0</div></div>

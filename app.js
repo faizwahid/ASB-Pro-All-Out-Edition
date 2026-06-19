@@ -134,7 +134,12 @@ const STRINGS = {
     fallback_notice:'Suapan langsung tidak tersedia — pautan sumber dipercayai',
     fallback_visit:'Ketik untuk lawati',
     winner_asb:'ASB Biasa', winner_asbf:'ASBF', winner_fd:'FD', winner_epf:'EPF',
-            fin_mode_hint_loan:'Masukkan jumlah yang anda pinjam — kami kira bayaran bulanan anda',
+                fin_calc_loan_label:'Jumlah Pinjaman Maksimum Yang Boleh Dipohon:',
+    sav_initial:'Simpanan/Deposit Awal',
+    sav_monthly:'Tabung Setiap Bulan',
+    sav_rate:'Anggaran Dividen Tahunan (%)',
+    sav_years:'Berapa Tahun Nak Simpan?',
+    fin_mode_hint_loan:'Masukkan jumlah yang anda pinjam — kami kira bayaran bulanan anda',
     fin_mode_hint_pay:'Masukkan berapa mampu bayar sebulan — kami kira jumlah pinjaman maksimum',
     cmpEPFRateVal_default:'6.30%',
         manual_div_title:'Masukkan Dividen Terkini',
@@ -277,7 +282,12 @@ const STRINGS = {
     fallback_notice:'Live feed unavailable — here are trusted sources',
     fallback_visit:'Tap to visit',
     winner_asb:'ASB Regular', winner_asbf:'ASBF', winner_fd:'Fixed Deposit', winner_epf:'EPF',
-            fin_mode_hint_loan:'Enter the loan amount — we calculate your monthly payment',
+                fin_calc_loan_label:'Maximum Loan Amount You Can Apply For:',
+    sav_initial:'Initial Savings / Deposit',
+    sav_monthly:'Monthly Contribution',
+    sav_rate:'Expected Annual Dividend (%)',
+    sav_years:'How Many Years to Save?',
+    fin_mode_hint_loan:'Enter the loan amount — we calculate your monthly payment',
     fin_mode_hint_pay:'Enter what you can afford monthly — we calculate the maximum loan',
     cmpEPFRateVal_default:'6.30%',
         manual_div_title:'Enter Latest Dividend',
@@ -619,8 +629,8 @@ function animateCounter(element, to, formatter) {
   const from = parseFloat(element.dataset.v||0)||0;
   element.dataset.v = to;
   const dur = 550, start = performance.now();
-  const step = t => {
-    const p = Math.min((t-start)/dur,1);
+  const step = ts => {
+    const p = Math.min((ts-start)/dur,1);
     const ease = 1-Math.pow(1-p,3);
     element.textContent = formatter(from+(to-from)*ease);
     if(p<1) requestAnimationFrame(step);
@@ -1078,9 +1088,10 @@ function updateSavings() {
   const last = savData[savData.length-1];
   const labels = savData.map(r=>r.year.toString());
 
-  // DCA vs Lump Sum comparison
-  const totalMonthlyInvested = state.savInitial + state.savMonthly*12*state.savYears;
-  const lumpData = calcLumpSum(totalMonthlyInvested, state.savRate, state.savYears);
+  // DCA vs Lump Sum — compare: invest the same monthly budget as lump sum from day 1
+  // Lump sum: invest ALL the money you WOULD have saved (initial + all future DCA) right now
+  const totalBudget = state.savInitial + state.savMonthly * 12 * state.savYears;
+  const lumpData = calcLumpSum(totalBudget, state.savRate, state.savYears);
   const lumpFinal = lumpData[lumpData.length-1].balance;
   const dcaFinal = last.balance;
 
@@ -1092,7 +1103,10 @@ function updateSavings() {
   updateChartData(charts.savDiv, labels, [ savData.map(r=>r.dividend) ]);
 
   animateCounter(el('savFinalVal'), dcaFinal, fmt);
-  setText('savLastDiv', `Dividen tahun terakhir: ${fmt(last.dividend)} (Kadar: ${fmtPct(state.savRate + state.savBonus)})`);
+  const totalRate = state.savRate + state.savBonus;
+  setText('savLastDiv', state.lang==='en'
+    ? `Year ${state.savYears} dividend: ${fmt(last.dividend)} · Rate: ${fmtPct(totalRate)}`
+    : `Dividen tahun ke-${state.savYears}: ${fmt(last.dividend)} · Kadar: ${fmtPct(totalRate)}`);
   animateCounter(el('savTotalInvest'), last.totalInvested, fmt);
   animateCounter(el('savTotalDiv'), last.netReturns, fmt);
   setText('savROI', ((last.netReturns/last.totalInvested)*100).toFixed(1)+'%');
@@ -1118,10 +1132,14 @@ function updateSavings() {
   const diff = Math.abs(dcaFinal-lumpFinal);
   const verdictEl = el('dcaVsLumpVerdict');
   if (verdictEl) {
-    if (dcaFinal>lumpFinal) {
-      verdictEl.innerHTML = `<strong>${t('dca_better')}</strong> +${fmt(diff)} — ${t('dca_reason')}`;
-    } else if (lumpFinal>dcaFinal) {
-      verdictEl.innerHTML = `<strong>${t('lump_better')}</strong> +${fmt(diff)} — ${t('lump_reason')}`;
+    const ctx = state.lang==='en'
+      ? `If you had RM${totalBudget.toLocaleString('en-MY',{maximumFractionDigits:0})} available today:`
+      : `Kalau anda ada RM${totalBudget.toLocaleString('en-MY',{maximumFractionDigits:0})} sekarang:`;
+    if (lumpFinal>dcaFinal) {
+      const pctMore = ((lumpFinal-dcaFinal)/dcaFinal*100).toFixed(1);
+      verdictEl.innerHTML = `<span style="font-size:0.7rem;color:var(--text-4)">${ctx}</span><br><strong>${t('lump_better')}</strong> +${fmt(diff)} (${pctMore}%) — ${t('lump_reason')}`;
+    } else if (dcaFinal>lumpFinal) {
+      verdictEl.innerHTML = `<span style="font-size:0.7rem;color:var(--text-4)">${ctx}</span><br><strong>${t('dca_better')}</strong> +${fmt(diff)} — ${t('dca_reason')}`;
     } else {
       verdictEl.innerHTML = t('dca_equal');
     }
@@ -1152,6 +1170,13 @@ function updateFinancing() {
   charts.finDonut.update('active');
 
   const netProfit = last.asbValue - last.totalInterestPaid;
+  // Show calculated loan amount (especially useful in payment mode)
+  const dispLoan = el('finCalcLoanAmt');
+  if (dispLoan) {
+    dispLoan.textContent = fmt(loanAmt);
+    const loanRow = el('finCalcLoanRow');
+    if (loanRow) loanRow.style.display = state.finMode==='payment' ? 'flex' : 'none';
+  }
   animateCounter(el('finMonthlyPay'), monthlyPay, fmt);
   animateCounter(el('finASBFinal'), last.asbValue, fmt);
   animateCounter(el('finTotalInterest'), last.totalInterestPaid, fmt);
@@ -1225,7 +1250,9 @@ function updateComparison() {
   setText('cmpFDFinal', fmt(fdFinal));
   setText('cmpFDReturn', `Pulangan: ${fmt(fdReturn)}`);
   setText('cmpEPFFinal', fmt(epfFinal));
-  setText('cmpEPFReturn', `Pulangan: ${fmt(epfReturn)}`);
+  setText('cmpEPFReturn', state.lang==='en'
+    ? `Return: ${fmt(epfReturn)} · EPF 2024: 6.3%`
+    : `Pulangan: ${fmt(epfReturn)} · EPF 2024: 6.3%`);
 
   // Breakeven ASBF vs ASB
   const beYear = asbfData.findIndex((r,i) => r.netWorth >= asbData[i]?.balance);
@@ -1334,20 +1361,20 @@ function updateGoal() {
   const bd = el('goalBreakdown');
   if (bd) bd.innerHTML = `
     <div class="chart-block" style="margin-bottom:0">
-      <div class="gbd-row"><span>Sasaran Matlamat</span><span>${fmt(goalAmt)}</span></div>
-      <div class="gbd-row"><span>Simpanan Semasa</span><span>${fmt(goalCurrent)}</span></div>
-      <div class="gbd-row"><span>Jurang Tersisa</span><span style="color:var(--bear)">${fmt(Math.max(0,goalAmt-goalCurrent))}</span></div>
-      <div class="gbd-row"><span>DCA Bulanan Perlu</span><span style="color:var(--accent)">${reqDCA<1?'Tidak perlu':fmt(reqDCA)}</span></div>
-      <div class="gbd-row"><span>Nilai Akhir Dijangka</span><span>${fmt(trajectory[trajectory.length-1]?.balance||0)}</span></div>
+      <div class="gbd-row"><span>${t('gbd_target')}</span><span>${fmt(goalAmt)}</span></div>
+      <div class="gbd-row"><span>${t('gbd_current')}</span><span>${fmt(goalCurrent)}</span></div>
+      <div class="gbd-row"><span>${t('gbd_gap')}</span><span style="color:var(--bear)">${fmt(Math.max(0,goalAmt-goalCurrent))}</span></div>
+      <div class="gbd-row"><span>${t('gbd_dca')}</span><span style="color:var(--accent)">${reqDCA<1?(state.lang==='en'?'Not needed':'Tidak perlu'):fmt(reqDCA)}</span></div>
+      <div class="gbd-row"><span>${t('gbd_final')}</span><span>${fmt(trajectory[trajectory.length-1]?.balance||0)}</span></div>
       <div style="padding:0.75rem 0 0.25rem">
         <div style="display:flex;justify-content:space-between;font-size:0.72rem;color:var(--text-3);margin-bottom:4px">
-          <span>Kemajuan Matlamat</span><span>${pct.toFixed(1)}%</span>
+          <span>${t('gbd_progress')}</span><span>${pct.toFixed(1)}%</span>
         </div>
         <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${pct}%"></div></div>
       </div>
       <div style="padding:0.25rem 0 0.5rem">
         <div style="display:flex;justify-content:space-between;font-size:0.72rem;color:var(--text-3);margin-bottom:4px">
-          <span>Kemajuan FIRE</span><span>${firePct.toFixed(1)}%</span>
+          <span>${t('gbd_fire')}</span><span>${firePct.toFixed(1)}%</span>
         </div>
         <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${firePct}%"></div></div>
       </div>
@@ -1390,8 +1417,6 @@ function updateZakat() {
     return b2*(state.zakatRate/100);
   });
   updateChartData(charts.zakat, labels, [zakatYearly]);
-  // Always sync dashboard
-  updateDashboard();
 }
 
 // Pull values from Savings tab (optional shortcut)

@@ -1491,3 +1491,23 @@ tbody tr:hover { background: var(--surface-2); }
     grid-template-columns: 1fr 1fr;
   }
 }
+
+/* ── ASBF calc loan row ── */
+.calc-loan-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 0.85rem;
+  background: var(--accent-bg);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius-sm);
+  font-size: 0.78rem;
+  color: var(--text-2);
+}
+.calc-loan-row i { color: var(--accent); flex-shrink: 0; }
+.calc-loan-row strong {
+  font-family: var(--mono);
+  color: var(--accent);
+  font-size: 0.9rem;
+  margin-left: auto;
+}
