@@ -471,22 +471,10 @@
   <div class="slider-tooltip" id="sliderTooltip"></div>
   <div class="toast" id="toast"></div>
 
-  <!-- Chart.js with backup CDN -->
-  <script>
-    function loadChartJS(cb) {
-      var s = document.createElement('script');
-      s.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js';
-      s.onload = cb;
-      s.onerror = function() {
-        var s2 = document.createElement('script');
-        s2.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.3/chart.umd.min.js';
-        s2.onload = cb; s2.onerror = cb;
-        document.head.appendChild(s2);
-      };
-      document.head.appendChild(s);
-    }
-    loadChartJS(function(){});
-  </script>
+  <!-- Chart.js — primary CDN, blocking load so it's ready before app.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"
+          onerror="this.onerror=null;var s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.3/chart.umd.min.js';s.async=false;document.write('<scr'+'ipt src=\"https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.3/chart.umd.min.js\"></scr'+'ipt>');"></script>
+  <!-- app.js loads AFTER Chart.js is parsed -->
   <script src="app.js"></script>
 </body>
 </html>

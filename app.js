@@ -1869,12 +1869,14 @@ function refreshNews() {
 
 // Topic → RSS feed mapping (direct feeds, more reliable than Google News search)
 const NEWS_FEEDS = {
-  // Google News topic RSS — simple space-separated queries (OR syntax breaks rss2json)
-  'asb':      'https://news.google.com/rss/search?q=ASB%20PNB%20dividen%20pelaburan&hl=ms&gl=MY&ceid=MY:ms',
-  'malaysia': 'https://news.google.com/rss/search?q=pelaburan%20kewangan%20saham%20Malaysia%20ekonomi&hl=ms&gl=MY&ceid=MY:ms',
-  'us':       'https://news.google.com/rss/search?q=US%20stock%20market%20investing&hl=en&gl=US&ceid=US:en',
-  'china':    'https://news.google.com/rss/search?q=China%20economy%20stock%20market&hl=en&gl=US&ceid=US:en',
-  'default':  'https://news.google.com/rss/search?q=ASB%20PNB%20Malaysia&hl=ms&gl=MY&ceid=MY:ms',
+  // ASB: Google News search (specific to ASB/PNB)
+  'asb':      'https://news.google.com/rss/search?q=ASB%20PNB%20dividen&hl=ms&gl=MY&ceid=MY:ms',
+  // Malaysia: broad finance/investment via Google News
+  'malaysia': 'https://news.google.com/rss/search?q=pelaburan%20kewangan%20Malaysia%20Bursa%20ekonomi&hl=ms&gl=MY&ceid=MY:ms',
+  // US/China: established financial outlets (stable feeds)
+  'us':       'https://news.google.com/rss/search?q=US%20stocks%20market%20Wall%20Street&hl=en&gl=US&ceid=US:en',
+  'china':    'https://news.google.com/rss/search?q=China%20economy%20markets&hl=en&gl=US&ceid=US:en',
+  'default':  'https://news.google.com/rss/search?q=Malaysia%20pelaburan&hl=ms&gl=MY&ceid=MY:ms',
 };
 
 async function loadNews(feedKey) {
@@ -1912,42 +1914,56 @@ async function loadNews(feedKey) {
     return true;
   };
 
-  // Strategy 1: rss2json (most reliable for Google News)
+  // Helper: parse XML RSS text into item objects
+  function parseRssXml(xmlText) {
+    const doc = new DOMParser().parseFromString(xmlText, 'text/xml');
+    return Array.from(doc.querySelectorAll('item')).map(n => {
+      // Google News <link> is a text node; sometimes link is in nextSibling
+      let link = n.querySelector('link')?.textContent?.trim();
+      if (!link || link === '') link = n.querySelector('guid')?.textContent?.trim() || '#';
+      return {
+        title  : n.querySelector('title')?.textContent || '',
+        link   : link,
+        pubDate: n.querySelector('pubDate')?.textContent || '',
+        source : n.querySelector('source')?.textContent || '',
+      };
+    });
+  }
+
+  // Strategy 1: rss2json
   try {
-    const r2j = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}&count=12`;
-    const res  = await fetch(r2j, { signal: AbortSignal.timeout(7000) });
+    const r2j = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}&count=15`;
+    const res  = await fetch(r2j, { signal: AbortSignal.timeout(8000) });
     const data = await res.json();
-    if (data.status === 'ok' && data.items?.length) { if (renderItems(data.items)) return; }
+    if (data.status === 'ok' && data.items?.length && renderItems(data.items)) return;
   } catch {}
 
-  // Strategy 2: corsproxy.io
+  // Strategy 2: allorigins (JSON wrapper)
   try {
-    const proxy = `https://corsproxy.io/?${encodeURIComponent(rssUrl)}`;
-    const res   = await fetch(proxy, { signal: AbortSignal.timeout(7000) });
+    const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(rssUrl)}`;
+    const res   = await fetch(proxy, { signal: AbortSignal.timeout(8000) });
+    const data  = await res.json();
+    if (data.contents) {
+      const items = parseRssXml(data.contents);
+      if (items.length && renderItems(items)) return;
+    }
+  } catch {}
+
+  // Strategy 3: allorigins raw
+  try {
+    const proxy = `https://api.allorigins.win/raw?url=${encodeURIComponent(rssUrl)}`;
+    const res   = await fetch(proxy, { signal: AbortSignal.timeout(8000) });
     const xml   = await res.text();
-    const doc   = new DOMParser().parseFromString(xml, 'text/xml');
-    const items = Array.from(doc.querySelectorAll('item')).map(n => ({
-      title  : n.querySelector('title')?.textContent||'',
-      link   : n.querySelector('link')?.nextSibling?.textContent || n.querySelector('guid')?.textContent || '#',
-      pubDate: n.querySelector('pubDate')?.textContent||'',
-      source : n.querySelector('source')?.textContent||'',
-    }));
+    const items = parseRssXml(xml);
     if (items.length && renderItems(items)) return;
   } catch {}
 
-  // Strategy 3: allorigins fallback
+  // Strategy 4: corsproxy.io
   try {
-    const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(rssUrl)}`;
-    const res   = await fetch(proxy, { signal: AbortSignal.timeout(7000) });
-    const data  = await res.json();
-    if (!data.contents) throw new Error('empty');
-    const doc   = new DOMParser().parseFromString(data.contents, 'text/xml');
-    const items = Array.from(doc.querySelectorAll('item')).map(n => ({
-      title  : n.querySelector('title')?.textContent||'',
-      link   : n.querySelector('link')?.nextSibling?.textContent || n.querySelector('guid')?.textContent || '#',
-      pubDate: n.querySelector('pubDate')?.textContent||'',
-      source : n.querySelector('source')?.textContent||'',
-    }));
+    const proxy = `https://corsproxy.io/?url=${encodeURIComponent(rssUrl)}`;
+    const res   = await fetch(proxy, { signal: AbortSignal.timeout(8000) });
+    const xml   = await res.text();
+    const items = parseRssXml(xml);
     if (items.length && renderItems(items)) return;
   } catch {}
 
@@ -2038,14 +2054,20 @@ function init() {
     initColorTheme();
   } catch(e) { console.error('[ASB] Phase 1 error:', e); }
 
-  // Charts in separate try-catch — failure here must NOT stop event listeners
-  try {
-    if (typeof Chart !== 'undefined') {
-      initCharts();
-    } else {
-      console.warn('[ASB] Chart.js not loaded — running without charts');
-    }
-  } catch(e) { console.error('[ASB] Chart init error:', e); }
+  // Charts — init now if Chart.js ready, else retry when it loads
+  function tryInitCharts() {
+    if (typeof Chart === 'undefined') return false;
+    try { initCharts(); updateAll(); return true; }
+    catch(e) { console.error('[ASB] Chart init error:', e); return false; }
+  }
+  if (!tryInitCharts()) {
+    // Chart.js not ready yet — poll briefly until it loads
+    let tries = 0;
+    const chartTimer = setInterval(() => {
+      tries++;
+      if (tryInitCharts() || tries > 40) clearInterval(chartTimer); // max ~6s
+    }, 150);
+  }
 
   try {
     applyStateToInputs();
