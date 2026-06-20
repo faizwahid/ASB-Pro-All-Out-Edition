@@ -443,6 +443,9 @@ function applyLanguage(lang) {
   });
   // Update html lang attribute
   document.documentElement.lang = lang === 'en' ? 'en' : 'ms';
+  // Keep mode label correct in current language (not overwritten by data-i18n)
+  const _ml = document.getElementById('uiModeLabel');
+  if (_ml) _ml.textContent = (state.uiMode === 'pro') ? t('ui_pro') : t('ui_normal');
   // Toggle active state on lang buttons
   document.querySelectorAll('.lang-toggle-btn').forEach(b => {
     b.classList.toggle('active', b.dataset.lang === lang);

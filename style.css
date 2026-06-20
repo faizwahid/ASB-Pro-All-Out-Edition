@@ -2882,3 +2882,59 @@ html, body { overflow-x: hidden; max-width: 100%; }
   .ios-switch-knob { width: 18px; height: 18px; }
   .ios-switch-wrap[data-uimode="pro"] .ios-switch-knob { transform: translateX(16px); }
 }
+
+/* ═══════════════════════════════════════════════════════════
+   CONTAINMENT FIX — tables/charts never overflow the page
+   (flexbox/grid children need min-width:0 to allow shrink)
+   ═══════════════════════════════════════════════════════════ */
+.calc-layout > *,
+.results-panel,
+.inputs-panel,
+.results-panel > *,
+.chart-block,
+.stat-card,
+.tab-panel,
+.tab-panel > * { min-width: 0; }
+
+/* Wide tables scroll INSIDE their own box, not the page */
+.data-table { max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.data-table table { min-width: 460px; }
+
+/* Charts stay within their container */
+.chart-wrap { max-width: 100%; overflow: hidden; }
+.chart-wrap canvas { max-width: 100% !important; }
+
+/* ── Footer: clean — name · year · disclaimer ── */
+.footer-inner { gap: 4px 8px; }
+.footer-credit { font-size: 0.7rem; color: var(--text-3); }
+.footer-credit strong { color: var(--text-2); font-weight: 600; }
+.footer-disclaimer { font-size: 0.66rem; color: var(--text-4); }
+.build-tag {
+  background: none !important;
+  color: var(--text-4) !important;
+  font-size: 0.56rem !important;
+  font-weight: 500 !important;
+  opacity: 0.55;
+  padding: 0 !important;
+}
+
+/* ── Standard/Pro switch: caption BELOW toggle (vertical, no h-space) ── */
+.ios-switch-wrap {
+  flex-direction: column;
+  gap: 3px;
+  align-items: center;
+}
+.ios-switch-text {
+  display: block !important;          /* always show — clarity for all users */
+  order: 2;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  min-width: 0;
+  text-align: center;
+  line-height: 1;
+}
+.ios-switch { order: 1; }
+@media (max-width: 380px) {
+  .ios-switch-text { font-size: 0.54rem; }
+}
