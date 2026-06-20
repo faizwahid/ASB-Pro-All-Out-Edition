@@ -50,6 +50,11 @@
           <button class="lang-toggle-btn active" data-lang="bm">BM</button>
           <button class="lang-toggle-btn" data-lang="en">EN</button>
         </div>
+        <!-- Normal/Pro mode toggle -->
+        <div class="mode-toggle">
+          <button class="mode-toggle-btn active" data-uimode="normal" data-i18n="ui_normal">Mudah</button>
+          <button class="mode-toggle-btn" data-uimode="pro" data-i18n="ui_pro">Pro</button>
+        </div>
         <button class="hdr-btn" onclick="shareURL()">
           <i class="ph ph-link"></i><span data-i18n="hdr_share">Kongsi Link</span>
         </button>
@@ -71,6 +76,7 @@
       <button class="tab-btn" data-tab="comparison"><i class="ph ph-arrows-left-right"></i><span data-i18n="tab_comparison">Banding</span></button>
       <button class="tab-btn" data-tab="forecast"><i class="ph ph-chart-line-up"></i><span data-i18n="tab_forecast">Ramalan</span></button>
       <button class="tab-btn" data-tab="goal"><i class="ph ph-flag"></i><span data-i18n="tab_goal">Matlamat</span></button>
+      <button class="tab-btn" data-tab="ageplan"><i class="ph ph-user-circle"></i><span data-i18n="tab_ageplan">Pelan Umur</span></button>
       <button class="tab-btn" data-tab="zakat"><i class="ph ph-hand-heart"></i><span data-i18n="tab_zakat">Zakat</span></button>
       <button class="tab-btn" data-tab="history"><i class="ph ph-clock-countdown"></i><span data-i18n="tab_history">Sejarah</span></button>
       <button class="tab-btn" data-tab="news"><i class="ph ph-newspaper"></i><span data-i18n="tab_news">Berita</span></button>
@@ -185,7 +191,7 @@
           </div>
           <div class="chart-block"><div class="chart-header"><span class="chart-title" data-i18n="sav_chart1">Pertumbuhan ASB (RM)</span></div><div class="chart-wrap h300"><canvas id="savGrowthChart"></canvas></div></div>
           <div class="chart-block"><div class="chart-header"><span class="chart-title" data-i18n="sav_chart2">Dividen Tahunan (RM)</span></div><div class="chart-wrap h200"><canvas id="savDivChart"></canvas></div></div>
-          <div class="table-toggle-row"><button class="table-toggle-btn" id="savTableToggle"><i class="ph ph-table"></i><span data-i18n="sav_view_table">Lihat Jadual Tahunan</span></button></div>
+          <div class="table-toggle-row pro-only"><button class="table-toggle-btn" id="savTableToggle"><i class="ph ph-table"></i><span data-i18n="sav_view_table">Lihat Jadual Tahunan</span></button></div>
           <div class="data-table hidden" id="savTableWrap">
             <table><thead><tr><th data-i18n="hist_col_year">Thn</th><th data-i18n="th_start_bal">Baki Awal</th><th data-i18n="th_deposit">Deposit</th><th data-i18n="th_dividend">Dividen</th><th data-i18n="th_end_bal">Baki Akhir</th><th data-i18n="th_total_inv">Jum. Dilaburkan</th></tr></thead><tbody id="savTableBody"></tbody></table>
           </div>
@@ -231,7 +237,7 @@
           </div>
           <div class="chart-block"><div class="chart-header"><span class="chart-title" data-i18n="fin_chart1">Nilai ASB vs Baki Pinjaman</span><span class="chart-legend"><span class="leg-item"><span class="leg-dot bull"></span><span data-i18n="lbl_asb_value">Nilai ASB</span></span><span class="leg-item"><span class="leg-dot bear"></span><span data-i18n="lbl_loan_bal">Baki Pinjaman</span></span></span></div><div class="chart-wrap h300"><canvas id="finChart"></canvas></div></div>
           <div class="chart-block"><div class="chart-header"><span class="chart-title" data-i18n="fin_chart2">Komposisi Bayaran</span></div><div class="chart-wrap h200"><canvas id="finDonutChart"></canvas></div></div>
-          <div class="table-toggle-row"><button class="table-toggle-btn" id="finTableToggle"><i class="ph ph-table"></i><span data-i18n="fin_view_table">Lihat Jadual Amortisasi</span></button></div>
+          <div class="table-toggle-row pro-only"><button class="table-toggle-btn" id="finTableToggle"><i class="ph ph-table"></i><span data-i18n="fin_view_table">Lihat Jadual Amortisasi</span></button></div>
           <div class="data-table hidden" id="finTableWrap"><table><thead><tr><th data-i18n="hist_col_year">Thn</th><th data-i18n="lbl_loan_bal">Baki Pinjaman</th><th data-i18n="th_interest">Faedah</th><th data-i18n="th_principal">Prinsipal</th><th data-i18n="lbl_asb_value">Nilai ASB</th><th data-i18n="th_net">Nilai Bersih</th></tr></thead><tbody id="finTableBody"></tbody></table></div>
         </div>
       </div>
@@ -258,8 +264,10 @@
           </div>
           <div class="breakeven-row"><i class="ph ph-intersect"></i><span id="cmpBreakeven">—</span></div>
           <div class="chart-block"><div class="chart-header"><span class="chart-title" data-i18n="cmp_chart_title">Pertumbuhan Semua Instrumen</span><span class="chart-legend"><span class="leg-item"><span class="leg-dot bull"></span>ASB</span><span class="leg-item"><span class="leg-dot base"></span>ASBF</span><span class="leg-item"><span class="leg-dot slate"></span>FD</span><span class="leg-item"><span class="leg-dot bear"></span>EPF</span></span></div><div class="chart-wrap h300"><canvas id="cmpChart"></canvas></div></div>
+          <div class="pro-only">
           <div class="table-section-title" data-i18n="cmp_sensitivity">Analisis Sensitiviti (Kadar Dividen)</div>
           <div class="data-table"><table><thead><tr><th data-i18n="cmp_th_rate">Kadar Dividen</th><th data-i18n="cmp_th_asb">ASB Biasa</th><th data-i18n="cmp_th_asbf">ASBF (bersih)</th><th data-i18n="cmp_th_fd">FD</th><th data-i18n="cmp_th_winner">Pemenang</th></tr></thead><tbody id="sensitivityBody"></tbody></table></div>
+          </div>
         </div>
       </div>
     </section>
@@ -273,7 +281,7 @@
           <div class="input-group"><label class="input-label"><span data-i18n="fc_monthly">Sumbangan Bulanan</span> <span class="input-val" id="fcMonthlyVal">RM 500</span></label><input type="range" class="slider" id="fcMonthly" min="0" max="5000" step="50" value="500"><div class="range-bounds"><span>RM 0</span><span>RM 5k</span></div></div>
           <div class="input-group"><label class="input-label"><span data-i18n="fc_years">Tempoh Ramalan</span> <span class="input-val" id="fcYearsVal">30 tahun</span></label><input type="range" class="slider" id="fcYears" min="5" max="50" step="1" value="30"><div class="range-bounds"><span>5</span><span>50</span></div></div>
           <div class="input-group"><label class="input-label"><span data-i18n="fc_inflation">Kadar Inflasi</span> <span class="input-val" id="fcInflationVal">3.00%</span></label><input type="range" class="slider" id="fcInflation" min="0" max="8" step="0.5" value="3"><div class="range-bounds"><span>0%</span><span>8%</span></div></div>
-          <div class="scenario-rates">
+          <div class="scenario-rates pro-only">
             <div class="scenario-rate-title" data-i18n="fc_scenario_title">Kadar Senario</div>
             <div class="scenario-rate-row"><label class="scenario-lbl bear" data-i18n="lbl_pessimis">Pesimis</label><input type="number" class="scenario-input" id="fcBear" value="3" min="0.5" max="15" step="0.5"><span>%</span></div>
             <div class="scenario-rate-row"><label class="scenario-lbl base" data-i18n="lbl_moderate">Sederhana</label><input type="number" class="scenario-input" id="fcBase" value="5" min="0.5" max="15" step="0.5"><span>%</span></div>
@@ -456,6 +464,92 @@
             <i class="ph ph-floppy-disk"></i>
             <span data-i18n="manual_div_save">Simpan &amp; Kemas Kini</span>
           </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ AGE PLAN ============ -->
+    <section class="tab-panel" id="panel-ageplan">
+      <div class="calc-layout">
+        <div class="inputs-panel">
+          <div class="panel-header">
+            <h2 class="panel-title" data-i18n="age_title">Pelan Kewangan Ikut Umur</h2>
+            <p class="panel-desc" data-i18n="age_desc">Masukkan umur anda — kami susun pelan & cadangan instrumen</p>
+          </div>
+          <div class="input-group">
+            <label class="input-label"><span data-i18n="age_current">Umur Sekarang</span> <span class="input-val" id="ageCurrentVal">30 tahun</span></label>
+            <input type="range" class="slider" id="ageCurrent" min="18" max="70" step="1" value="30">
+            <div class="range-bounds"><span>18</span><span>70</span></div>
+          </div>
+          <div class="input-group">
+            <label class="input-label"><span data-i18n="age_retire">Umur Nak Bersara</span> <span class="input-val" id="ageRetireVal">60 tahun</span></label>
+            <input type="range" class="slider" id="ageRetire" min="40" max="75" step="1" value="60">
+            <div class="range-bounds"><span>40</span><span>75</span></div>
+          </div>
+          <div class="input-group">
+            <label class="input-label"><span data-i18n="age_savings">Simpanan Sekarang</span> <span class="input-val" id="ageSavingsVal">RM 20,000</span></label>
+            <input type="range" class="slider" id="ageSavings" min="0" max="500000" step="1000" value="20000">
+            <div class="range-bounds"><span>RM 0</span><span>RM 500k</span></div>
+          </div>
+          <div class="input-group">
+            <label class="input-label"><span data-i18n="age_monthly">Boleh Tabung Sebulan</span> <span class="input-val" id="ageMonthlyVal">RM 500</span></label>
+            <input type="range" class="slider" id="ageMonthly" min="50" max="10000" step="50" value="500">
+            <div class="range-bounds"><span>RM 50</span><span>RM 10k</span></div>
+          </div>
+          <div class="highlight-result">
+            <div class="highlight-label" data-i18n="age_years_left">Tahun Sehingga Bersara</div>
+            <div class="highlight-val accent" id="ageYearsLeft">30 tahun</div>
+            <div class="highlight-sub" id="ageYearsSub">—</div>
+          </div>
+        </div>
+        <div class="results-panel">
+          <!-- Life stage banner -->
+          <div class="life-stage" id="lifeStage">
+            <div class="life-stage-icon" id="lifeStageIcon"><i class="ph ph-rocket-launch"></i></div>
+            <div class="life-stage-text">
+              <div class="life-stage-title" id="lifeStageTitle">—</div>
+              <div class="life-stage-desc" id="lifeStageDesc">—</div>
+            </div>
+          </div>
+
+          <!-- Projected at retirement -->
+          <div class="stats-grid stats-grid-2">
+            <div class="stat-card">
+              <div class="stat-label" data-i18n="age_at_retire">Nilai Masa Bersara</div>
+              <div class="stat-value accent" id="ageRetireValue">RM 0</div>
+              <div class="stat-sub" id="ageRetireSub">—</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label" data-i18n="age_monthly_income">Pendapatan Bulanan (4%)</div>
+              <div class="stat-value" id="ageMonthlyIncome">RM 0</div>
+              <div class="stat-sub" data-i18n="age_monthly_income_sub">Jika keluar 4%/tahun</div>
+            </div>
+          </div>
+
+          <!-- Instrument suggestions -->
+          <div class="chart-block">
+            <div class="chart-header"><span class="chart-title" data-i18n="age_instruments">Pilihan Instrumen Untuk Anda</span></div>
+            <div class="instrument-grid" id="instrumentGrid"></div>
+          </div>
+
+          <!-- Timeline chart -->
+          <div class="chart-block">
+            <div class="chart-header">
+              <span class="chart-title" data-i18n="age_timeline">Unjuran Sehingga Bersara</span>
+              <span class="chart-legend">
+                <span class="leg-item"><span class="leg-dot bull"></span>ASB 5%</span>
+                <span class="leg-item"><span class="leg-dot base"></span>EPF 6.3%</span>
+                <span class="leg-item"><span class="leg-dot slate"></span>FD 3.5%</span>
+              </span>
+            </div>
+            <div class="chart-wrap h300"><canvas id="ageChart"></canvas></div>
+          </div>
+
+          <!-- Age milestones -->
+          <div class="chart-block">
+            <div class="chart-header"><span class="chart-title" data-i18n="age_milestones">Pencapaian Ikut Umur (ASB 5%)</span></div>
+            <div class="age-milestone-list" id="ageMilestones"></div>
+          </div>
         </div>
       </div>
     </section>

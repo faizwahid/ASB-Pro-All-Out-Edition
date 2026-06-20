@@ -8,7 +8,8 @@ const STRINGS = {
     hdr_share:'Kongsi Link',
     tab_dashboard:'Dashboard', tab_savings:'Simpanan', tab_financing:'ASBF',
     tab_comparison:'Banding', tab_forecast:'Ramalan', tab_goal:'Matlamat',
-    tab_zakat:'Zakat', tab_history:'Sejarah', tab_news:'Berita',
+    tab_zakat:'Zakat', tab_history:'Sejarah', tab_news:'Berita', tab_ageplan:'Pelan Umur',
+    ui_normal:'Mudah', ui_pro:'Pro',
     hero_label:'Unjuran Nilai Akhir (Kadar Sederhana)',
     hero_eyebrow:'Nilai dikira berdasarkan tetapan di tab Simpanan — ubah untuk lihat unjuran anda',
     stat_invested:'Jumlah Dilaburkan', stat_dividends:'Jumlah Dividen',
@@ -155,6 +156,16 @@ const STRINGS = {
     fin_auto_payment:'Bayaran bulanan anda:', fin_auto_loan:'Pinjaman maksimum anda:',
     footer_disclaimer:'Bukan nasihat kewangan — sekadar alat pengiraan',
     footer_by:'Dibangunkan oleh',
+    age_title:'Pelan Kewangan Ikut Umur',
+    age_desc:'Masukkan umur anda — kami susun pelan & cadangan instrumen',
+    age_current:'Umur Sekarang', age_retire:'Umur Nak Bersara',
+    age_savings:'Simpanan Sekarang', age_monthly:'Boleh Tabung Sebulan',
+    age_years_left:'Tahun Sehingga Bersara',
+    age_at_retire:'Nilai Masa Bersara', age_monthly_income:'Pendapatan Bulanan (4%)',
+    age_monthly_income_sub:'Jika keluar 4%/tahun',
+    age_instruments:'Pilihan Instrumen Untuk Anda',
+    age_timeline:'Unjuran Sehingga Bersara',
+    age_milestones:'Pencapaian Ikut Umur (ASB 5%)',
     fire_flow_1:'Nak keluarkan sebulan',
     fire_flow_2:'Perlu kumpul (Nombor FIRE)',
     fire_flow_3:'Anggaran masa capai (ikut DCA semasa)',
@@ -179,7 +190,8 @@ const STRINGS = {
     hdr_share:'Share Link',
     tab_dashboard:'Dashboard', tab_savings:'Savings', tab_financing:'ASBF',
     tab_comparison:'Compare', tab_forecast:'Forecast', tab_goal:'Goals',
-    tab_zakat:'Zakat', tab_history:'History', tab_news:'News',
+    tab_zakat:'Zakat', tab_history:'History', tab_news:'News', tab_ageplan:'Age Plan',
+    ui_normal:'Simple', ui_pro:'Pro',
     hero_label:'Projected Final Value (Base Rate)',
     hero_eyebrow:'Calculated from your Savings settings — adjust to see your projection',
     stat_invested:'Total Invested', stat_dividends:'Total Dividends',
@@ -325,6 +337,16 @@ const STRINGS = {
     fin_auto_payment:'Your monthly payment:', fin_auto_loan:'Your maximum loan:',
     footer_disclaimer:'Not financial advice — just a calculation tool',
     footer_by:'Built by',
+    age_title:'Age-Based Financial Plan',
+    age_desc:'Enter your age — we build a plan & suggest instruments',
+    age_current:'Current Age', age_retire:'Retirement Age',
+    age_savings:'Current Savings', age_monthly:'Monthly Saving',
+    age_years_left:'Years Until Retirement',
+    age_at_retire:'Value at Retirement', age_monthly_income:'Monthly Income (4%)',
+    age_monthly_income_sub:'If withdrawing 4%/year',
+    age_instruments:'Instrument Options For You',
+    age_timeline:'Projection Until Retirement',
+    age_milestones:'Milestones by Age (ASB 5%)',
     fire_flow_1:'Monthly withdrawal',
     fire_flow_2:'Need to save (FIRE Number)',
     fire_flow_3:'Est. time to reach (at current DCA)',
@@ -640,6 +662,9 @@ const state = {
   fireExp:3000, fireWithdraw:4, // monthly withdrawal RM + safe rate %
   // Zakat (simplified)
   zakatRate:2.5, zakatBasis:'balance', zakatBalance:0, zakatDividend:0,
+  // Age plan
+  ageCurrent:30, ageRetire:60, ageSavings:20000, ageMonthly:500,
+  uiMode:'normal', // 'normal' hides complex details, 'pro' shows all
 };
 
 // Cached results
@@ -1082,6 +1107,15 @@ function initCharts() {
     options:{ ...def, scales:{ ...def.scales, y:{ ...def.scales.y, ticks:{ ...def.scales.y.ticks, callback:v=>fmt(v) } } } }
   });
 
+  // Age plan timeline
+  charts.age = new Chart(el('ageChart'), {
+    type:'line', data:{ labels:[], datasets:[
+      lineDataset('ASB 5%',[],C.bull,C.bullA),
+      lineDataset('EPF 6.3%',[],C.base,C.baseA),
+      lineDataset('FD 3.5%',[],C.slate,C.slateA),
+    ]}, options:{ ...def, plugins:{ ...def.plugins, legend:{ display:false } } }
+  });
+
   // History stacked bar
   charts.hist = new Chart(el('histChart'), {
     type:'bar', data:{ labels:[], datasets:[
@@ -1121,7 +1155,7 @@ function updateDashboard() {
   animateCounter(el('dashTotalReturn'), last.netReturns, fmt);
   setText('dashFinalSub', `${t('stat_monthly')}: RM${state.savMonthly.toLocaleString('en-MY')}/bln · ${years} thn · dividen ${state.savRate}%`);
   setText('dashInvestSub', `${years} tahun sumbangan`);
-  setText('dashReturnSub', `ROI: ${((last.netReturns/last.totalInvested)*100).toFixed(1)}%`);
+  setText('dashReturnSub', `ROI: ${last.totalInvested>0?((last.netReturns/last.totalInvested)*100).toFixed(1):'0'}%`);
   setText('dashMonthly', fmt(state.savMonthly));
   setText('dashDivRate', `Kadar dividen: ${fmtPct(state.savRate)}`);
   setText('dashPillMonthly', `${t('stat_monthly')}: ${fmt(state.savMonthly)}/${t('month_sfx')}`);
@@ -1169,7 +1203,7 @@ function updateSavings() {
     : `Dividen tahun ke-${state.savYears}: ${fmt(last.dividend)} · Kadar: ${fmtPct(totalRate)}`);
   animateCounter(el('savTotalInvest'), last.totalInvested, fmt);
   animateCounter(el('savTotalDiv'), last.netReturns, fmt);
-  setText('savROI', ((last.netReturns/last.totalInvested)*100).toFixed(1)+'%');
+  setText('savROI', (last.totalInvested>0?((last.netReturns/last.totalInvested)*100).toFixed(1):'0')+'%');
 
   // Withdrawal impact
   const withdrawAmt = parseFloat(el('withdrawAmount')?.value)||0;
@@ -1516,6 +1550,137 @@ function updateZakat() {
   updateChartData(charts.zakat, labels, [zakatYearly]);
 }
 
+
+// ── UPDATE AGE PLAN ──
+function updateAgePlan() {
+  const { ageCurrent, ageRetire, ageSavings, ageMonthly } = state;
+  const yearsLeft = Math.max(0, ageRetire - ageCurrent);
+
+  setText('ageYearsLeft', yearsLeft > 0
+    ? `${yearsLeft} ${state.lang==='en'?'years':'tahun'}`
+    : (state.lang==='en'?'Already retired':'Sudah bersara'));
+  setText('ageYearsSub', state.lang==='en'
+    ? `From age ${ageCurrent} to ${ageRetire}`
+    : `Dari umur ${ageCurrent} ke ${ageRetire}`);
+
+  // Life stage
+  let stage, stageDesc, stageIcon;
+  if (ageCurrent < 30) {
+    stageIcon = 'ph-rocket-launch';
+    stage = state.lang==='en' ? 'Building Phase (20s)' : 'Fasa Membina (20-an)';
+    stageDesc = state.lang==='en'
+      ? 'Time is your biggest asset. Even small amounts grow huge over 30+ years. Start now!'
+      : 'Masa adalah aset terbesar. Simpanan kecil pun jadi besar dalam 30+ tahun. Mula sekarang!';
+  } else if (ageCurrent < 40) {
+    stageIcon = 'ph-trend-up';
+    stage = state.lang==='en' ? 'Growth Phase (30s)' : 'Fasa Pertumbuhan (30-an)';
+    stageDesc = state.lang==='en'
+      ? 'Peak earning years. Maximise contributions while you can. Consider ASBF if dividend beats loan rate.'
+      : 'Tahun pendapatan puncak. Maksimumkan simpanan. Pertimbang ASBF jika dividen atasi kadar pinjaman.';
+  } else if (ageCurrent < 50) {
+    stageIcon = 'ph-chart-line-up';
+    stage = state.lang==='en' ? 'Acceleration Phase (40s)' : 'Fasa Pecutan (40-an)';
+    stageDesc = state.lang==='en'
+      ? 'Catch-up time. Boost savings rate. Balance growth with some safer instruments.'
+      : 'Masa kejar. Tingkatkan kadar simpanan. Imbang pertumbuhan dengan instrumen lebih selamat.';
+  } else if (ageCurrent < 60) {
+    stageIcon = 'ph-shield-check';
+    stage = state.lang==='en' ? 'Preservation Phase (50s)' : 'Fasa Pemeliharaan (50-an)';
+    stageDesc = state.lang==='en'
+      ? 'Protect what you built. Shift toward stable returns. Plan your withdrawal strategy.'
+      : 'Lindungi apa yang dibina. Beralih ke pulangan stabil. Rancang strategi pengeluaran.';
+  } else {
+    stageIcon = 'ph-house-line';
+    stage = state.lang==='en' ? 'Retirement Phase (60+)' : 'Fasa Persaraan (60+)';
+    stageDesc = state.lang==='en'
+      ? 'Focus on capital preservation and steady income. Keep some in growth for longevity.'
+      : 'Fokus pemeliharaan modal dan pendapatan tetap. Kekalkan sebahagian dalam pertumbuhan.';
+  }
+  setText('lifeStageTitle', stage);
+  setText('lifeStageDesc', stageDesc);
+  const iconEl = el('lifeStageIcon');
+  if (iconEl) iconEl.innerHTML = `<i class="ph ${stageIcon}"></i>`;
+
+  // Projection at retirement (ASB 5% as primary)
+  const asbProj = calcForecast(ageSavings, ageMonthly, 5, Math.max(1,yearsLeft), 0);
+  const retireValue = yearsLeft > 0 ? asbProj[asbProj.length-1].balance : ageSavings;
+  animateCounter(el('ageRetireValue'), retireValue, fmt);
+  setText('ageRetireSub', state.lang==='en'
+    ? `At age ${ageRetire}, ASB 5%`
+    : `Pada umur ${ageRetire}, ASB 5%`);
+  // Monthly income from 4% withdrawal
+  const monthlyIncome = (retireValue * 0.04) / 12;
+  animateCounter(el('ageMonthlyIncome'), monthlyIncome, fmt);
+
+  // Timeline chart — 3 instruments
+  const yrs = Math.max(1, yearsLeft);
+  const asbData = calcForecast(ageSavings, ageMonthly, 5, yrs, 0);
+  const epfData = calcDCA(ageMonthly, 6.3, yrs).map((r,i)=>({balance: r.balance + ageSavings*Math.pow(1.063,i+1)}));
+  const fdData  = calcDCA(ageMonthly, 3.5, yrs).map((r,i)=>({balance: r.balance + ageSavings*Math.pow(1.035,i+1)}));
+  const ageLabels = asbData.map((_,i)=>(ageCurrent+i+1).toString());
+  updateChartData(charts.age, ageLabels, [
+    asbData.map(r=>r.balance),
+    epfData.map(r=>r.balance),
+    fdData.map(r=>r.balance),
+  ]);
+
+  // Instrument suggestions — show all, let user decide
+  const grid = el('instrumentGrid');
+  if (grid) {
+    const instruments = [
+      { name:'ASB / ASN', rate:'~5%', risk: state.lang==='en'?'Low':'Rendah', icon:'ph-seal-check',
+        note: state.lang==='en'?'Stable dividends, Bumiputera fund':'Dividen stabil, dana Bumiputera', cls:'bull' },
+      { name:'EPF / KWSP', rate:'~6.3%', risk: state.lang==='en'?'Low':'Rendah', icon:'ph-umbrella',
+        note: state.lang==='en'?'Retirement savings, tax relief':'Simpanan persaraan, pelepasan cukai', cls:'base' },
+      { name:'ASBF', rate: state.lang==='en'?'Leverage':'Leveraj', risk: state.lang==='en'?'Medium':'Sederhana', icon:'ph-bank',
+        note: state.lang==='en'?'Financing — profits if dividend > interest':'Pembiayaan — untung jika dividen > faedah', cls:'base' },
+      { name:'Fixed Deposit', rate:'~3.5%', risk: state.lang==='en'?'Very Low':'Sangat Rendah', icon:'ph-vault',
+        note: state.lang==='en'?'Guaranteed, capital protected':'Dijamin, modal dilindungi', cls:'slate' },
+    ];
+    grid.innerHTML = instruments.map(ins=>`
+      <div class="instrument-card">
+        <div class="instrument-head">
+          <span class="instrument-icon ${ins.cls}"><i class="ph ${ins.icon}"></i></span>
+          <div>
+            <div class="instrument-name">${ins.name}</div>
+            <div class="instrument-meta">${ins.rate} · ${state.lang==='en'?'Risk':'Risiko'}: ${ins.risk}</div>
+          </div>
+        </div>
+        <div class="instrument-note">${ins.note}</div>
+      </div>`).join('');
+  }
+
+  // Age milestones (ASB 5%)
+  const msList = el('ageMilestones');
+  if (msList) {
+    const targets = [100000, 250000, 500000, 1000000];
+    const proj = calcForecast(ageSavings, ageMonthly, 5, Math.max(1, 75-ageCurrent), 0);
+    const rows = targets.map(tg => {
+      const hit = proj.find(r=>r.balance>=tg);
+      const atAge = hit ? ageCurrent + hit.year : null;
+      return { target: tg, age: atAge };
+    });
+    msList.innerHTML = rows.map(r=>`
+      <div class="age-milestone-row">
+        <span class="age-milestone-target">${fmtK(r.target)}</span>
+        <span class="age-milestone-age">${r.age && r.age<=90
+          ? (state.lang==='en'?`Age ${r.age}`:`Umur ${r.age}`)
+          : (state.lang==='en'?'Beyond 90':'Lewat 90')}</span>
+      </div>`).join('');
+  }
+}
+
+// ── UI MODE (Normal/Pro) ──
+function applyUIMode(mode) {
+  state.uiMode = (mode === 'pro') ? 'pro' : 'normal';
+  document.documentElement.setAttribute('data-uimode', state.uiMode);
+  // Update toggle button active states
+  document.querySelectorAll('.mode-toggle-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.uimode === state.uiMode);
+  });
+  try { localStorage.setItem('asb-pro-uimode', state.uiMode); } catch {}
+}
+
 // Pull values from Savings tab (optional shortcut)
 function autoFillZakat() {
   if (!savData.length) {
@@ -1571,6 +1736,7 @@ function updateAll() {
   try { updateForecast(); }   catch(e) { console.error('[ASB] updateForecast:', e); }
   try { updateGoal(); }       catch(e) { console.error('[ASB] updateGoal:', e); }
   try { updateZakat(); }      catch(e) { console.error('[ASB] updateZakat:', e); }
+  try { updateAgePlan(); }    catch(e) { console.error('[ASB] updateAgePlan:', e); }
   try { updateHistory(); }    catch(e) { console.error('[ASB] updateHistory:', e); }
   try { updateDashboard(); }  catch(e) { console.error('[ASB] updateDashboard:', e); }
 }
@@ -1707,6 +1873,10 @@ function setupSliders() {
     { id:'fireExp',     key:'fireExp',     disp:'fireExpVal',    fmt:v=>`RM ${(+v).toLocaleString('en-MY')}` }, // monthly withdrawal
     { id:'fireWithdraw',key:'fireWithdraw',disp:'fireWithdrawVal',fmt:v=>`${(+v).toFixed(2)}%` },
     { id:'zakatRate',   key:'zakatRate',   disp:'zakatRateVal',  fmt:v=>`${(+v).toFixed(1)}%` },
+    { id:'ageCurrent',  key:'ageCurrent',  disp:'ageCurrentVal', fmt:v=>`${v} ${state.lang==='en'?'yrs':'tahun'}` },
+    { id:'ageRetire',   key:'ageRetire',   disp:'ageRetireVal',  fmt:v=>`${v} ${state.lang==='en'?'yrs':'tahun'}` },
+    { id:'ageSavings',  key:'ageSavings',  disp:'ageSavingsVal', fmt:v=>`RM ${(+v).toLocaleString('en-MY')}` },
+    { id:'ageMonthly',  key:'ageMonthly',  disp:'ageMonthlyVal', fmt:v=>`RM ${(+v).toLocaleString('en-MY')}` },
   ];
 
   configs.forEach(({ id, key, disp, fmt:f }) => {
@@ -1811,6 +1981,13 @@ function setupEventListeners() {
   document.addEventListener('click', e => {
     const wrap = e.target.closest('.color-picker-wrap');
     if (!wrap) el('colorPickerPanel')?.classList.remove('picker-open');
+  });
+
+  // Normal/Pro mode toggle
+  document.querySelectorAll('.mode-toggle-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      applyUIMode(btn.dataset.uimode);
+    });
   });
 
   // Tooltip icons — tap to show explanation
@@ -2158,6 +2335,10 @@ function init() {
     loadSavedState();
     initLanguage();
     initColorTheme();
+    // UI mode (Normal/Pro)
+    let savedMode = 'normal';
+    try { savedMode = localStorage.getItem('asb-pro-uimode') || state.uiMode || 'normal'; } catch {}
+    applyUIMode(savedMode);
   } catch(e) { console.error('[ASB] Phase 1 error:', e); }
 
   // Charts — init now if Chart.js ready, else retry when it loads

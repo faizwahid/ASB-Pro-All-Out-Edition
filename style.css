@@ -1756,3 +1756,157 @@ tbody tr:hover { background: var(--surface-2); }
   font-family: var(--mono);
   color: var(--accent);
 }
+
+/* ══════════════════════════════════════════
+   AGE PLAN
+   ══════════════════════════════════════════ */
+.life-stage {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: linear-gradient(135deg, var(--accent-bg), transparent);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius-lg);
+}
+.life-stage-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: var(--brand-gradient, linear-gradient(135deg, var(--accent), var(--accent-2)));
+  color: white;
+  font-size: 1.6rem;
+  flex-shrink: 0;
+}
+.life-stage-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-1);
+  margin-bottom: 0.2rem;
+}
+.life-stage-desc {
+  font-size: 0.8rem;
+  color: var(--text-3);
+  line-height: 1.45;
+}
+
+/* Instrument grid */
+.instrument-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+.instrument-card {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.9rem;
+  transition: all var(--transition);
+}
+.instrument-card:hover {
+  border-color: var(--accent-border);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+.instrument-head {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.5rem;
+}
+.instrument-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+.instrument-icon.bull { background: var(--bull-bg); color: var(--bull); }
+.instrument-icon.base { background: var(--base-bg); color: var(--base); }
+.instrument-icon.slate { background: var(--slate-bg); color: var(--slate); }
+.instrument-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-1);
+}
+.instrument-meta {
+  font-size: 0.68rem;
+  color: var(--text-3);
+  font-family: var(--mono);
+}
+.instrument-note {
+  font-size: 0.72rem;
+  color: var(--text-3);
+  line-height: 1.4;
+}
+
+/* Age milestones */
+.age-milestone-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.age-milestone-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 0.85rem;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+.age-milestone-target {
+  font-size: 0.85rem;
+  font-weight: 700;
+  font-family: var(--mono);
+  color: var(--accent);
+}
+.age-milestone-age {
+  font-size: 0.8rem;
+  color: var(--text-2);
+  font-weight: 500;
+}
+
+@media (max-width: 600px) {
+  .instrument-grid { grid-template-columns: 1fr; }
+  .life-stage { flex-direction: row; }
+}
+
+/* ══════════════════════════════════════════
+   NORMAL / PRO MODE TOGGLE
+   ══════════════════════════════════════════ */
+.mode-toggle {
+  display: inline-flex;
+  background: var(--surface-3);
+  border-radius: 8px;
+  padding: 2px;
+  gap: 2px;
+}
+.mode-toggle-btn {
+  border: none;
+  background: transparent;
+  color: var(--text-3);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.35rem 0.7rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all var(--transition);
+  font-family: inherit;
+}
+.mode-toggle-btn.active {
+  background: var(--accent);
+  color: white;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Hide pro-only elements in Normal mode */
+html[data-uimode="normal"] .pro-only {
+  display: none !important;
+}
