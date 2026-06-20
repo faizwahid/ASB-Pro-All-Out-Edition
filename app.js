@@ -2082,12 +2082,45 @@ function moveTabIndicator(btn) {
   ind.style.width = btn.offsetWidth+'px';
 }
 
+// ── PER-TAB COLOR IDENTITY (curated harmonious family) ──
+const TAB_THEMES = {
+  dashboard:  { dark:'#3730A3', accent:'#4F46E5', light:'#6E66EF' }, // indigo
+  savings:    { dark:'#065F46', accent:'#0EA06F', light:'#16BC85' }, // emerald
+  financing:  { dark:'#1E3A8A', accent:'#2566CC', light:'#3E84E8' }, // ocean blue
+  comparison: { dark:'#0B5F58', accent:'#0E9488', light:'#16B0A2' }, // teal
+  forecast:   { dark:'#0B5E8C', accent:'#1186C9', light:'#2BA6E0' }, // sky
+  goal:       { dark:'#9A4B0E', accent:'#D9831E', light:'#F0A036' }, // amber
+  ageplan:    { dark:'#9D2C50', accent:'#D6456E', light:'#E96389' }, // rose
+  zakat:      { dark:'#8A6410', accent:'#C29316', light:'#DCAC2E' }, // gold
+  history:    { dark:'#3D4A66', accent:'#5A6B8C', light:'#7488AB' }, // slate
+  news:       { dark:'#9D3522', accent:'#E0573C', light:'#F0735A' }, // coral
+};
+
+function hexToRgba(hex, a) {
+  const h = hex.replace('#','');
+  const r = parseInt(h.substr(0,2),16), g = parseInt(h.substr(2,2),16), b = parseInt(h.substr(4,2),16);
+  return `rgba(${r},${g},${b},${a})`;
+}
+
+function applyTabTheme(tabId) {
+  const t = TAB_THEMES[tabId] || TAB_THEMES.dashboard;
+  const root = document.documentElement;
+  root.style.setProperty('--accent', t.accent);
+  root.style.setProperty('--accent-2', t.light);
+  root.style.setProperty('--accent-bg', hexToRgba(t.accent, 0.09));
+  root.style.setProperty('--accent-border', hexToRgba(t.accent, 0.26));
+  root.style.setProperty('--hero-gradient', `linear-gradient(135deg, ${t.dark} 0%, ${t.accent} 55%, ${t.light} 100%)`);
+  root.style.setProperty('--brand-gradient', `linear-gradient(135deg, ${t.accent}, ${t.light})`);
+  try { updateChartAccent(t.accent, t.light); } catch {}
+}
+
 function switchTab(tabId) {
   document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   const panel = el('panel-'+tabId);
   const btn = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
   if (panel) panel.classList.add('active');
+  applyTabTheme(tabId);
   if (btn) {
     btn.classList.add('active');
     moveTabIndicator(btn);
@@ -2633,6 +2666,10 @@ function init() {
     loadSavedState();
     initLanguage();
     initColorTheme();
+    // Apply per-tab color identity for the initially-active tab
+    const activePanel = document.querySelector('.tab-panel.active');
+    const activeTab = activePanel ? activePanel.id.replace('panel-','') : 'dashboard';
+    applyTabTheme(activeTab);
     // UI mode (Normal/Pro)
     let savedMode = 'normal';
     try { savedMode = localStorage.getItem('asb-pro-uimode') || state.uiMode || 'normal'; } catch {}
