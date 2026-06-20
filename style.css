@@ -2735,3 +2735,83 @@ body { background: var(--bg); }
   .onboard, .onboard-sheet, .onboard-slide { animation: none !important; transition: none !important; }
   .onboard-sheet { transform: none; }
 }
+
+/* ═══════════════════════════════════════════════════════════
+   TAB NAV → 2-ROW GRID (no scroll, equal-size cells)
+   ═══════════════════════════════════════════════════════════ */
+.tab-nav {
+  position: sticky;
+  top: var(--header-h);
+  z-index: 90;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  overflow: visible;
+}
+.tab-nav-inner {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+  height: auto;
+  padding: 8px 10px;
+  max-width: 760px;
+}
+.tab-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 56px;
+  width: 100%;
+  padding: 6px 2px;
+  border-radius: 12px;
+  font-size: 0.64rem;
+  font-weight: 600;
+  line-height: 1.1;
+  text-align: center;
+  white-space: normal;
+  color: var(--text-3);
+  transition: background var(--transition), color var(--transition), transform var(--transition-fast);
+}
+.tab-btn i { font-size: 1.15rem; }
+.tab-btn span { display: block !important; }
+/* Active → tinted accent pill */
+.tab-btn.active {
+  background: var(--accent-bg);
+  color: var(--accent);
+}
+.tab-btn:active { transform: scale(0.95); }
+.tab-btn:hover:not(.active) { background: var(--surface-2); color: var(--text-2); }
+/* Hide the old sliding indicator (grid uses pill highlight) */
+.tab-indicator { display: none !important; }
+
+@media (max-width: 600px) {
+  .tab-btn span { display: block !important; }  /* keep labels in grid mode */
+  .tab-btn { font-size: 0.6rem; padding: 4px 1px; }
+  .tab-nav-inner { gap: 4px; padding: 7px 7px; }
+}
+@media (min-width: 761px) {
+  .tab-nav-inner { margin: 0 auto; }
+}
+
+/* ── Brand mark: center the growth-bars SVG ── */
+.brand-mark {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
+.brand-mark svg { display: block; }
+
+/* ── FW creator watermark in dashboard hero ── */
+.hero-fw {
+  position: absolute;
+  right: 18px; bottom: 10px;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 2.6rem;
+  letter-spacing: -0.04em;
+  color: rgba(255,255,255,0.12);
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+}

@@ -29,7 +29,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
   <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
-  <link rel="stylesheet" href="style.css?v=20260620u">
+  <link rel="stylesheet" href="style.css?v=20260620w">
 </head>
 <body>
   <!-- ONBOARDING (first-time only) -->
@@ -70,7 +70,15 @@
   <header class="app-header">
     <div class="header-inner">
       <div class="header-brand">
-        <div class="brand-mark"></div>
+        <div class="brand-mark">
+          <svg viewBox="0 0 32 32" width="20" height="20" fill="none" aria-hidden="true">
+            <rect x="7" y="19" width="4.2" height="6" rx="1.4" fill="#fff"/>
+            <rect x="14" y="15" width="4.2" height="10" rx="1.4" fill="#fff"/>
+            <rect x="21" y="10" width="4.2" height="15" rx="1.4" fill="#fff"/>
+            <path d="M7 17 L22 8" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+            <path d="M22 8 L18.5 8.2 M22 8 L21.8 11.5" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
         <div>
           <div class="brand-name">ASB Pro</div>
           <div class="brand-sub" data-i18n="brand_sub">Kalkulator Pelaburan</div>
@@ -167,7 +175,7 @@
 
     <!-- ============ DASHBOARD ============ -->
     <section class="tab-panel active" id="panel-dashboard">
-      <div class="dashboard-hero">
+      <div class="dashboard-hero"><span class="hero-fw" aria-hidden="true">FW</span>
         <div class="hero-eyebrow">
           <i class="ph ph-info"></i>
           <span data-i18n="hero_eyebrow">Nilai dikira berdasarkan tetapan di tab Simpanan — ubah untuk lihat unjuran anda</span>
@@ -735,7 +743,7 @@
   <footer class="app-footer">
     <div class="footer-inner">
       <span class="footer-top"><span class="footer-logo"></span><span class="footer-name">ASB Pro</span></span>
-      <span class="footer-credit"><strong>Faiz Wahid</strong> · 2026 · <span class="build-tag">Reka v5</span></span>
+      <span class="footer-credit"><strong>Faiz Wahid</strong> · 2026 · <span class="build-tag">Reka v7</span></span>
       <span class="footer-disclaimer" data-i18n="footer_disclaimer">Bukan nasihat kewangan</span>
     </div>
   </footer>
@@ -750,6 +758,6 @@
     onerror="var s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.3/chart.umd.min.js';document.head.appendChild(s);"
   ></script>
   <!-- app.js — has built-in retry that waits for Chart.js to be ready -->
-  <script src="app.js?v=20260620u"></script>
+  <script src="app.js?v=20260620w"></script>
 </body>
 </html>

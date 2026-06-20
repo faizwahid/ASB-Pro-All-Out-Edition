@@ -2085,12 +2085,7 @@ function buildHistoryTable(totals) {
 }
 
 // ── TAB SYSTEM ──
-function moveTabIndicator(btn) {
-  const ind = el('tabIndicator');
-  if (!ind||!btn) return;
-  ind.style.left = btn.offsetLeft+'px';
-  ind.style.width = btn.offsetWidth+'px';
-}
+function moveTabIndicator(btn) { /* grid layout uses pill highlight; indicator disabled */ }
 
 // ── PER-TAB COLOR IDENTITY (curated harmonious family) ──
 const TAB_THEMES = {
