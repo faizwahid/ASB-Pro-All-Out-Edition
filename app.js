@@ -149,8 +149,12 @@ const STRINGS = {
     sav_monthly:'Tabung Setiap Bulan',
     sav_rate:'Anggaran Dividen Tahunan (%)',
     sav_years:'Berapa Tahun Nak Simpan?',
-    fin_both_hint:'Ubah Jumlah Pinjaman ATAU Bayaran Bulanan — satu lagi auto-kira sendiri',
-    footer_disclaimer:'Bukan nasihat kewangan',
+    fin_mode_loan:'Tahu Pinjaman', fin_mode_pay:'Tahu Bayaran/Bulan',
+    fin_hint_loan:'Masukkan jumlah pinjaman — bayaran bulanan dikira automatik',
+    fin_hint_pay:'Masukkan bayaran bulanan mampu — pinjaman maksimum dikira automatik',
+    fin_auto_payment:'Bayaran bulanan anda:', fin_auto_loan:'Pinjaman maksimum anda:',
+    footer_disclaimer:'Bukan nasihat kewangan — sekadar alat pengiraan',
+    footer_by:'Dibangunkan oleh',
     fire_flow_1:'Nak keluarkan sebulan',
     fire_flow_2:'Perlu kumpul (Nombor FIRE)',
     fire_flow_3:'Anggaran masa capai (ikut DCA semasa)',
@@ -315,8 +319,12 @@ const STRINGS = {
     sav_monthly:'Monthly Contribution',
     sav_rate:'Expected Annual Dividend (%)',
     sav_years:'How Many Years to Save?',
-    fin_both_hint:'Change Loan Amount OR Monthly Payment — the other auto-calculates',
-    footer_disclaimer:'Not financial advice',
+    fin_mode_loan:'Know Loan', fin_mode_pay:'Know Payment',
+    fin_hint_loan:'Enter loan amount — monthly payment auto-calculated',
+    fin_hint_pay:'Enter affordable monthly payment — max loan auto-calculated',
+    fin_auto_payment:'Your monthly payment:', fin_auto_loan:'Your maximum loan:',
+    footer_disclaimer:'Not financial advice — just a calculation tool',
+    footer_by:'Built by',
     fire_flow_1:'Monthly withdrawal',
     fire_flow_2:'Need to save (FIRE Number)',
     fire_flow_3:'Est. time to reach (at current DCA)',
@@ -622,7 +630,7 @@ const state = {
   // Savings
   savInitial:10000, savMonthly:500, savRate:5, savBonus:0, savYears:20,
   // Financing
-  finLoan:100000, finPayment:500, finRate:4, finTenure:30, finDiv:5,
+  finLoan:100000, finPayment:500, finRate:4, finTenure:30, finDiv:5, finMode:'loan',
   // Comparison
   cmpBudget:500, cmpDiv:5, cmpLoanRate:4, cmpFDRate:3.5, cmpEPFRate:6.3, cmpYears:20,
   // Forecast
@@ -741,6 +749,18 @@ function applyStateToInputs() {
   ['fcBear','fcBase','fcBull'].forEach(k => {
     const inp = el(k); if (inp) inp.value = state[k];
   });
+  // ASBF mode
+  if (state.finMode === 'payment') {
+    el('asbfModePay')?.classList.add('active');
+    el('asbfModeLoan')?.classList.remove('active');
+    el('asbfPayInput')?.classList.remove('hidden');
+    el('asbfLoanInput')?.classList.add('hidden');
+  } else {
+    el('asbfModeLoan')?.classList.add('active');
+    el('asbfModePay')?.classList.remove('active');
+    el('asbfLoanInput')?.classList.remove('hidden');
+    el('asbfPayInput')?.classList.add('hidden');
+  }
   // Zakat basis radio
   document.querySelectorAll('input[name="zakatBasis"]').forEach(r => {
     r.checked = r.value === state.zakatBasis;
@@ -1190,7 +1210,19 @@ function updateSavings() {
 
 // ── UPDATE FINANCING ──
 function updateFinancing() {
-  const loanAmt = state.finLoan;
+  const months = state.finTenure * 12;
+  // Determine loan amount based on mode
+  let loanAmt;
+  if (state.finMode === 'payment') {
+    // User inputs payment → derive loan
+    loanAmt = calcLoanFromPayment(state.finPayment, state.finRate, months);
+    setText('finLoanAuto', fmt(loanAmt));
+  } else {
+    // User inputs loan → derive payment
+    loanAmt = state.finLoan;
+    const pay = calcMonthlyPayment(loanAmt, state.finRate, months);
+    setText('finPaymentAuto', fmt(pay));
+  }
   finData = calcASBF(loanAmt, state.finRate, state.finTenure, state.finDiv);
   if (!finData.length) return;
   const last = finData[finData.length-1];
@@ -1808,45 +1840,24 @@ function setupEventListeners() {
     });
   });
 
-  // ASBF: finLoan and finPayment auto-update each other
-  let _finSyncing = false;
-  el('finLoan')?.addEventListener('input', () => {
-    if (_finSyncing) return;
-    _finSyncing = true;
-    // Loan changed → recalc monthly payment
-    const pay = calcMonthlyPayment(state.finLoan, state.finRate, state.finTenure*12);
-    state.finPayment = Math.round(pay);
-    const pSlider = el('finPayment');
-    if (pSlider) {
-      pSlider.value = Math.max(+pSlider.min, Math.min(+pSlider.max, Math.round(pay)));
-      setText('finPaymentVal', `RM ${Math.round(pay).toLocaleString('en-MY')}`);
-    }
-    _finSyncing = false;
+  // ASBF mode toggle — Loan input vs Payment input
+  el('asbfModeLoan')?.addEventListener('click', () => {
+    state.finMode = 'loan';
+    el('asbfModeLoan')?.classList.add('active');
+    el('asbfModePay')?.classList.remove('active');
+    el('asbfLoanInput')?.classList.remove('hidden');
+    el('asbfPayInput')?.classList.add('hidden');
+    setText('asbfModeHint', t('fin_hint_loan'));
+    updateFinancing();
   });
-  el('finPayment')?.addEventListener('input', () => {
-    if (_finSyncing) return;
-    _finSyncing = true;
-    // Payment changed → recalc loan amount
-    const loan = calcLoanFromPayment(state.finPayment, state.finRate, state.finTenure*12);
-    state.finLoan = Math.round(loan);
-    const lSlider = el('finLoan');
-    if (lSlider) {
-      lSlider.value = Math.max(+lSlider.min, Math.min(+lSlider.max, Math.round(loan)));
-      setText('finLoanVal', `RM ${Math.round(loan).toLocaleString('en-MY')}`);
-    }
-    _finSyncing = false;
-  });
-  // When rate or tenure changes, keep loan fixed and recalc payment
-  ['finRate','finTenure'].forEach(id => {
-    el(id)?.addEventListener('input', () => {
-      const pay = calcMonthlyPayment(state.finLoan, state.finRate, state.finTenure*12);
-      state.finPayment = Math.round(pay);
-      const pSlider = el('finPayment');
-      if (pSlider) {
-        pSlider.value = Math.max(+pSlider.min, Math.min(+pSlider.max, Math.round(pay)));
-        setText('finPaymentVal', `RM ${Math.round(pay).toLocaleString('en-MY')}`);
-      }
-    });
+  el('asbfModePay')?.addEventListener('click', () => {
+    state.finMode = 'payment';
+    el('asbfModePay')?.classList.add('active');
+    el('asbfModeLoan')?.classList.remove('active');
+    el('asbfPayInput')?.classList.remove('hidden');
+    el('asbfLoanInput')?.classList.add('hidden');
+    setText('asbfModeHint', t('fin_hint_pay'));
+    updateFinancing();
   });
 
   // Savings table toggle

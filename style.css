@@ -1639,28 +1639,51 @@ tbody tr:hover { background: var(--surface-2); }
 .app-footer {
   border-top: 1px solid var(--border);
   background: var(--surface);
-  margin-top: 2rem;
-  padding: 1.25rem 1rem;
+  margin-top: 2.5rem;
+  padding: 2rem 1.25rem;
 }
 .footer-inner {
   max-width: 1400px;
   margin: 0 auto;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
+  gap: 0.55rem;
+  text-align: center;
+}
+.footer-top {
+  display: flex;
+  align-items: center;
   gap: 0.5rem;
-  font-size: 0.78rem;
+}
+.footer-logo {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: var(--brand-gradient, linear-gradient(135deg, var(--accent), var(--accent-2)));
+  flex-shrink: 0;
+}
+.footer-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-1);
+  letter-spacing: -0.01em;
+}
+.footer-credit {
+  font-size: 0.8rem;
   color: var(--text-3);
 }
-.footer-brand {
-  font-weight: 700;
+.footer-credit strong {
   color: var(--accent);
+  font-weight: 600;
 }
-.footer-dot { color: var(--text-4); }
 .footer-disclaimer {
+  font-size: 0.72rem;
   color: var(--text-4);
-  font-style: italic;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 0.3rem 0.85rem;
 }
 
 /* ── FIRE FLOW VISUAL ── */
@@ -1708,4 +1731,28 @@ tbody tr:hover { background: var(--surface-2); }
   color: var(--text-4);
   font-size: 0.85rem;
   padding-left: 0.5rem;
+}
+
+/* ── ASBF AUTO-RESULT (calculated, not input) ── */
+.auto-result {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.7rem 0.9rem;
+  background: var(--accent-bg);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius-sm);
+  margin-top: -0.25rem;
+}
+.auto-result-label {
+  font-size: 0.76rem;
+  color: var(--text-2);
+  font-weight: 500;
+}
+.auto-result-val {
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: var(--mono);
+  color: var(--accent);
 }

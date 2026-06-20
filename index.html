@@ -198,12 +198,24 @@
       <div class="calc-layout">
         <div class="inputs-panel">
           <div class="panel-header"><h2 class="panel-title" data-i18n="fin_title">Kalkulator ASBF</h2><p class="panel-desc" data-i18n="fin_desc">Pembiayaan ASB — analisis bayaran, faedah dan keuntungan bersih</p></div>
+          <div class="toggle-mode-row">
+            <button class="mode-btn active" id="asbfModeLoan" data-mode="loan"><i class="ph ph-currency-circle-dollar"></i><span data-i18n="fin_mode_loan">Tahu Pinjaman</span></button>
+            <button class="mode-btn" id="asbfModePay" data-mode="payment"><i class="ph ph-calendar-dots"></i><span data-i18n="fin_mode_pay">Tahu Bayaran/Bulan</span></button>
+          </div>
           <div class="mode-hint">
             <i class="ph ph-lightbulb"></i>
-            <span data-i18n="fin_both_hint">Ubah Jumlah Pinjaman ATAU Bayaran Bulanan — satu lagi auto-kira sendiri</span>
+            <span id="asbfModeHint" data-i18n="fin_hint_loan">Masukkan jumlah pinjaman — bayaran bulanan dikira automatik</span>
           </div>
-          <div class="input-group"><label class="input-label"><span data-i18n="fin_loan">Jumlah Pinjaman</span> <span class="input-val" id="finLoanVal">RM 100,000</span></label><input type="range" class="slider" id="finLoan" min="10000" max="1000000" step="5000" value="100000"><div class="range-bounds"><span>RM 10k</span><span>RM 1j</span></div></div>
-          <div class="input-group"><label class="input-label"><span data-i18n="fin_payment">Bayaran Bulanan</span> <span class="input-val" id="finPaymentVal">RM 500</span></label><input type="range" class="slider" id="finPayment" min="200" max="10000" step="50" value="500"><div class="range-bounds"><span>RM 200</span><span>RM 10k</span></div></div>
+          <!-- Mode: Loan (input loan, show payment) -->
+          <div id="asbfLoanInput">
+            <div class="input-group"><label class="input-label"><span data-i18n="fin_loan">Jumlah Pinjaman</span> <span class="input-val" id="finLoanVal">RM 100,000</span></label><input type="range" class="slider" id="finLoan" min="10000" max="1000000" step="5000" value="100000"><div class="range-bounds"><span>RM 10k</span><span>RM 1j</span></div></div>
+            <div class="auto-result"><span class="auto-result-label" data-i18n="fin_auto_payment">Bayaran bulanan anda:</span><span class="auto-result-val" id="finPaymentAuto">RM 0</span></div>
+          </div>
+          <!-- Mode: Payment (input payment, show loan) -->
+          <div id="asbfPayInput" class="hidden">
+            <div class="input-group"><label class="input-label"><span data-i18n="fin_payment">Bayaran Bulanan</span> <span class="input-val" id="finPaymentVal">RM 500</span></label><input type="range" class="slider" id="finPayment" min="50" max="10000" step="50" value="500"><div class="range-bounds"><span>RM 50</span><span>RM 10k</span></div></div>
+            <div class="auto-result"><span class="auto-result-label" data-i18n="fin_auto_loan">Pinjaman maksimum anda:</span><span class="auto-result-val" id="finLoanAuto">RM 0</span></div>
+          </div>
           <div class="input-group"><label class="input-label"><span data-i18n="fin_rate">Kadar Faedah Pinjaman</span> <span class="input-val" id="finRateVal">4.00%</span></label><input type="range" class="slider" id="finRate" min="1" max="8" step="0.25" value="4"><div class="range-bounds"><span>1%</span><span>8%</span></div></div>
           <div class="input-group"><label class="input-label"><span data-i18n="fin_tenure">Tempoh Pinjaman</span> <span class="input-val" id="finTenureVal">30 tahun</span></label><input type="range" class="slider" id="finTenure" min="1" max="42" step="1" value="30"><div class="range-bounds"><span>1</span><span>42</span></div></div>
           <div class="input-group"><label class="input-label"><span data-i18n="fin_div">Kadar Dividen ASB</span> <span class="input-val" id="finDivVal">5.00%</span></label><input type="range" class="slider" id="finDiv" min="1" max="10" step="0.25" value="5"><div class="range-bounds"><span>1%</span><span>10%</span></div></div>
@@ -480,11 +492,14 @@
 
   <footer class="app-footer">
     <div class="footer-inner">
-      <span class="footer-brand">ASB Pro</span>
-      <span class="footer-dot">·</span>
-      <span>Faiz Wahid 2026</span>
-      <span class="footer-dot">·</span>
-      <span class="footer-disclaimer" data-i18n="footer_disclaimer">Bukan nasihat kewangan</span>
+      <div class="footer-top">
+        <span class="footer-logo"></span>
+        <span class="footer-name">ASB Pro</span>
+      </div>
+      <div class="footer-credit">
+        <span data-i18n="footer_by">Dibangunkan oleh</span> <strong>Faiz Wahid</strong> · 2026
+      </div>
+      <div class="footer-disclaimer" data-i18n="footer_disclaimer">Bukan nasihat kewangan — sekadar alat pengiraan</div>
     </div>
   </footer>
 
