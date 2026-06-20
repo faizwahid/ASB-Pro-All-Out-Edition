@@ -198,20 +198,12 @@
       <div class="calc-layout">
         <div class="inputs-panel">
           <div class="panel-header"><h2 class="panel-title" data-i18n="fin_title">Kalkulator ASBF</h2><p class="panel-desc" data-i18n="fin_desc">Pembiayaan ASB — analisis bayaran, faedah dan keuntungan bersih</p></div>
-          <div class="toggle-mode-row">
-            <button class="mode-btn active" id="asbfModeToggle" data-mode="loan"><i class="ph ph-currency-dollar"></i><span data-i18n="fin_mode_loan">Tahu Jumlah Pinjaman</span></button>
-            <button class="mode-btn" id="asbfPaymentModeBtn" data-mode="payment"><i class="ph ph-calculator"></i><span data-i18n="fin_mode_pay">Tahu Bayaran Bulanan</span></button>
-          </div>
-          <div class="mode-hint" id="asbfModeHint">
+          <div class="mode-hint">
             <i class="ph ph-lightbulb"></i>
-            <span data-i18n="fin_mode_hint_loan">Masukkan jumlah yang anda pinjam — kami kira bayaran bulanan anda</span>
+            <span data-i18n="fin_both_hint">Ubah Jumlah Pinjaman ATAU Bayaran Bulanan — satu lagi auto-kira sendiri</span>
           </div>
-          <div id="asbfLoanGroup">
-            <div class="input-group"><label class="input-label"><span data-i18n="fin_loan">Jumlah Pinjaman</span> <span class="input-val" id="finLoanVal">RM 100,000</span></label><input type="range" class="slider" id="finLoan" min="10000" max="1000000" step="5000" value="100000"><div class="range-bounds"><span>RM 10k</span><span>RM 1j</span></div></div>
-          </div>
-          <div id="asbfPaymentGroup" class="hidden">
-            <div class="input-group"><label class="input-label"><span data-i18n="fin_payment">Bayaran Bulanan</span> <span class="input-val" id="finPaymentVal">RM 500</span></label><input type="range" class="slider" id="finPayment" min="200" max="10000" step="50" value="500"><div class="range-bounds"><span>RM 200</span><span>RM 10k</span></div></div>
-          </div>
+          <div class="input-group"><label class="input-label"><span data-i18n="fin_loan">Jumlah Pinjaman</span> <span class="input-val" id="finLoanVal">RM 100,000</span></label><input type="range" class="slider" id="finLoan" min="10000" max="1000000" step="5000" value="100000"><div class="range-bounds"><span>RM 10k</span><span>RM 1j</span></div></div>
+          <div class="input-group"><label class="input-label"><span data-i18n="fin_payment">Bayaran Bulanan</span> <span class="input-val" id="finPaymentVal">RM 500</span></label><input type="range" class="slider" id="finPayment" min="200" max="10000" step="50" value="500"><div class="range-bounds"><span>RM 200</span><span>RM 10k</span></div></div>
           <div class="input-group"><label class="input-label"><span data-i18n="fin_rate">Kadar Faedah Pinjaman</span> <span class="input-val" id="finRateVal">4.00%</span></label><input type="range" class="slider" id="finRate" min="1" max="8" step="0.25" value="4"><div class="range-bounds"><span>1%</span><span>8%</span></div></div>
           <div class="input-group"><label class="input-label"><span data-i18n="fin_tenure">Tempoh Pinjaman</span> <span class="input-val" id="finTenureVal">30 tahun</span></label><input type="range" class="slider" id="finTenure" min="1" max="42" step="1" value="30"><div class="range-bounds"><span>1</span><span>42</span></div></div>
           <div class="input-group"><label class="input-label"><span data-i18n="fin_div">Kadar Dividen ASB</span> <span class="input-val" id="finDivVal">5.00%</span></label><input type="range" class="slider" id="finDiv" min="1" max="10" step="0.25" value="5"><div class="range-bounds"><span>1%</span><span>10%</span></div></div>
@@ -219,12 +211,6 @@
           <div class="spread-card" id="spreadCard"><div class="spread-label"><span data-i18n="fin_spread">Spread (Dividen − Faedah)</span> <i class="ph ph-question tip-icon" data-tip="tip_spread"></i></div><div class="spread-val" id="spreadVal">0.00%</div><div class="spread-note" id="spreadNote">—</div></div>
         </div>
         <div class="results-panel">
-          <!-- Calculated loan amount — shown in payment mode -->
-          <div class="calc-loan-row" id="finCalcLoanRow" style="display:none">
-            <i class="ph ph-info"></i>
-            <span data-i18n="fin_calc_loan_label">Jumlah Pinjaman Maksimum:</span>
-            <strong id="finCalcLoanAmt">RM 0</strong>
-          </div>
           <div class="stats-grid stats-grid-2">
             <div class="stat-card"><div class="stat-label" data-i18n="fin_monthly">Bayaran Bulanan</div><div class="stat-value" id="finMonthlyPay">RM 0</div></div>
             <div class="stat-card"><div class="stat-label" data-i18n="fin_asb_final">Nilai ASB (Akhir)</div><div class="stat-value accent" id="finASBFinal">RM 0</div></div>
@@ -315,6 +301,31 @@
             <div class="input-group" style="margin-top:0.75rem"><label class="input-label"><span data-i18n="goal_fire_rate">Kadar Pengeluaran Selamat (%)</span> <span class="input-val" id="fireWithdrawVal">4.00%</span></label><input type="range" class="slider" id="fireWithdraw" min="0" max="8" step="0.5" value="4"><div class="range-bounds"><span>0%</span><span>8%</span></div><div class="input-hint" data-i18n="goal_fire_rate_hint">Pakar kewangan cadang 4% sebagai kadar selamat</div></div>
           </details>
           <div class="highlight-result"><div class="highlight-label"><span data-i18n="goal_fire_label">Nombor FIRE Anda</span> <i class="ph ph-question tip-icon" data-tip="tip_fire"></i></div><div class="highlight-val" id="fireNumber">RM 0</div><div class="highlight-sub" id="fireSub">—</div></div>
+          <div class="fire-flow" id="fireFlow">
+            <div class="fire-flow-step">
+              <span class="fire-flow-icon"><i class="ph ph-wallet"></i></span>
+              <div class="fire-flow-text">
+                <div class="fire-flow-label" data-i18n="fire_flow_1">Nak keluarkan sebulan</div>
+                <div class="fire-flow-val" id="fireFlowMonthly">RM 0</div>
+              </div>
+            </div>
+            <div class="fire-flow-arrow"><i class="ph ph-arrow-down"></i></div>
+            <div class="fire-flow-step">
+              <span class="fire-flow-icon"><i class="ph ph-target"></i></span>
+              <div class="fire-flow-text">
+                <div class="fire-flow-label" data-i18n="fire_flow_2">Perlu kumpul (Nombor FIRE)</div>
+                <div class="fire-flow-val accent" id="fireFlowTarget">RM 0</div>
+              </div>
+            </div>
+            <div class="fire-flow-arrow"><i class="ph ph-arrow-down"></i></div>
+            <div class="fire-flow-step">
+              <span class="fire-flow-icon"><i class="ph ph-calendar-check"></i></span>
+              <div class="fire-flow-text">
+                <div class="fire-flow-label" data-i18n="fire_flow_3">Anggaran masa capai</div>
+                <div class="fire-flow-val" id="fireFlowYears">—</div>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="results-panel">
           <div id="goalBreakdown"></div>
@@ -365,27 +376,26 @@
             <h3 class="zakat-info-title" data-i18n="zakat_links_title">Cara Mudah Bayar Zakat</h3>
             <div class="zakat-pay-options">
               <div class="zakat-pay-card">
-                <i class="ph ph-device-mobile"></i>
+                <span class="zakat-pay-num">1</span>
                 <div>
-                  <div class="zakat-pay-title" data-i18n="zakat_via_bank">Melalui App Perbankan</div>
-                  <div class="zakat-pay-desc" data-i18n="zakat_via_bank_desc">Maybank, CIMB, RHB, Public Bank — cari pilihan "Zakat" dalam Transfer/Bayaran</div>
+                  <div class="zakat-pay-title" data-i18n="zakat_m1_title">App Bank (paling mudah)</div>
+                  <div class="zakat-pay-desc" data-i18n="zakat_m1_desc">Buka Maybank, CIMB, RHB, Bank Islam — cari "Zakat" dalam menu Bayaran/Payment. Terus tolak dari akaun.</div>
                 </div>
               </div>
-              <a href="https://www.lzs.com.my/web/guest/e-zakat" target="_blank" rel="noopener" class="zakat-pay-card zakat-pay-link">
-                <i class="ph ph-globe"></i>
+              <div class="zakat-pay-card">
+                <span class="zakat-pay-num">2</span>
                 <div>
-                  <div class="zakat-pay-title">e-Zakat LZS (Selangor)</div>
-                  <div class="zakat-pay-desc" data-i18n="zakat_lzs_desc">Portal zakat online LZS — boleh bayar atas talian tanpa pergi kaunter</div>
+                  <div class="zakat-pay-title" data-i18n="zakat_m2_title">e-Wallet (Touch 'n Go)</div>
+                  <div class="zakat-pay-desc" data-i18n="zakat_m2_desc">Buka TnG eWallet → GOpinjam/More → cari "Zakat". Boleh bayar terus guna baki eWallet.</div>
                 </div>
-                <i class="ph ph-arrow-square-out" style="margin-left:auto;opacity:0.4"></i>
-              </a>
-              <a href="https://www.baitumalwp.gov.my" target="_blank" rel="noopener" class="zakat-pay-card zakat-pay-link">
-                <i class="ph ph-globe"></i>
+              </div>
+              <a href="https://www.google.com/search?q=bayar+zakat+online+harta+negeri+saya" target="_blank" rel="noopener" class="zakat-pay-card zakat-pay-link">
+                <span class="zakat-pay-num">3</span>
                 <div>
-                  <div class="zakat-pay-title">Baitulmal MAIWP (KL/Putrajaya)</div>
-                  <div class="zakat-pay-desc" data-i18n="zakat_maiwp_desc">Portal rasmi zakat Wilayah Persekutuan</div>
+                  <div class="zakat-pay-title" data-i18n="zakat_m3_title">Portal Zakat Negeri</div>
+                  <div class="zakat-pay-desc" data-i18n="zakat_m3_desc">Cari portal rasmi negeri anda (LZS, MAIWP, MAINS dll). Ketik untuk cari di Google.</div>
                 </div>
-                <i class="ph ph-arrow-square-out" style="margin-left:auto;opacity:0.4"></i>
+                <i class="ph ph-magnifying-glass" style="margin-left:auto;opacity:0.4"></i>
               </a>
             </div>
             <div class="zakat-note"><i class="ph ph-warning"></i><p data-i18n="zakat_note">Kaedah pengiraan zakat ASB berbeza mengikut negeri dan fatwa. Rujuk lembaga zakat negeri anda untuk kepastian hukum.</p></div>
@@ -467,6 +477,16 @@
     </section>
 
   </main>
+
+  <footer class="app-footer">
+    <div class="footer-inner">
+      <span class="footer-brand">ASB Pro</span>
+      <span class="footer-dot">·</span>
+      <span>Faiz Wahid 2026</span>
+      <span class="footer-dot">·</span>
+      <span class="footer-disclaimer" data-i18n="footer_disclaimer">Bukan nasihat kewangan</span>
+    </div>
+  </footer>
 
   <div class="slider-tooltip" id="sliderTooltip"></div>
   <div class="tip-popup" id="tipPopup"></div>

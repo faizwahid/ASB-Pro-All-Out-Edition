@@ -138,17 +138,22 @@ const STRINGS = {
     goal_fire_advanced:'Tetapan Lanjutan (opsyenal)',
     goal_fire_rate_hint:'Pakar kewangan cadang 4% sebagai kadar selamat',
     goal_fire_rate:'Kadar Pengeluaran Selamat (%)',
-    zakat_via_bank:'Melalui App Perbankan',
-    zakat_via_bank_desc:'Maybank, CIMB, RHB, Public Bank — cari pilihan "Zakat" dalam Transfer/Bayaran',
-    zakat_lzs_desc:'Portal zakat online LZS — boleh bayar atas talian tanpa pergi kaunter',
-    zakat_maiwp_desc:'Portal rasmi zakat Wilayah Persekutuan',
+    zakat_m1_title:'App Bank (paling mudah)',
+    zakat_m1_desc:'Buka Maybank, CIMB, RHB, Bank Islam — cari "Zakat" dalam menu Bayaran/Payment. Terus tolak dari akaun.',
+    zakat_m2_title:'e-Wallet (Touch \'n Go)',
+    zakat_m2_desc:'Buka TnG eWallet → More → cari "Zakat". Boleh bayar terus guna baki eWallet.',
+    zakat_m3_title:'Portal Zakat Negeri',
+    zakat_m3_desc:'Cari portal rasmi negeri anda (LZS, MAIWP, MAINS dll). Ketik untuk cari di Google.',
     fin_calc_loan_label:'Jumlah Pinjaman Maksimum Yang Boleh Dipohon:',
     sav_initial:'Simpanan/Deposit Awal',
     sav_monthly:'Tabung Setiap Bulan',
     sav_rate:'Anggaran Dividen Tahunan (%)',
     sav_years:'Berapa Tahun Nak Simpan?',
-    fin_mode_hint_loan:'Masukkan jumlah yang anda pinjam — kami kira bayaran bulanan anda',
-    fin_mode_hint_pay:'Masukkan berapa mampu bayar sebulan — kami kira jumlah pinjaman maksimum',
+    fin_both_hint:'Ubah Jumlah Pinjaman ATAU Bayaran Bulanan — satu lagi auto-kira sendiri',
+    footer_disclaimer:'Bukan nasihat kewangan',
+    fire_flow_1:'Nak keluarkan sebulan',
+    fire_flow_2:'Perlu kumpul (Nombor FIRE)',
+    fire_flow_3:'Anggaran masa capai (ikut DCA semasa)',
     cmpEPFRateVal_default:'6.30%',
             tip_dca:'DCA (Dollar Cost Averaging) — cara melabur sikit-sikit setiap bulan, bukan sekali gus. Kurangkan risiko turun naik harga.',
     tip_dividend:'Dividen — pulangan tahunan yang ASB bayar. Contoh 2024: ~5%. Makin tinggi, makin banyak untung.',
@@ -299,17 +304,22 @@ const STRINGS = {
     goal_fire_advanced:'Advanced Settings (optional)',
     goal_fire_rate_hint:'Financial experts recommend 4% as a safe withdrawal rate',
     goal_fire_rate:'Safe Withdrawal Rate (%)',
-    zakat_via_bank:'Via Banking App',
-    zakat_via_bank_desc:'Maybank, CIMB, RHB, Public Bank — find "Zakat" under Transfer/Payment',
-    zakat_lzs_desc:'LZS online zakat portal — pay digitally without visiting a counter',
-    zakat_maiwp_desc:'Official zakat portal for Federal Territory',
+    zakat_m1_title:'Bank App (easiest)',
+    zakat_m1_desc:'Open Maybank, CIMB, RHB, Bank Islam — find "Zakat" under Payment menu. Pays directly from your account.',
+    zakat_m2_title:'e-Wallet (Touch \'n Go)',
+    zakat_m2_desc:'Open TnG eWallet → More → search "Zakat". Pay directly using your eWallet balance.',
+    zakat_m3_title:'State Zakat Portal',
+    zakat_m3_desc:'Find your state\'s official portal (LZS, MAIWP, MAINS, etc). Tap to search on Google.',
     fin_calc_loan_label:'Maximum Loan Amount You Can Apply For:',
     sav_initial:'Initial Savings / Deposit',
     sav_monthly:'Monthly Contribution',
     sav_rate:'Expected Annual Dividend (%)',
     sav_years:'How Many Years to Save?',
-    fin_mode_hint_loan:'Enter the loan amount — we calculate your monthly payment',
-    fin_mode_hint_pay:'Enter what you can afford monthly — we calculate the maximum loan',
+    fin_both_hint:'Change Loan Amount OR Monthly Payment — the other auto-calculates',
+    footer_disclaimer:'Not financial advice',
+    fire_flow_1:'Monthly withdrawal',
+    fire_flow_2:'Need to save (FIRE Number)',
+    fire_flow_3:'Est. time to reach (at current DCA)',
     cmpEPFRateVal_default:'6.30%',
             tip_dca:'DCA (Dollar Cost Averaging) — investing a fixed amount monthly instead of all at once. Reduces risk from price swings.',
     tip_dividend:'Dividend — the annual return ASB pays out. 2024 example: ~5%. Higher rate means more profit.',
@@ -612,7 +622,7 @@ const state = {
   // Savings
   savInitial:10000, savMonthly:500, savRate:5, savBonus:0, savYears:20,
   // Financing
-  finLoan:100000, finPayment:500, finRate:4, finTenure:30, finDiv:5, finMode:'loan',
+  finLoan:100000, finPayment:500, finRate:4, finTenure:30, finDiv:5,
   // Comparison
   cmpBudget:500, cmpDiv:5, cmpLoanRate:4, cmpFDRate:3.5, cmpEPFRate:6.3, cmpYears:20,
   // Forecast
@@ -731,13 +741,6 @@ function applyStateToInputs() {
   ['fcBear','fcBase','fcBull'].forEach(k => {
     const inp = el(k); if (inp) inp.value = state[k];
   });
-  // ASBF mode
-  if (state.finMode === 'payment') {
-    el('asbfModeToggle')?.classList.remove('active');
-    el('asbfPaymentModeBtn')?.classList.add('active');
-    el('asbfPaymentGroup')?.classList.remove('hidden');
-    el('asbfLoanGroup')?.classList.add('hidden');
-  }
   // Zakat basis radio
   document.querySelectorAll('input[name="zakatBasis"]').forEach(r => {
     r.checked = r.value === state.zakatBasis;
@@ -1187,10 +1190,7 @@ function updateSavings() {
 
 // ── UPDATE FINANCING ──
 function updateFinancing() {
-  let loanAmt = state.finLoan;
-  if (state.finMode==='payment') {
-    loanAmt = calcLoanFromPayment(state.finPayment, state.finRate, state.finTenure*12);
-  }
+  const loanAmt = state.finLoan;
   finData = calcASBF(loanAmt, state.finRate, state.finTenure, state.finDiv);
   if (!finData.length) return;
   const last = finData[finData.length-1];
@@ -1207,13 +1207,6 @@ function updateFinancing() {
   charts.finDonut.update('active');
 
   const netProfit = last.asbValue - last.totalInterestPaid;
-  // Show calculated loan amount (especially useful in payment mode)
-  const dispLoan = el('finCalcLoanAmt');
-  if (dispLoan) {
-    dispLoan.textContent = fmt(loanAmt);
-    const loanRow = el('finCalcLoanRow');
-    if (loanRow) loanRow.style.display = state.finMode==='payment' ? 'flex' : 'none';
-  }
   animateCounter(el('finMonthlyPay'), monthlyPay, fmt);
   animateCounter(el('finASBFinal'), last.asbValue, fmt);
   animateCounter(el('finTotalInterest'), last.totalInterestPaid, fmt);
@@ -1403,6 +1396,30 @@ function updateGoal() {
   charts.fire.data.datasets[0].data = [saved, stillNeeded2];
   charts.fire.data.datasets[0].backgroundColor = [C.bull, isDark()?'#374151':'#e4e4e7'];
   charts.fire.update('active');
+
+  // FIRE flow visual: monthly → target → time to reach
+  setText('fireFlowMonthly', fmt(state.fireExp));
+  if (fireNum === null) {
+    setText('fireFlowTarget', state.lang==='en' ? 'Not applicable' : 'Tidak berkaitan');
+    setText('fireFlowYears', '—');
+  } else {
+    setText('fireFlowTarget', fmt(fireNum));
+    // Estimate years to reach FIRE number from current savings + monthly DCA
+    const rM = Math.pow(1+goalRate/100, 1/12) - 1;
+    let bal = goalCurrent, months = 0;
+    const monthlyDCA = reqDCA > 0 ? reqDCA : state.savMonthly || 500;
+    while (bal < fireNum && months < 1200) { bal = bal*(1+rM) + monthlyDCA; months++; }
+    const yrs = Math.floor(months/12), mo = months%12;
+    if (goalCurrent >= fireNum) {
+      setText('fireFlowYears', state.lang==='en' ? 'Already there!' : 'Dah sampai!');
+    } else if (months >= 1200) {
+      setText('fireFlowYears', state.lang==='en' ? '100+ years' : '100+ tahun');
+    } else {
+      setText('fireFlowYears', state.lang==='en'
+        ? `~${yrs} yr ${mo} mo`
+        : `~${yrs} thn ${mo} bln`);
+    }
+  }
 
   const pct = Math.min(100,(goalCurrent/goalAmt)*100);
   const firePct = fireNum ? Math.min(100,(goalCurrent/fireNum)*100) : 100;
@@ -1791,28 +1808,45 @@ function setupEventListeners() {
     });
   });
 
-  // ASBF mode toggle
-  el('asbfModeToggle')?.addEventListener('click', () => {
-    state.finMode = 'loan';
-    el('asbfModeToggle')?.classList.add('active');
-    el('asbfPaymentModeBtn')?.classList.remove('active');
-    el('asbfLoanGroup')?.classList.remove('hidden');
-    el('asbfPaymentGroup')?.classList.add('hidden');
-    setText('asbfModeHint', (state.lang==='en'
-      ? '💡 Enter the loan amount — we calculate your monthly payment'
-      : '💡 Masukkan jumlah yang anda pinjam — kami kira bayaran bulanan anda'));
-    updateFinancing();
+  // ASBF: finLoan and finPayment auto-update each other
+  let _finSyncing = false;
+  el('finLoan')?.addEventListener('input', () => {
+    if (_finSyncing) return;
+    _finSyncing = true;
+    // Loan changed → recalc monthly payment
+    const pay = calcMonthlyPayment(state.finLoan, state.finRate, state.finTenure*12);
+    state.finPayment = Math.round(pay);
+    const pSlider = el('finPayment');
+    if (pSlider) {
+      pSlider.value = Math.max(+pSlider.min, Math.min(+pSlider.max, Math.round(pay)));
+      setText('finPaymentVal', `RM ${Math.round(pay).toLocaleString('en-MY')}`);
+    }
+    _finSyncing = false;
   });
-  el('asbfPaymentModeBtn')?.addEventListener('click', () => {
-    state.finMode = 'payment';
-    el('asbfPaymentModeBtn')?.classList.add('active');
-    el('asbfModeToggle')?.classList.remove('active');
-    el('asbfPaymentGroup')?.classList.remove('hidden');
-    el('asbfLoanGroup')?.classList.add('hidden');
-    setText('asbfModeHint', (state.lang==='en'
-      ? '💡 Enter what you can afford monthly — we calculate the maximum loan'
-      : '💡 Masukkan berapa mampu bayar sebulan — kami kira jumlah pinjaman maksimum'));
-    updateFinancing();
+  el('finPayment')?.addEventListener('input', () => {
+    if (_finSyncing) return;
+    _finSyncing = true;
+    // Payment changed → recalc loan amount
+    const loan = calcLoanFromPayment(state.finPayment, state.finRate, state.finTenure*12);
+    state.finLoan = Math.round(loan);
+    const lSlider = el('finLoan');
+    if (lSlider) {
+      lSlider.value = Math.max(+lSlider.min, Math.min(+lSlider.max, Math.round(loan)));
+      setText('finLoanVal', `RM ${Math.round(loan).toLocaleString('en-MY')}`);
+    }
+    _finSyncing = false;
+  });
+  // When rate or tenure changes, keep loan fixed and recalc payment
+  ['finRate','finTenure'].forEach(id => {
+    el(id)?.addEventListener('input', () => {
+      const pay = calcMonthlyPayment(state.finLoan, state.finRate, state.finTenure*12);
+      state.finPayment = Math.round(pay);
+      const pSlider = el('finPayment');
+      if (pSlider) {
+        pSlider.value = Math.max(+pSlider.min, Math.min(+pSlider.max, Math.round(pay)));
+        setText('finPaymentVal', `RM ${Math.round(pay).toLocaleString('en-MY')}`);
+      }
+    });
   });
 
   // Savings table toggle
@@ -1910,7 +1944,7 @@ const NEWS_FEEDS = {
   // ASB: Google News search (specific to ASB/PNB)
   'asb':      'https://news.google.com/rss/search?q=ASB%20PNB%20dividen&hl=ms&gl=MY&ceid=MY:ms',
   // Malaysia: broad finance/investment via Google News
-  'malaysia': 'https://news.google.com/rss/search?q=pelaburan%20kewangan%20Malaysia%20Bursa%20ekonomi&hl=ms&gl=MY&ceid=MY:ms',
+  'malaysia': 'https://news.google.com/rss/search?q=pelaburan%20Malaysia&hl=ms&gl=MY&ceid=MY:ms',
   // US/China: established financial outlets (stable feeds)
   'us':       'https://news.google.com/rss/search?q=US%20stocks%20market%20Wall%20Street&hl=en&gl=US&ceid=US:en',
   'china':    'https://news.google.com/rss/search?q=China%20economy%20markets&hl=en&gl=US&ceid=US:en',
