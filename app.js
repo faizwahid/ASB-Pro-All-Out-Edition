@@ -744,30 +744,20 @@ function resetState() {
 
 async function shareURL() {
   const url = `${location.origin}${location.pathname}`;
-  const title = 'ASB Pro';
-  const shareText = state.lang==='en'
-    ? 'Free ASB investment calculator'
-    : 'Kalkulator pelaburan ASB percuma';
 
-  // Build share payload with ONLY url (no text) — purest link share.
-  // Use navigator.canShare to verify the browser accepts this as a link
-  // before calling share, so it won't fall back to a page screenshot.
-  const payload = { title, url };
-
-  if (navigator.canShare && navigator.canShare(payload)) {
-    try {
-      await navigator.share(payload);
-      return;
-    } catch (e) {
-      if (e && e.name === 'AbortError') return; // user cancelled
-    }
-  } else if (navigator.share) {
-    // Older browsers without canShare — try url-only share
-    try {
-      await navigator.share({ url });
-      return;
-    } catch (e) {
-      if (e && e.name === 'AbortError') return;
+  // Try native share sheet with url-only payload (cleanest link share)
+  if (navigator.share) {
+    const payload = { title: 'ASB Pro', url };
+    // canShare guards against browsers that would otherwise screenshot
+    const okToShare = !navigator.canShare || navigator.canShare(payload);
+    if (okToShare) {
+      try {
+        await navigator.share(payload);
+        return;
+      } catch (e) {
+        if (e && e.name === 'AbortError') return; // user dismissed
+        // any other error → fall through to clipboard
+      }
     }
   }
 
@@ -776,7 +766,6 @@ async function shareURL() {
     await navigator.clipboard.writeText(url);
     showToast(t('toast_share'));
   } catch {
-    // Last resort: prompt so user can copy manually
     window.prompt(state.lang==='en' ? 'Copy this link:' : 'Salin pautan ini:', url);
   }
 }
@@ -1880,12 +1869,12 @@ function refreshNews() {
 
 // Topic → RSS feed mapping (direct feeds, more reliable than Google News search)
 const NEWS_FEEDS = {
-  // Google News topic-specific RSS — reliable via rss2json, fresh content
-  'asb':      'https://news.google.com/rss/search?q=ASB+PNB+dividen+pelaburan&hl=ms&gl=MY&ceid=MY:ms',
-  'malaysia': 'https://news.google.com/rss/search?q=(pelaburan+OR+kewangan+OR+saham+OR+%22unit+amanah%22+OR+KWSP+OR+ekonomi+OR+ringgit+OR+Bursa)+Malaysia&hl=ms&gl=MY&ceid=MY:ms',
-  'us':       'https://news.google.com/rss/search?q=US+stock+market+S%26P500+nasdaq+investing&hl=en&gl=US&ceid=US:en',
-  'china':    'https://news.google.com/rss/search?q=China+economy+stock+market+investment&hl=en&gl=US&ceid=US:en',
-  'default':  'https://news.google.com/rss/search?q=ASB+PNB+Malaysia&hl=ms&gl=MY&ceid=MY:ms',
+  // Google News topic RSS — simple space-separated queries (OR syntax breaks rss2json)
+  'asb':      'https://news.google.com/rss/search?q=ASB%20PNB%20dividen%20pelaburan&hl=ms&gl=MY&ceid=MY:ms',
+  'malaysia': 'https://news.google.com/rss/search?q=pelaburan%20kewangan%20saham%20Malaysia%20ekonomi&hl=ms&gl=MY&ceid=MY:ms',
+  'us':       'https://news.google.com/rss/search?q=US%20stock%20market%20investing&hl=en&gl=US&ceid=US:en',
+  'china':    'https://news.google.com/rss/search?q=China%20economy%20stock%20market&hl=en&gl=US&ceid=US:en',
+  'default':  'https://news.google.com/rss/search?q=ASB%20PNB%20Malaysia&hl=ms&gl=MY&ceid=MY:ms',
 };
 
 async function loadNews(feedKey) {
@@ -1901,22 +1890,26 @@ async function loadNews(feedKey) {
   const rssUrl = NEWS_FEEDS[feedKey] || NEWS_FEEDS.default;
 
   const renderItems = items => {
-    if (!items || !items.length) throw new Error('empty');
+    if (!items || !items.length) return false;
     const html = items.slice(0, 12).map(item => {
-      const title = (item.title||item.name||'').replace(/<!\[CDATA\[|\]\]>/g,'').trim();
-      const link  = item.link||item.url||item.guid||'#';
-      const date  = item.pubDate||item.isoDate||item.published||'';
-      const src   = (item.author||item.source||'').split(',')[0]||'Berita';
+      let title = (item.title || item.name || '').replace(/<!\[CDATA\[|\]\]>/g,'').trim();
+      const link  = item.link || item.url || item.guid || '#';
+      const date  = item.pubDate || item.isoDate || item.published || '';
+      let src   = (item.author || item.source || '').toString().split(',')[0].trim() || 'Berita';
       if (!title) return '';
+      // Google News appends " - Source" to titles — split it out
+      const dashIdx = title.lastIndexOf(' - ');
+      if (dashIdx > 20 && src === 'Berita') { src = title.slice(dashIdx + 3); title = title.slice(0, dashIdx); }
       return `<a href="${link}" target="_blank" rel="noopener noreferrer" class="news-card">
         <div class="news-source">${src.length>35?src.slice(0,33)+'…':src}</div>
         <div class="news-title">${title.length>140?title.slice(0,137)+'…':title}</div>
         <div class="news-date">${fmtDate(date)}</div>
       </a>`;
-    }).filter(Boolean).join('') || null;
-    if (!html) throw new Error('no renderable items');
+    }).filter(Boolean).join('');
+    if (!html) return false;
     grid.innerHTML = html;
-    _newsCache = { feed: feedKey, html }; // cache by feed
+    try { _newsCache = { feed: feedKey, html }; } catch {}
+    return true;
   };
 
   // Strategy 1: rss2json (most reliable for Google News)
@@ -1924,7 +1917,7 @@ async function loadNews(feedKey) {
     const r2j = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}&count=12`;
     const res  = await fetch(r2j, { signal: AbortSignal.timeout(7000) });
     const data = await res.json();
-    if (data.status === 'ok' && data.items?.length) { renderItems(data.items); return; }
+    if (data.status === 'ok' && data.items?.length) { if (renderItems(data.items)) return; }
   } catch {}
 
   // Strategy 2: corsproxy.io
@@ -1939,7 +1932,7 @@ async function loadNews(feedKey) {
       pubDate: n.querySelector('pubDate')?.textContent||'',
       source : n.querySelector('source')?.textContent||'',
     }));
-    if (items.length) { renderItems(items); return; }
+    if (items.length && renderItems(items)) return;
   } catch {}
 
   // Strategy 3: allorigins fallback
@@ -1955,7 +1948,7 @@ async function loadNews(feedKey) {
       pubDate: n.querySelector('pubDate')?.textContent||'',
       source : n.querySelector('source')?.textContent||'',
     }));
-    if (items.length) { renderItems(items); return; }
+    if (items.length && renderItems(items)) return;
   } catch {}
 
   // Static curated fallback — always works
