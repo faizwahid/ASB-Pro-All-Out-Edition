@@ -1967,35 +1967,49 @@ async function loadNews(feedKey) {
     if (items.length && renderItems(items)) return;
   } catch {}
 
-  // Static curated fallback — always works
-  const BM_LINKS = [
-    { src:'PNB Malaysia',       title:'Laman web rasmi PNB — pengumuman agihan dividen ASB terkini',     url:'https://www.pnb.com.my' },
-    { src:'Berita Harian',      title:'Berita ekonomi dan pelaburan terkini Malaysia',                   url:'https://www.bharian.com.my/bisnes' },
-    { src:'Utusan Malaysia',    title:'Laporan ekonomi dan kewangan Malaysia',                           url:'https://www.utusan.com.my/ekonomi' },
-    { src:'Bernama',            title:'Berita kewangan dan ekonomi rasmi Malaysia',                      url:'https://www.bernama.com/bm' },
-    { src:'The Malaysian Reserve', title:'Berita pasaran modal dan ekuiti Malaysia',                           url:'https://themalaysianreserve.com' },
-    { src:'Free Malaysia Today', title:'Laporan perniagaan dan pelaburan',                                     url:'https://www.freemalaysiatoday.com/category/bisnes' },
-  ];
-  const EN_LINKS = [
-    { src:'PNB Malaysia',       title:'Official PNB website — latest ASB/ASN dividend announcements',   url:'https://www.pnb.com.my' },
-    { src:'The Edge Markets',   title:'Malaysia capital markets, equities and investment news',          url:'https://www.theedgemarkets.com' },
-    { src:'The Star Biz',       title:'Business and investment news for Malaysia',                       url:'https://biz.thestar.com.my' },
-    { src:'Bernama',            title:'Official Malaysian national news agency — economy coverage',      url:'https://www.bernama.com/en' },
-    { src:'Malay Mail Biz',     title:'Malaysia business and financial headlines',                       url:'https://www.malaymail.com/section/money' },
-    { src:'New Straits Times',  title:'NST business and investment section',                             url:'https://www.nst.com.my/business' },
-  ];
-  const useEn = (feedKey === 'us' || feedKey === 'china' || state.lang === 'en');
-  const links = useEn ? EN_LINKS : BM_LINKS;
+  // Static curated fallback — feed-specific trusted sources
+  const FALLBACK_LINKS = {
+    asb: [
+      { src:'PNB Malaysia',     title:'Laman rasmi PNB — pengumuman agihan dividen ASB/ASN', url:'https://www.pnb.com.my' },
+      { src:'Bernama Bisnes',   title:'Berita kewangan & ekonomi rasmi Malaysia',           url:'https://www.bernama.com/bm/bisnes/' },
+      { src:'Berita Harian',    title:'Berita ekonomi & pelaburan terkini',                 url:'https://www.bharian.com.my/bisnes' },
+      { src:'The Edge Malaysia',title:'Pasaran modal & ekuiti Malaysia',                    url:'https://theedgemalaysia.com' },
+    ],
+    malaysia: [
+      { src:'The Edge Malaysia',title:'Pasaran modal, saham & pelaburan Malaysia',          url:'https://theedgemalaysia.com' },
+      { src:'Bernama Bisnes',   title:'Berita ekonomi & kewangan rasmi',                    url:'https://www.bernama.com/bm/bisnes/' },
+      { src:'Berita Harian',    title:'Berita bisnes & pelaburan',                          url:'https://www.bharian.com.my/bisnes' },
+      { src:'Bursa Malaysia',   title:'Maklumat pasaran saham rasmi Malaysia',              url:'https://www.bursamalaysia.com' },
+    ],
+    us: [
+      { src:'Yahoo Finance',    title:'US stock market, S&P 500, Nasdaq & investing news',   url:'https://finance.yahoo.com' },
+      { src:'MarketWatch',      title:'Wall Street, markets & financial headlines',          url:'https://www.marketwatch.com' },
+      { src:'CNBC Markets',     title:'US market news, stocks & economy',                    url:'https://www.cnbc.com/markets/' },
+      { src:'Reuters Markets',  title:'Global & US financial market coverage',               url:'https://www.reuters.com/markets/' },
+    ],
+    china: [
+      { src:'SCMP Business',    title:'China economy, markets & business news',              url:'https://www.scmp.com/business' },
+      { src:'Reuters China',    title:'China markets & economic coverage',                   url:'https://www.reuters.com/world/china/' },
+      { src:'CNBC Asia',        title:'Asia-Pacific & China market news',                    url:'https://www.cnbc.com/asia-markets/' },
+      { src:'Yahoo Finance',    title:'Global markets incl. China indices',                  url:'https://finance.yahoo.com/world-indices/' },
+    ],
+  };
+  const useEn = (feedKey === 'us' || feedKey === 'china');
+  const links = FALLBACK_LINKS[feedKey] || FALLBACK_LINKS.asb;
+  const noticeText = state.lang==='en'
+    ? 'Live feed busy right now — trusted sources below'
+    : 'Suapan langsung sibuk — sumber dipercayai di bawah';
+  const visitText = state.lang==='en' ? 'Tap to visit' : 'Ketik untuk lawati';
   grid.innerHTML = `
     <div class="news-fallback-notice" style="grid-column:1/-1">
       <i class="ph ph-info"></i>
-      <span>${useEn ? 'Live feed unavailable — trusted sources below' : 'Suapan langsung tak tersedia — sumber dipercayai di bawah'}</span>
+      <span>${noticeText}</span>
     </div>
     ${links.map(l=>`
     <a href="${l.url}" target="_blank" rel="noopener noreferrer" class="news-card news-card-static">
       <div class="news-source">${l.src}</div>
       <div class="news-title">${l.title}</div>
-      <div class="news-date">${useEn ? 'Tap to visit' : 'Ketik untuk lawati'}</div>
+      <div class="news-date">${visitText}</div>
     </a>`).join('')}`;
 }
 
