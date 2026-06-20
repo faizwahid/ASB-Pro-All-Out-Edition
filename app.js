@@ -9,7 +9,7 @@ const STRINGS = {
     tab_dashboard:'Dashboard', tab_savings:'Simpanan', tab_financing:'ASBF',
     tab_comparison:'Banding', tab_forecast:'Ramalan', tab_goal:'Matlamat',
     tab_zakat:'Zakat', tab_history:'Sejarah', tab_news:'Berita', tab_ageplan:'Pelan Umur',
-    ui_normal:'Mudah', ui_pro:'Pro',
+    ui_normal:'Standard', ui_pro:'Pro',
     hero_label:'Unjuran Nilai Akhir (Kadar Sederhana)',
     hero_eyebrow:'Nilai dikira berdasarkan tetapan di tab Simpanan — ubah untuk lihat unjuran anda',
     stat_invested:'Jumlah Dilaburkan', stat_dividends:'Jumlah Dividen',
@@ -154,7 +154,7 @@ const STRINGS = {
     fin_hint_loan:'Masukkan jumlah pinjaman — bayaran bulanan dikira automatik',
     fin_hint_pay:'Masukkan bayaran bulanan mampu — pinjaman maksimum dikira automatik',
     fin_auto_payment:'Bayaran bulanan anda:', fin_auto_loan:'Pinjaman maksimum anda:',
-    footer_disclaimer:'Bukan nasihat kewangan — sekadar alat pengiraan',
+    footer_disclaimer:'Bukan nasihat kewangan',
     footer_by:'Dibangunkan oleh',
     age_title:'Pelan Kewangan Ikut Umur',
     age_desc:'Masukkan umur anda — kami susun pelan & cadangan instrumen',
@@ -175,6 +175,7 @@ const STRINGS = {
     tip_dca_lump:'Lump Sum = labur semua duit sekali gus dari awal. DCA = labur sikit-sikit. Banding mana lebih baik untuk anda.',
     tip_spread:'Spread = Dividen ASB tolak Faedah pinjaman. Kalau positif (+), ASBF untung. Kalau negatif (−), rugi.',
     tip_fire:'FIRE = Financial Independence, Retire Early. Jumlah simpanan yang cukup untuk hidup dari pulangan pelaburan tanpa kerja.',
+    manual_div_open:'Isi Dividen Manual',
     manual_div_title:'Masukkan Dividen Terkini',
     manual_div_sub:'PNB belum kemaskini laman web — isi sendiri bila diumumkan',
     manual_div_year:'Tahun', manual_div_rate:'Dividen (%)', manual_div_bonus:'Bonus (%)',
@@ -191,7 +192,7 @@ const STRINGS = {
     tab_dashboard:'Dashboard', tab_savings:'Savings', tab_financing:'ASBF',
     tab_comparison:'Compare', tab_forecast:'Forecast', tab_goal:'Goals',
     tab_zakat:'Zakat', tab_history:'History', tab_news:'News', tab_ageplan:'Age Plan',
-    ui_normal:'Simple', ui_pro:'Pro',
+    ui_normal:'Standard', ui_pro:'Pro',
     hero_label:'Projected Final Value (Base Rate)',
     hero_eyebrow:'Calculated from your Savings settings — adjust to see your projection',
     stat_invested:'Total Invested', stat_dividends:'Total Dividends',
@@ -335,7 +336,7 @@ const STRINGS = {
     fin_hint_loan:'Enter loan amount — monthly payment auto-calculated',
     fin_hint_pay:'Enter affordable monthly payment — max loan auto-calculated',
     fin_auto_payment:'Your monthly payment:', fin_auto_loan:'Your maximum loan:',
-    footer_disclaimer:'Not financial advice — just a calculation tool',
+    footer_disclaimer:'Not financial advice',
     footer_by:'Built by',
     age_title:'Age-Based Financial Plan',
     age_desc:'Enter your age — we build a plan & suggest instruments',
@@ -356,6 +357,7 @@ const STRINGS = {
     tip_dca_lump:'Lump Sum = invest everything upfront. DCA = invest gradually. Compare which works better for you.',
     tip_spread:'Spread = ASB dividend minus loan interest. Positive (+) means ASBF profits. Negative (−) means a loss.',
     tip_fire:'FIRE = Financial Independence, Retire Early. The savings amount enough to live off investment returns without working.',
+    manual_div_open:'Enter Dividend Manually',
     manual_div_title:'Enter Latest Dividend',
     manual_div_sub:'PNB has not updated their website yet — fill in once announced',
     manual_div_year:'Year', manual_div_rate:'Dividend (%)', manual_div_bonus:'Bonus (%)',
@@ -478,6 +480,7 @@ let DIVIDEND_HISTORY = [
 // ── LIVE DIVIDEND FETCH ──
 // Cache key & TTL
 const DIV_CACHE_KEY = 'asb-pro-div-live';
+const DIV_MANUAL_KEY = 'asb-pro-div-manual';
 const DIV_CACHE_TTL = 12 * 60 * 60 * 1000; // 12 jam
 const STATE_KEY    = 'asb-pro-state';
 
@@ -485,11 +488,26 @@ async function fetchLatestDividend() {
   const nowYear = new Date().getFullYear();
   const targetYear = nowYear - 1; // last fully announced dividend year
 
-  // 1. Check localStorage cache
+  // 0. Apply saved MANUAL entry first (user's own data takes display priority)
+  let manualEntry = null;
+  try {
+    manualEntry = JSON.parse(localStorage.getItem(DIV_MANUAL_KEY)||'null');
+    if (manualEntry && manualEntry.year) {
+      applyLiveDividend(manualEntry.year, manualEntry.dividend, manualEntry.bonus||0, 'Manual', false, true);
+    }
+  } catch {}
+
+  // 1. Check live cache
   try {
     const cached = JSON.parse(localStorage.getItem(DIV_CACHE_KEY)||'null');
     if (cached && cached.year === targetYear && (Date.now()-cached.ts) < DIV_CACHE_TTL) {
-      applyLiveDividend(cached.year, cached.dividend, cached.bonus||0, cached.src, false);
+      // If user has manual for same year and it differs → prompt
+      if (manualEntry && manualEntry.year === cached.year &&
+          (manualEntry.dividend !== cached.dividend || (manualEntry.bonus||0) !== (cached.bonus||0))) {
+        promptDividendConflict(cached, manualEntry);
+      } else if (!manualEntry) {
+        applyLiveDividend(cached.year, cached.dividend, cached.bonus||0, cached.src, false);
+      }
       return;
     }
   } catch {}
@@ -548,7 +566,16 @@ async function fetchLatestDividend() {
           text = await resp.text();
         }
         const found = parseDivBonus(text);
-        if (found) { applyLiveDividend(targetYear, found.dividend, found.bonus, 'PNB Website', true); return; }
+        if (found) {
+          if (manualEntry && manualEntry.year === targetYear &&
+              (manualEntry.dividend !== found.dividend || (manualEntry.bonus||0) !== (found.bonus||0))) {
+            cacheLiveDividend(targetYear, found.dividend, found.bonus, 'PNB Website');
+            promptDividendConflict({year:targetYear, dividend:found.dividend, bonus:found.bonus, src:'PNB Website'}, manualEntry);
+          } else {
+            applyLiveDividend(targetYear, found.dividend, found.bonus, 'PNB Website', true);
+          }
+          return;
+        }
       } catch {}
     }
   }
@@ -564,15 +591,25 @@ async function fetchLatestDividend() {
       for (const item of (data.items||[])) {
         const raw = (item.title||'') + ' ' + (item.description||'');
         const found = parseDivBonus(raw);
-        if (found) { applyLiveDividend(targetYear, found.dividend, found.bonus, 'Berita', true); return; }
+        if (found) {
+          if (manualEntry && manualEntry.year === targetYear &&
+              (manualEntry.dividend !== found.dividend || (manualEntry.bonus||0) !== (found.bonus||0))) {
+            cacheLiveDividend(targetYear, found.dividend, found.bonus, 'Berita');
+            promptDividendConflict({year:targetYear, dividend:found.dividend, bonus:found.bonus, src:'Berita'}, manualEntry);
+          } else {
+            applyLiveDividend(targetYear, found.dividend, found.bonus, 'Berita', true);
+          }
+          return;
+        }
       }
     }
   } catch {}
 
-  // 4. All failed — show manual entry form
-  if (!DIVIDEND_HISTORY.some(r => r.year === targetYear)) {
+  // 4. All failed — set badge; user can click "Isi Manual" if they want
+  if (manualEntry) {
+    setLiveBadge('live', `${manualEntry.year}: ${manualEntry.dividend.toFixed(2)}% (Manual)`);
+  } else if (!DIVIDEND_HISTORY.some(r => r.year === targetYear)) {
     setLiveBadge('pending');
-    showManualDividendForm(targetYear);
   } else {
     setLiveBadge('static');
   }
@@ -595,15 +632,57 @@ function saveManualDividend() {
     showToast(state.lang==='en' ? 'Enter a valid dividend %' : 'Masukkan kadar dividen yang sah');
     return;
   }
-  applyLiveDividend(year, divRate, bonus, 'Manual', true);
+  // Persist as MANUAL (separate from auto cache)
+  try { localStorage.setItem(DIV_MANUAL_KEY, JSON.stringify({ year, dividend:divRate, bonus })); } catch {}
+  applyLiveDividend(year, divRate, bonus, 'Manual', true, true);
   document.getElementById('manualDivCard')?.classList.add('hidden');
   showToast(state.lang==='en'
     ? `Saved: ${year} dividend ${divRate}% + ${bonus}% bonus`
     : `Disimpan: Dividen ${year} ${divRate}% + ${bonus}% bonus`);
 }
 
+// Toggle manual entry form open/close
+function toggleManualDividend() {
+  const card = document.getElementById('manualDivCard');
+  if (!card) return;
+  const isHidden = card.classList.contains('hidden');
+  if (isHidden) {
+    const inp = document.getElementById('manualDivYear');
+    if (inp && !inp.value) inp.value = new Date().getFullYear() - 1;
+    card.classList.remove('hidden');
+    card.scrollIntoView({ behavior:'smooth', block:'nearest' });
+  } else {
+    card.classList.add('hidden');
+  }
+}
 
-function applyLiveDividend(year, dividend, bonus, source, isNew) {
+// Conflict: PNB announced a value different from user's manual entry
+function promptDividendConflict(auto, manual) {
+  // Show manual value on screen first
+  applyLiveDividend(manual.year, manual.dividend, manual.bonus||0, 'Manual', false, true);
+  const bonusStr = auto.bonus > 0 ? ` + ${auto.bonus}%` : '';
+  const msg = state.lang==='en'
+    ? `PNB announced ${auto.year}: ${auto.dividend}%${bonusStr} (official). You have a manual entry of ${manual.dividend}%. Use the official value?`
+    : `PNB umum ${auto.year}: ${auto.dividend}%${bonusStr} (rasmi). Anda ada nilai manual ${manual.dividend}%. Guna nilai rasmi?`;
+  if (window.confirm(msg)) {
+    // User chooses official → clear manual, apply auto
+    try { localStorage.removeItem(DIV_MANUAL_KEY); } catch {}
+    applyLiveDividend(auto.year, auto.dividend, auto.bonus, auto.src||'PNB', true);
+    showToast(state.lang==='en' ? 'Updated to official PNB value' : 'Dikemas kini ke nilai rasmi PNB');
+  } else {
+    showToast(state.lang==='en' ? 'Keeping your manual value' : 'Kekal nilai manual anda');
+  }
+}
+
+// Cache live value without displaying (used when manual takes priority)
+function cacheLiveDividend(year, dividend, bonus, source) {
+  try {
+    localStorage.setItem(DIV_CACHE_KEY, JSON.stringify({ year, dividend, bonus, src:source, ts:Date.now() }));
+  } catch {}
+}
+
+
+function applyLiveDividend(year, dividend, bonus, source, isNew, isManual) {
   // Never add data for the current or future year — dividend not yet announced
   const safeMaxYear = new Date().getFullYear() - 1;
   if (year > safeMaxYear) {
@@ -619,10 +698,12 @@ function applyLiveDividend(year, dividend, bonus, source, isNew) {
     DIVIDEND_HISTORY.sort((a,b) => a.year - b.year);
   }
 
-  // Cache to localStorage
-  try {
-    localStorage.setItem(DIV_CACHE_KEY, JSON.stringify({ year, dividend, bonus, src:source, ts:Date.now() }));
-  } catch {}
+  // Cache to localStorage (skip for manual — manual has its own store)
+  if (!isManual) {
+    try {
+      localStorage.setItem(DIV_CACHE_KEY, JSON.stringify({ year, dividend, bonus, src:source, ts:Date.now() }));
+    } catch {}
+  }
 
   // Update charts + stats
   updateHistory();
@@ -765,6 +846,8 @@ function applyStateToInputs() {
     goalAmt:'goalAmt', goalCurrent:'goalCurrent', goalYears:'goalYears', goalRate:'goalRate',
     fireExp:'fireExp', fireWithdraw:'fireWithdraw',
     zakatRate:'zakatRate',
+    ageCurrent:'ageCurrent', ageRetire:'ageRetire',
+    ageSavings:'ageSavings', ageMonthly:'ageMonthly',
   };
   Object.entries(map).forEach(([stateKey, inputId]) => {
     const inp = el(inputId);
@@ -1674,10 +1757,9 @@ function updateAgePlan() {
 function applyUIMode(mode) {
   state.uiMode = (mode === 'pro') ? 'pro' : 'normal';
   document.documentElement.setAttribute('data-uimode', state.uiMode);
-  // Update toggle button active states
-  document.querySelectorAll('.mode-toggle-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.uimode === state.uiMode);
-  });
+  // Update slide switch state
+  const sw = document.getElementById('uiModeSwitch');
+  if (sw) sw.setAttribute('data-uimode', state.uiMode);
   try { localStorage.setItem('asb-pro-uimode', state.uiMode); } catch {}
 }
 
@@ -1983,11 +2065,9 @@ function setupEventListeners() {
     if (!wrap) el('colorPickerPanel')?.classList.remove('picker-open');
   });
 
-  // Normal/Pro mode toggle
-  document.querySelectorAll('.mode-toggle-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      applyUIMode(btn.dataset.uimode);
-    });
+  // Normal/Pro mode slide switch — toggle on click
+  el('uiModeSwitch')?.addEventListener('click', () => {
+    applyUIMode(state.uiMode === 'pro' ? 'normal' : 'pro');
   });
 
   // Tooltip icons — tap to show explanation
@@ -2384,6 +2464,7 @@ window.refreshNews       = refreshNews;
 window.switchTab         = switchTab;
 window.autoFillZakat     = autoFillZakat;
 window.saveManualDividend= saveManualDividend;
+window.toggleManualDividend = toggleManualDividend;
 window.toggleColorPicker = function(ev) {
   if (ev) ev.stopPropagation();
   const panel = document.getElementById('colorPickerPanel');

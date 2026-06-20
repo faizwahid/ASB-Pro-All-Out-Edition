@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
   <title>ASB Pro — Kalkulator Pelaburan Malaysia</title>
   <meta name="description" content="Kalkulator pelaburan ASB percuma — rancang simpanan, ASBF, zakat & persaraan. Free Malaysian ASB investment calculator.">
   <!-- Open Graph / social share preview -->
@@ -19,7 +20,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
   <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=20260620d">
 </head>
 <body>
   <header class="app-header">
@@ -51,10 +52,13 @@
           <button class="lang-toggle-btn" data-lang="en">EN</button>
         </div>
         <!-- Normal/Pro mode toggle -->
-        <div class="mode-toggle">
-          <button class="mode-toggle-btn active" data-uimode="normal" data-i18n="ui_normal">Mudah</button>
-          <button class="mode-toggle-btn" data-uimode="pro" data-i18n="ui_pro">Pro</button>
-        </div>
+        <button class="ui-switch" id="uiModeSwitch" data-uimode="normal" title="Standard / Pro" aria-label="Mode">
+          <span class="ui-switch-track">
+            <span class="ui-switch-label ui-switch-label-left" data-i18n="ui_normal">Standard</span>
+            <span class="ui-switch-label ui-switch-label-right" data-i18n="ui_pro">Pro</span>
+            <span class="ui-switch-thumb"></span>
+          </span>
+        </button>
         <button class="hdr-btn" onclick="shareURL()">
           <i class="ph ph-link"></i><span data-i18n="hdr_share">Kongsi Link</span>
         </button>
@@ -438,7 +442,14 @@
       </div>
       <div class="chart-block"><div class="chart-header"><span class="chart-title" data-i18n="hist_chart_title">Dividen &amp; Bonus Tahunan (%)</span><span class="chart-legend"><span class="leg-item"><span class="leg-dot base"></span><span data-i18n="th_dividend">Dividen</span></span><span class="leg-item"><span class="leg-dot bull"></span><span data-i18n="hist_col_bonus">Bonus</span></span></span></div><div class="chart-wrap h300"><canvas id="histChart"></canvas></div></div>
       <div class="data-table"><table><thead><tr><th data-i18n="hist_col_year">Tahun</th><th data-i18n="hist_col_div">Dividen</th><th data-i18n="hist_col_bonus">Bonus</th><th data-i18n="hist_col_total">Jumlah</th><th data-i18n="hist_col_trend">Trend</th></tr></thead><tbody id="histTableBody"></tbody></table></div>
-      <!-- Manual dividend entry (shown when auto-fetch pending) -->
+      <!-- Manual entry toggle button -->
+      <div class="manual-div-toggle-row">
+        <button class="manual-div-toggle-btn" id="manualDivToggle" onclick="toggleManualDividend()">
+          <i class="ph ph-pencil-simple"></i>
+          <span data-i18n="manual_div_open">Isi Dividen Manual</span>
+        </button>
+      </div>
+      <!-- Manual dividend entry (hidden by default, click button to open) -->
       <div class="manual-div-card hidden" id="manualDivCard">
         <div class="manual-div-header">
           <i class="ph ph-pencil-simple"></i>
@@ -586,14 +597,9 @@
 
   <footer class="app-footer">
     <div class="footer-inner">
-      <div class="footer-top">
-        <span class="footer-logo"></span>
-        <span class="footer-name">ASB Pro</span>
-      </div>
-      <div class="footer-credit">
-        <span data-i18n="footer_by">Dibangunkan oleh</span> <strong>Faiz Wahid</strong> · 2026
-      </div>
-      <div class="footer-disclaimer" data-i18n="footer_disclaimer">Bukan nasihat kewangan — sekadar alat pengiraan</div>
+      <span class="footer-top"><span class="footer-logo"></span><span class="footer-name">ASB Pro</span></span>
+      <span class="footer-credit"><strong>Faiz Wahid</strong> · 2026</span>
+      <span class="footer-disclaimer" data-i18n="footer_disclaimer">Bukan nasihat kewangan</span>
     </div>
   </footer>
 
@@ -607,6 +613,6 @@
     onerror="var s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.3/chart.umd.min.js';document.head.appendChild(s);"
   ></script>
   <!-- app.js — has built-in retry that waits for Chart.js to be ready -->
-  <script src="app.js"></script>
+  <script src="app.js?v=20260620d"></script>
 </body>
 </html>
