@@ -10,6 +10,11 @@ const STRINGS = {
     tab_comparison:'Banding', tab_forecast:'Ramalan', tab_goal:'Matlamat',
     tab_zakat:'Zakat', tab_history:'Sejarah', tab_news:'Berita', tab_ageplan:'Pelan Umur',
     ui_normal:'Standard', ui_pro:'Pro',
+    ob1_title:'Selamat datang ke ASB Pro', ob1_text:'Kalkulator pelaburan ASB percuma untuk semua — rancang simpanan, pinjaman ASBF, zakat & persaraan anda.',
+    ob2_title:'Geser & lihat unjuran', ob2_text:'Setiap tab ada slider sendiri. Ubah simpanan, kadar & tempoh — hasil dikira automatik di hadapan mata anda.',
+    ob3_title:'Mudah atau Pro', ob3_text:'Mod Standard tunjuk yang asas. Tekan suis Pro untuk buka jadual penuh, senario & laras lanjutan.',
+    ob4_title:'Tetapan anda kekal', ob4_text:'Semua tetapan disimpan automatik dalam peranti anda. Tiada akaun, tiada data dihantar. Bukan nasihat kewangan.',
+    ob_skip:'Langkau', ob_next:'Seterusnya', ob_start:'Mula',
     banner_intro:'<b>Standard</b> tunjuk yang asas & mudah. <b>Pro</b> buka semua detail & laras lanjutan.',
     banner_detail:'Lihat perbezaan', banner_detail_hide:'Sembunyi',
     banner_std_title:'Standard', banner_pro_title:'Pro',
@@ -212,6 +217,11 @@ const STRINGS = {
     tab_comparison:'Compare', tab_forecast:'Forecast', tab_goal:'Goals',
     tab_zakat:'Zakat', tab_history:'History', tab_news:'News', tab_ageplan:'Age Plan',
     ui_normal:'Standard', ui_pro:'Pro',
+    ob1_title:'Welcome to ASB Pro', ob1_text:'A free ASB investment calculator for everyone — plan your savings, ASBF financing, zakat & retirement.',
+    ob2_title:'Slide & see projections', ob2_text:'Every tab has its own sliders. Adjust savings, rate & duration — results calculate live before your eyes.',
+    ob3_title:'Standard or Pro', ob3_text:'Standard mode shows the basics. Flip the Pro switch to unlock full tables, scenarios & advanced controls.',
+    ob4_title:'Your settings stay', ob4_text:'Everything saves automatically on your device. No account, no data sent. Not financial advice.',
+    ob_skip:'Skip', ob_next:'Next', ob_start:'Start',
     banner_intro:'<b>Standard</b> shows the basics. <b>Pro</b> unlocks all details & advanced controls.',
     banner_detail:'See differences', banner_detail_hide:'Hide',
     banner_std_title:'Standard', banner_pro_title:'Pro',
@@ -2638,6 +2648,32 @@ function updateChartTheme(dark) {
   }
 }
 
+// ── ONBOARDING (first-time) ──
+let _obSlide = 0;
+const _obTotal = 4;
+function initOnboard() {
+  let seen = false;
+  try { seen = localStorage.getItem('asb-pro-onboard-seen') === '1'; } catch {}
+  if (seen) return;
+  const ob = document.getElementById('onboard');
+  if (ob) { ob.style.display = 'flex'; requestAnimationFrame(()=>ob.classList.add('show')); }
+}
+function _renderObSlide() {
+  document.querySelectorAll('.onboard-slide').forEach((s,i)=>s.classList.toggle('active', i===_obSlide));
+  document.querySelectorAll('.onboard-dot').forEach((d,i)=>d.classList.toggle('active', i===_obSlide));
+  const next = document.getElementById('onboardNext');
+  if (next) next.textContent = _obSlide === _obTotal-1 ? t('ob_start') : t('ob_next');
+}
+function nextOnboard() {
+  if (_obSlide < _obTotal-1) { _obSlide++; _renderObSlide(); }
+  else skipOnboard();
+}
+function skipOnboard() {
+  const ob = document.getElementById('onboard');
+  if (ob) { ob.classList.remove('show'); setTimeout(()=>{ ob.style.display='none'; }, 280); }
+  try { localStorage.setItem('asb-pro-onboard-seen','1'); } catch {}
+}
+
 // ── MODE INTRO BANNER (first-time) ──
 function initModeBanner() {
   let dismissed = false;
@@ -2703,6 +2739,7 @@ function init() {
   } catch(e) { console.error('[ASB] Language error:', e); }
 
   try { initModeBanner(); } catch {}
+  try { initOnboard(); } catch {}
 
   setTimeout(() => {
     const active = document.querySelector('.tab-btn.active');
@@ -2723,6 +2760,8 @@ window.autoFillZakat     = autoFillZakat;
 window.saveManualDividend= saveManualDividend;
 window.toggleManualDividend = toggleManualDividend;
 window.dismissModeBanner = dismissModeBanner;
+window.nextOnboard = nextOnboard;
+window.skipOnboard = skipOnboard;
 window.toggleModeDetail = toggleModeDetail;
 window.toggleColorPicker = function(ev) {
   if (ev) ev.stopPropagation();
@@ -2745,3 +2784,12 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
 }
 // Safety net: also try on full window load
 window.addEventListener('load', startApp);
+
+// ── PWA: register service worker for offline + installability ──
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(err =>
+      console.warn('[ASB] SW registration failed:', err)
+    );
+  });
+}

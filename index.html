@@ -17,14 +17,56 @@
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="ASB Pro — Kalkulator Pelaburan Malaysia">
   <meta name="twitter:description" content="Kalkulator pelaburan ASB percuma untuk semua rakyat Malaysia.">
-  <meta name="theme-color" content="#059669">
+  <meta name="theme-color" content="#4F46E5">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="ASB Pro">
+  <meta name="mobile-web-app-capable" content="yes">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
   <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
-  <link rel="stylesheet" href="style.css?v=20260620t">
+  <link rel="stylesheet" href="style.css?v=20260620u">
 </head>
 <body>
+  <!-- ONBOARDING (first-time only) -->
+  <div class="onboard" id="onboard" style="display:none">
+    <div class="onboard-sheet">
+      <div class="onboard-slides" id="onboardSlides">
+        <div class="onboard-slide active" data-slide="0">
+          <div class="onboard-icon ob-indigo"><i class="ph-bold ph-chart-line-up"></i></div>
+          <h2 class="onboard-title" data-i18n="ob1_title">Selamat datang ke ASB Pro</h2>
+          <p class="onboard-text" data-i18n="ob1_text">Kalkulator pelaburan ASB percuma untuk semua — rancang simpanan, pinjaman ASBF, zakat & persaraan anda.</p>
+        </div>
+        <div class="onboard-slide" data-slide="1">
+          <div class="onboard-icon ob-emerald"><i class="ph-bold ph-sliders-horizontal"></i></div>
+          <h2 class="onboard-title" data-i18n="ob2_title">Geser & lihat unjuran</h2>
+          <p class="onboard-text" data-i18n="ob2_text">Setiap tab ada slider sendiri. Ubah simpanan, kadar & tempoh — hasil dikira automatik di hadapan mata anda.</p>
+        </div>
+        <div class="onboard-slide" data-slide="2">
+          <div class="onboard-icon ob-amber"><i class="ph-bold ph-squares-four"></i></div>
+          <h2 class="onboard-title" data-i18n="ob3_title">Mudah atau Pro</h2>
+          <p class="onboard-text" data-i18n="ob3_text">Mod Standard tunjuk yang asas. Tekan suis Pro untuk buka jadual penuh, senario & laras lanjutan.</p>
+        </div>
+        <div class="onboard-slide" data-slide="3">
+          <div class="onboard-icon ob-rose"><i class="ph-bold ph-shield-check"></i></div>
+          <h2 class="onboard-title" data-i18n="ob4_title">Tetapan anda kekal</h2>
+          <p class="onboard-text" data-i18n="ob4_text">Semua tetapan disimpan automatik dalam peranti anda. Tiada akaun, tiada data dihantar. Bukan nasihat kewangan.</p>
+        </div>
+      </div>
+      <div class="onboard-dots" id="onboardDots">
+        <span class="onboard-dot active"></span><span class="onboard-dot"></span><span class="onboard-dot"></span><span class="onboard-dot"></span>
+      </div>
+      <div class="onboard-actions">
+        <button class="onboard-skip" id="onboardSkip" onclick="skipOnboard()" data-i18n="ob_skip">Langkau</button>
+        <button class="onboard-next" id="onboardNext" onclick="nextOnboard()" data-i18n="ob_next">Seterusnya</button>
+      </div>
+    </div>
+  </div>
+
   <header class="app-header">
     <div class="header-inner">
       <div class="header-brand">
@@ -693,7 +735,7 @@
   <footer class="app-footer">
     <div class="footer-inner">
       <span class="footer-top"><span class="footer-logo"></span><span class="footer-name">ASB Pro</span></span>
-      <span class="footer-credit"><strong>Faiz Wahid</strong> · 2026 · <span class="build-tag">Reka v4</span></span>
+      <span class="footer-credit"><strong>Faiz Wahid</strong> · 2026 · <span class="build-tag">Reka v5</span></span>
       <span class="footer-disclaimer" data-i18n="footer_disclaimer">Bukan nasihat kewangan</span>
     </div>
   </footer>
@@ -708,6 +750,6 @@
     onerror="var s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.3/chart.umd.min.js';document.head.appendChild(s);"
   ></script>
   <!-- app.js — has built-in retry that waits for Chart.js to be ready -->
-  <script src="app.js?v=20260620t"></script>
+  <script src="app.js?v=20260620u"></script>
 </body>
 </html>
