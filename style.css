@@ -33,12 +33,12 @@
   --radius: 10px;
   --radius-sm: 6px;
   --radius-lg: 14px;
-  --shadow: 3px 3px 0 var(--ink);
-  --shadow-sm: 2px 2px 0 var(--ink);
-  --shadow-md: 4px 4px 0 var(--ink);
-  --shadow-lg: 6px 6px 0 var(--ink);
-  --bw: 2.5px;
-  --bw-lg: 3px;
+  --shadow: 5px 5px 0 var(--ink);
+  --shadow-sm: 3px 3px 0 var(--ink);
+  --shadow-md: 7px 7px 0 var(--ink);
+  --shadow-lg: 9px 9px 0 var(--ink);
+  --bw: 3px;
+  --bw-lg: 4px;
   --transition: 0.14s cubic-bezier(0.34,1.2,0.64,1);
   --font: 'Outfit', system-ui, sans-serif;
   --display: 'Space Grotesk', 'Outfit', system-ui, sans-serif;
@@ -2487,3 +2487,35 @@ body {
   .stat-card, .news-card, .instrument-card, .hdr-btn, .mode-btn,
   .news-filter-btn { transition: none !important; }
 }
+
+
+/* ── EXTRA BRUTAL POLISH ── */
+/* Hero forecast number — oversized chunky */
+.highlight-val, #fcResultMain, .hero-number {
+  font-family: var(--display) !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.04em !important;
+}
+/* Accent strip under header for a bolder identity */
+.app-header { position: relative; }
+.app-header::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: -4px;
+  height: 4px;
+  background: repeating-linear-gradient(90deg,
+    var(--accent) 0, var(--accent) 24px,
+    var(--ink) 24px, var(--ink) 28px);
+}
+/* Brand mark — solid accent fill */
+.brand-mark {
+  background: var(--accent) !important;
+}
+/* Section/panel titles get an accent underline tick */
+.panel-title {
+  display: inline-block;
+}
+/* Stat values pop bigger */
+.stat-value { font-size: 1.55rem; }
+/* Big hero RM number */
+.highlight-val { font-size: clamp(2.4rem, 7vw, 3.6rem) !important; line-height: 1.02; }

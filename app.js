@@ -518,8 +518,8 @@ let DIVIDEND_HISTORY = [
   { year:2021, dividend:4.60, bonus:0, src:'official' },
   { year:2022, dividend:4.60, bonus:0, src:'official' },
   { year:2023, dividend:5.25, bonus:0, src:'official' },
-  { year:2024, dividend:5.75, bonus:0, src:'official' },
-  { year:2025, dividend:5.75, bonus:0, src:'official' },
+  { year:2024, dividend:5.50, bonus:0.25, src:'official' },
+  { year:2025, dividend:5.50, bonus:0.25, src:'official' },
 ];
 
 // Merge any previously-saved dividends (accumulates year over year, persists forever)
