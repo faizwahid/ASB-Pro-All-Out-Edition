@@ -8,21 +8,22 @@
 /* ── CUSTOM PROPERTIES — MODERN POLISHED (tinted-neutral, soft elevation) ── */
 :root {
   /* Tinted-neutral surfaces — grays nudged toward cool to feel intentional */
-  --bg: #F4F6F8;
+  --bg: #F1F3F8;
   --surface: #ffffff;
-  --surface-2: #F8FAFB;
-  --surface-3: #EEF1F4;
-  --border: #E7EAEE;        /* hairline */
-  --border-2: #D7DBE2;
-  --ink: #141414;
-  --text-1: #14171C;        /* off-black, never pure black */
-  --text-2: #3A3F49;
-  --text-3: #6A7180;
-  --text-4: #9AA1AE;
-  --accent: #0E9E6E;        /* refined jade-emerald, desaturated */
-  --accent-2: #14B981;
-  --accent-bg: rgba(14,158,110,0.10);
-  --accent-border: rgba(14,158,110,0.28);
+  --surface-2: #F6F8FC;
+  --surface-3: #EBEEF5;
+  --border: #E3E7F0;        /* hairline, cool slate */
+  --border-2: #D2D8E6;
+  --ink: #0F1525;
+  --text-1: #0F1525;        /* deep slate, never pure black */
+  --text-2: #353D52;
+  --text-3: #677085;
+  --text-4: #99A1B3;
+  --accent: #4F46E5;        /* electric indigo (single accent) */
+  --accent-2: #6366F1;
+  --accent-bg: rgba(79,70,229,0.09);
+  --accent-border: rgba(79,70,229,0.26);
+  --hero-gradient: linear-gradient(135deg, #3730A3 0%, #4F46E5 55%, #4C7BF0 100%);
   --bull: #0E9E6E;
   --bull-bg: rgba(14,158,110,0.10);
   --base: #E8943B;          /* warm amber for neutral series */
@@ -61,12 +62,13 @@
   --text-2: #C7CCD6;
   --text-3: #8B93A3;
   --text-4: #626A78;
-  --accent: #1FBE8A;
-  --accent-2: #2DD49B;
-  --accent-bg: rgba(31,190,138,0.14);
-  --accent-border: rgba(31,190,138,0.32);
-  --bull: #1FBE8A;
-  --bull-bg: rgba(31,190,138,0.14);
+  --accent: #6D7CFF;
+  --accent-2: #8B95FF;
+  --accent-bg: rgba(109,124,255,0.16);
+  --accent-border: rgba(109,124,255,0.34);
+  --hero-gradient: linear-gradient(135deg, #312E81 0%, #4F46E5 55%, #4C7BF0 100%);
+  --bull: #2DD49B;
+  --bull-bg: rgba(45,212,155,0.14);
   --base: #F0A957;
   --base-bg: rgba(240,169,87,0.14);
   --bear: #FF6B79;
@@ -2504,4 +2506,125 @@ body { background: var(--bg); }
   font-size: 0.6rem;
   font-weight: 700;
   letter-spacing: 0.02em;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   PREMIUM FINTECH LAYER  ·  indigo · gradient hero · app-feel
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── Dashboard hero → full gradient block, white content ── */
+.dashboard-hero {
+  background: var(--hero-gradient);
+  border: none !important;
+  border-radius: var(--radius-lg);
+  padding: 28px 24px 26px;
+  color: #fff;
+  box-shadow: 0 16px 40px -16px color-mix(in srgb, var(--accent) 60%, transparent),
+              0 4px 12px rgba(15,21,37,0.12);
+  position: relative;
+  overflow: hidden;
+}
+/* Subtle light orb for depth (no harsh glow) */
+.dashboard-hero::before {
+  content: '';
+  position: absolute;
+  top: -40%; right: -10%;
+  width: 280px; height: 280px;
+  background: radial-gradient(circle, rgba(255,255,255,0.16), transparent 70%);
+  pointer-events: none;
+}
+.dashboard-hero .hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(255,255,255,0.16);
+  color: rgba(255,255,255,0.95);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 0.72rem;
+  backdrop-filter: blur(4px);
+}
+.dashboard-hero .hero-label {
+  color: rgba(255,255,255,0.78);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.72rem;
+  font-weight: 600;
+  margin-top: 16px;
+}
+.dashboard-hero .hero-val {
+  font-family: var(--display);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  font-size: clamp(2.4rem, 8vw, 3.4rem);
+  line-height: 1.05;
+  color: #fff;
+  margin: 6px 0 4px;
+}
+.dashboard-hero .hero-sub { color: rgba(255,255,255,0.82); font-size: 0.86rem; }
+.dashboard-hero .hero-pills { margin-top: 18px; display: flex; flex-wrap: wrap; gap: 8px; }
+.dashboard-hero .hero-pill {
+  background: rgba(255,255,255,0.14);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 999px;
+  padding: 7px 13px;
+  font-size: 0.74rem;
+  font-family: var(--mono);
+  backdrop-filter: blur(4px);
+}
+
+/* ── Stat cards: flatter, app-like, accent top-tab feel ── */
+.stats-grid-4 .stat-card, .stats-grid-2 .stat-card {
+  border-radius: var(--radius);
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+.stat-card .stat-label {
+  font-size: 0.72rem; font-weight: 600; letter-spacing: 0.01em;
+  color: var(--text-3);
+}
+.stat-card .stat-value { font-size: 1.5rem; margin-top: 6px; }
+
+/* ── Quick action cards → app list items with icon circles ── */
+.quick-card {
+  display: flex; align-items: center; gap: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+  cursor: pointer;
+}
+.quick-card > i:first-child {
+  display: grid; place-items: center;
+  width: 42px; height: 42px;
+  border-radius: 12px;
+  background: var(--accent-bg);
+  color: var(--accent);
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+.quick-card > span { font-weight: 600; flex: 1; color: var(--text-1); }
+.quick-card .quick-arrow {
+  color: var(--text-4); font-size: 1rem;
+  transition: transform var(--transition), color var(--transition);
+}
+.quick-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--accent-border);
+}
+.quick-card:hover .quick-arrow { transform: translateX(3px); color: var(--accent); }
+.quick-card:active { transform: translateY(0) scale(0.99); }
+
+/* Header brand mark → gradient */
+.brand-mark { background: var(--hero-gradient) !important; }
+
+/* Section spacing rhythm */
+.dashboard-hero { margin-bottom: 16px; }
+.stats-grid { margin-bottom: 16px; }
+
+/* Stat value scales down on narrow cards to avoid wrap */
+.stat-card .stat-value { font-size: clamp(1.15rem, 4.6vw, 1.5rem); white-space: nowrap; }
+@media (max-width: 380px) {
+  .stat-card .stat-value { font-size: 1.05rem; }
 }

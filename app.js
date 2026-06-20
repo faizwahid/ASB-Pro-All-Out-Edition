@@ -455,16 +455,16 @@ function initLanguage() {
 // COLOR THEMES
 // ══════════════════════════════════════════════════════
 const THEMES = {
-  // Modern: desaturated accents, subtle tint bg, soft accent-tint borders
-  jade:    { accent:'#0E9E6E', accent2:'#14B981', bg:'rgba(14,158,110,0.10)',  border:'rgba(14,158,110,0.28)' },
-  ocean:   { accent:'#2563C9', accent2:'#3B82E6', bg:'rgba(37,99,201,0.10)',   border:'rgba(37,99,201,0.26)' },
-  amber:   { accent:'#D97A1E', accent2:'#F0972E', bg:'rgba(217,122,30,0.10)',  border:'rgba(217,122,30,0.26)' },
-  rose:    { accent:'#D8456B', accent2:'#EC5C81', bg:'rgba(216,69,107,0.10)',  border:'rgba(216,69,107,0.26)' },
-  slate:   { accent:'#516079', accent2:'#6B7B96', bg:'rgba(81,96,121,0.10)',   border:'rgba(81,96,121,0.26)' },
+  // Premium fintech: electric indigo default + curated alternates
+  indigo:  { accent:'#4F46E5', accent2:'#6366F1', bg:'rgba(79,70,229,0.09)',   border:'rgba(79,70,229,0.26)', grad:'linear-gradient(135deg,#3730A3,#4F46E5 55%,#4C7BF0)' },
+  jade:    { accent:'#0E9E6E', accent2:'#14B981', bg:'rgba(14,158,110,0.10)',  border:'rgba(14,158,110,0.26)', grad:'linear-gradient(135deg,#065F46,#0E9E6E 55%,#16C088)' },
+  ocean:   { accent:'#2563C9', accent2:'#3B82E6', bg:'rgba(37,99,201,0.10)',   border:'rgba(37,99,201,0.26)', grad:'linear-gradient(135deg,#1E3A8A,#2563C9 55%,#3B82E6)' },
+  amber:   { accent:'#D97A1E', accent2:'#F0972E', bg:'rgba(217,122,30,0.10)',  border:'rgba(217,122,30,0.26)', grad:'linear-gradient(135deg,#9A4B0E,#D97A1E 55%,#F0972E)' },
+  rose:    { accent:'#D8456B', accent2:'#EC5C81', bg:'rgba(216,69,107,0.10)',  border:'rgba(216,69,107,0.26)', grad:'linear-gradient(135deg,#9D274A,#D8456B 55%,#EC5C81)' },
 };
 
 function setColorTheme(name) {
-  const th = THEMES[name] || THEMES.jade;
+  const th = THEMES[name] || THEMES.indigo;
   const root = document.documentElement;
   root.dataset.color = name;
   root.style.setProperty('--accent',         th.accent);
@@ -472,6 +472,7 @@ function setColorTheme(name) {
   root.style.setProperty('--accent-bg',       th.bg);
   root.style.setProperty('--accent-border',   th.border);
   root.style.setProperty('--brand-gradient',  `linear-gradient(135deg, ${th.accent}, ${th.accent2})`);
+  if (th.grad) root.style.setProperty('--hero-gradient', th.grad);
   // Sync color dots active state
   document.querySelectorAll('.color-dot').forEach(d => {
     d.classList.toggle('active', d.dataset.color === name);
@@ -493,7 +494,7 @@ function updateChartAccent(accent, accent2) {
 }
 
 function initColorTheme() {
-  const saved = localStorage.getItem('asb-pro-color') || 'jade';
+  const saved = localStorage.getItem('asb-pro-color') || 'indigo';
   setColorTheme(saved);
 }
 
