@@ -455,16 +455,16 @@ function initLanguage() {
 // COLOR THEMES
 // ══════════════════════════════════════════════════════
 const THEMES = {
-  // Neo-brutal: saturated accents, solid tint bg, ink-black borders (set in CSS)
-  gold:    { accent:'#F5A700', accent2:'#FFC23C', bg:'rgba(245,167,0,0.16)',   border:'#141414' },
-  grass:   { accent:'#00B589', accent2:'#00C896', bg:'rgba(0,181,137,0.16)',   border:'#141414' },
-  ocean:   { accent:'#2D6CDF', accent2:'#5B8DEF', bg:'rgba(45,108,223,0.16)',  border:'#141414' },
-  violet:  { accent:'#7B61FF', accent2:'#9B86FF', bg:'rgba(123,97,255,0.16)',  border:'#141414' },
-  coral:   { accent:'#FF5A5F', accent2:'#FF8084', bg:'rgba(255,90,95,0.16)',   border:'#141414' },
+  // Modern: desaturated accents, subtle tint bg, soft accent-tint borders
+  jade:    { accent:'#0E9E6E', accent2:'#14B981', bg:'rgba(14,158,110,0.10)',  border:'rgba(14,158,110,0.28)' },
+  ocean:   { accent:'#2563C9', accent2:'#3B82E6', bg:'rgba(37,99,201,0.10)',   border:'rgba(37,99,201,0.26)' },
+  amber:   { accent:'#D97A1E', accent2:'#F0972E', bg:'rgba(217,122,30,0.10)',  border:'rgba(217,122,30,0.26)' },
+  rose:    { accent:'#D8456B', accent2:'#EC5C81', bg:'rgba(216,69,107,0.10)',  border:'rgba(216,69,107,0.26)' },
+  slate:   { accent:'#516079', accent2:'#6B7B96', bg:'rgba(81,96,121,0.10)',   border:'rgba(81,96,121,0.26)' },
 };
 
 function setColorTheme(name) {
-  const th = THEMES[name] || THEMES.gold;
+  const th = THEMES[name] || THEMES.jade;
   const root = document.documentElement;
   root.dataset.color = name;
   root.style.setProperty('--accent',         th.accent);
@@ -493,7 +493,7 @@ function updateChartAccent(accent, accent2) {
 }
 
 function initColorTheme() {
-  const saved = localStorage.getItem('asb-pro-color') || 'gold';
+  const saved = localStorage.getItem('asb-pro-color') || 'jade';
   setColorTheme(saved);
 }
 

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ms" data-theme="light" data-color="gold">
+<html lang="ms" data-theme="light" data-color="jade">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,7 +20,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
   <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
-  <link rel="stylesheet" href="style.css?v=20260620o">
+  <link rel="stylesheet" href="style.css?v=20260620p">
 </head>
 <body>
   <header class="app-header">
@@ -39,11 +39,11 @@
             <i class="ph ph-palette"></i>
           </button>
           <div class="color-picker" id="colorPickerPanel">
-            <button class="color-dot active" data-color="gold"   style="background:#F5A700" title="Gold"></button>
-            <button class="color-dot" data-color="grass"  style="background:#00B589" title="Grass"></button>
-            <button class="color-dot" data-color="ocean"  style="background:#2D6CDF" title="Ocean"></button>
-            <button class="color-dot" data-color="violet" style="background:#7B61FF" title="Violet"></button>
-            <button class="color-dot" data-color="coral"  style="background:#FF5A5F" title="Coral"></button>
+            <button class="color-dot active" data-color="jade"  style="background:#0E9E6E" title="Jade"></button>
+            <button class="color-dot" data-color="ocean" style="background:#2563C9" title="Ocean"></button>
+            <button class="color-dot" data-color="amber" style="background:#D97A1E" title="Amber"></button>
+            <button class="color-dot" data-color="rose"  style="background:#D8456B" title="Rose"></button>
+            <button class="color-dot" data-color="slate" style="background:#516079" title="Slate"></button>
           </div>
         </div>
         <!-- Language toggle -->
@@ -58,7 +58,7 @@
             <span class="ios-switch-knob"></span>
           </span>
         </button>
-        <button class="hdr-btn" onclick="shareURL()">
+        <button class="hdr-btn hdr-share" onclick="shareURL()">
           <i class="ph ph-link"></i><span data-i18n="hdr_share">Kongsi Link</span>
         </button>
         <button class="hdr-btn hdr-btn-ghost" onclick="resetState()" title="Reset">
@@ -706,6 +706,6 @@
     onerror="var s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.3/chart.umd.min.js';document.head.appendChild(s);"
   ></script>
   <!-- app.js — has built-in retry that waits for Chart.js to be ready -->
-  <script src="app.js?v=20260620o"></script>
+  <script src="app.js?v=20260620p"></script>
 </body>
 </html>

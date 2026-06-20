@@ -5,41 +5,43 @@
    Base: Zinc/Slate neutrals
    ===================================================== */
 
-/* ── CUSTOM PROPERTIES — NEO-BRUTALISM "Kertas & Dakwat" ── */
+/* ── CUSTOM PROPERTIES — MODERN POLISHED (tinted-neutral, soft elevation) ── */
 :root {
-  --bg: #FFFDF5;
+  /* Tinted-neutral surfaces — grays nudged toward cool to feel intentional */
+  --bg: #F4F6F8;
   --surface: #ffffff;
-  --surface-2: #FBF6E9;
-  --surface-3: #F2ECDA;
-  --border: #141414;
-  --border-2: #141414;
+  --surface-2: #F8FAFB;
+  --surface-3: #EEF1F4;
+  --border: #E7EAEE;        /* hairline */
+  --border-2: #D7DBE2;
   --ink: #141414;
-  --text-1: #141414;
-  --text-2: #2E2E2E;
-  --text-3: #5A564C;
-  --text-4: #8A857A;
-  --accent: #F5A700;
-  --accent-2: #FFC23C;
-  --accent-bg: rgba(245,167,0,0.16);
-  --accent-border: #141414;
-  --bull: #00B589;
-  --bull-bg: rgba(0,181,137,0.16);
-  --base: #F5A700;
-  --base-bg: rgba(245,167,0,0.16);
-  --bear: #FF5A5F;
-  --bear-bg: rgba(255,90,95,0.16);
-  --slate: #5A564C;
-  --slate-bg: rgba(90,86,76,0.12);
-  --radius: 10px;
-  --radius-sm: 6px;
-  --radius-lg: 14px;
-  --shadow: 5px 5px 0 var(--ink);
-  --shadow-sm: 3px 3px 0 var(--ink);
-  --shadow-md: 7px 7px 0 var(--ink);
-  --shadow-lg: 9px 9px 0 var(--ink);
-  --bw: 3px;
-  --bw-lg: 4px;
-  --transition: 0.14s cubic-bezier(0.34,1.2,0.64,1);
+  --text-1: #14171C;        /* off-black, never pure black */
+  --text-2: #3A3F49;
+  --text-3: #6A7180;
+  --text-4: #9AA1AE;
+  --accent: #0E9E6E;        /* refined jade-emerald, desaturated */
+  --accent-2: #14B981;
+  --accent-bg: rgba(14,158,110,0.10);
+  --accent-border: rgba(14,158,110,0.28);
+  --bull: #0E9E6E;
+  --bull-bg: rgba(14,158,110,0.10);
+  --base: #E8943B;          /* warm amber for neutral series */
+  --base-bg: rgba(232,148,59,0.12);
+  --bear: #EF4F5F;
+  --bear-bg: rgba(239,79,95,0.10);
+  --slate: #7A8194;
+  --slate-bg: rgba(122,129,148,0.10);
+  /* 8px rhythm radii */
+  --radius-sm: 10px;
+  --radius: 16px;
+  --radius-lg: 24px;
+  /* Soft, tinted diffusion shadows (toward bg hue, no neon) */
+  --shadow-sm: 0 1px 2px rgba(20,23,28,0.05);
+  --shadow: 0 2px 8px -2px rgba(20,23,28,0.08), 0 1px 3px rgba(20,23,28,0.04);
+  --shadow-md: 0 10px 28px -10px rgba(20,23,28,0.14), 0 2px 6px rgba(20,23,28,0.05);
+  --shadow-lg: 0 24px 56px -20px rgba(20,23,28,0.20), 0 4px 12px rgba(20,23,28,0.06);
+  --transition: 0.2s cubic-bezier(0.32,0.72,0,1);  /* smooth ease-out */
+  --transition-fast: 0.14s cubic-bezier(0.32,0.72,0,1);
   --font: 'Outfit', system-ui, sans-serif;
   --display: 'Space Grotesk', 'Outfit', system-ui, sans-serif;
   --mono: 'JetBrains Mono', 'Courier New', monospace;
@@ -48,33 +50,33 @@
 }
 
 [data-theme="dark"] {
-  --bg: #16140E;
-  --surface: #211E16;
-  --surface-2: #2A2619;
-  --surface-3: #332E1F;
-  --border: #F5EFD8;        /* light ink on dark — borders stay bold */
-  --border-2: #F5EFD8;
-  --ink: #F5EFD8;
-  --text-1: #FBF7E8;
-  --text-2: #E5DFCB;
-  --text-3: #B5AE96;
-  --text-4: #847E68;
-  --accent: #FFC23C;
-  --accent-2: #FFD36B;
-  --accent-bg: rgba(255,194,60,0.18);
-  --accent-border: #F5EFD8;
-  --bull: #1FD9A6;
-  --bull-bg: rgba(31,217,166,0.16);
-  --base: #FFC23C;
-  --base-bg: rgba(255,194,60,0.16);
-  --bear: #FF7479;
-  --bear-bg: rgba(255,116,121,0.16);
-  --slate: #B5AE96;
-  --slate-bg: rgba(181,174,150,0.14);
-  --shadow: 3px 3px 0 var(--ink);
-  --shadow-sm: 2px 2px 0 var(--ink);
-  --shadow-md: 4px 4px 0 var(--ink);
-  --shadow-lg: 6px 6px 0 var(--ink);
+  --bg: #0E1116;
+  --surface: #171B22;
+  --surface-2: #1D222B;
+  --surface-3: #262C37;
+  --border: #2A303B;
+  --border-2: #353C49;
+  --ink: #F5F7FA;
+  --text-1: #F2F4F8;
+  --text-2: #C7CCD6;
+  --text-3: #8B93A3;
+  --text-4: #626A78;
+  --accent: #1FBE8A;
+  --accent-2: #2DD49B;
+  --accent-bg: rgba(31,190,138,0.14);
+  --accent-border: rgba(31,190,138,0.32);
+  --bull: #1FBE8A;
+  --bull-bg: rgba(31,190,138,0.14);
+  --base: #F0A957;
+  --base-bg: rgba(240,169,87,0.14);
+  --bear: #FF6B79;
+  --bear-bg: rgba(255,107,121,0.14);
+  --slate: #8B93A3;
+  --slate-bg: rgba(139,147,163,0.14);
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.4);
+  --shadow: 0 2px 8px -2px rgba(0,0,0,0.5), 0 1px 3px rgba(0,0,0,0.3);
+  --shadow-md: 0 10px 28px -10px rgba(0,0,0,0.6), 0 2px 6px rgba(0,0,0,0.4);
+  --shadow-lg: 0 24px 56px -20px rgba(0,0,0,0.7);
 }
 
 /* ── RESET ── */
@@ -2272,250 +2274,222 @@ html[data-uimode="normal"] .pro-only {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   NEO-BRUTALISM OVERRIDE LAYER  ·  "Kertas & Dakwat"
-   Thick ink borders · hard offset shadows · chunky display type
-   Appended last so it wins specificity for structural restyle.
+   MODERN POLISH LAYER  ·  soft elevation · 8px rhythm · ease-out
    ═══════════════════════════════════════════════════════════ */
 
-/* Paper grain — subtle dotted texture on the canvas */
-body {
-  background-color: var(--bg);
-  background-image: radial-gradient(var(--surface-3) 1px, transparent 1px);
-  background-size: 22px 22px;
-}
+body { background: var(--bg); }
 
-/* Display type for headings + wordmark */
-.panel-title, .brand-name, .footer-name, .life-stage-title,
-.highlight-val, .stat-value, h1, h2, h3 {
-  font-family: var(--display);
-  letter-spacing: -0.02em;
-}
-.panel-title { font-weight: 700; }
+/* Display font only for big hero numbers — restrained hierarchy */
+.highlight-val { font-family: var(--display); letter-spacing: -0.03em; font-weight: 700; }
+.panel-title { font-weight: 700; letter-spacing: -0.01em; }
 
-/* ── Cards & panels: thick border + hard shadow ── */
+/* ── Cards & panels: white, hairline, soft diffusion shadow ── */
 .stat-card, .chart-block, .inputs-panel, .results-panel,
-.highlight-result, .news-card, .life-stage, .instrument-card,
-.retire-breakdown, .manual-div-card, .hist-explain, .auto-result,
-.mode-hint, .calc-loan-row, .fire-flow, .zakat-pay-card,
-.compare-card, .data-table, .epf-advanced, .fire-advanced,
+.news-card, .life-stage, .instrument-card, .retire-breakdown,
+.manual-div-card, .hist-explain, .zakat-pay-card, .compare-card,
 .mode-compare-col {
-  border: var(--bw) solid var(--ink) !important;
-  border-radius: var(--radius) !important;
-  box-shadow: var(--shadow) !important;
-}
-
-/* Inner/secondary blocks: lighter (no double heavy shadow) */
-.auto-result, .mode-hint, .calc-loan-row, .hist-explain,
-.fire-flow, .retire-bd-row, .age-milestone-row {
-  box-shadow: var(--shadow-sm) !important;
-}
-.retire-bd-row, .age-milestone-row { border-width: 2px !important; }
-
-/* Cards lift+press interaction */
-.stat-card, .news-card, .instrument-card, .zakat-pay-link {
-  transition: transform var(--transition), box-shadow var(--transition);
-}
-.stat-card:hover, .news-card:hover, .instrument-card:hover, .zakat-pay-link:hover {
-  transform: translate(-2px,-2px);
-  box-shadow: var(--shadow-md) !important;
-}
-
-/* ── Header & nav: bold ink rules ── */
-.app-header {
-  border-bottom: var(--bw-lg) solid var(--ink);
-  box-shadow: 0 4px 0 var(--ink);
   background: var(--surface);
-}
-.brand-name {
-  font-family: var(--display);
-  font-weight: 700;
-  letter-spacing: -0.03em;
-}
-/* Logo chip — bordered box */
-.brand-mark {
-  border: var(--bw) solid var(--ink) !important;
-  border-radius: 8px !important;
-  box-shadow: var(--shadow-sm) !important;
-}
-.tab-nav {
-  border-bottom: var(--bw) solid var(--ink);
-  background: var(--surface);
-}
-.tab-btn { font-weight: 600; }
-.tab-btn.active { color: var(--ink); }
-/* Tab indicator → chunky underline */
-.tab-indicator {
-  height: 4px !important;
-  background: var(--accent) !important;
-  border-radius: 0 !important;
-  border-top: 1px solid var(--ink);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
 }
 
-/* ── Buttons: brutal chip with press ── */
-.hdr-btn, .table-toggle-btn, .manual-div-toggle-btn, .auto-fill-btn,
-.mode-btn, .news-filter-btn, .ph-btn {
-  border: var(--bw) solid var(--ink) !important;
-  border-radius: var(--radius-sm) !important;
-  box-shadow: var(--shadow-sm) !important;
-  font-weight: 600 !important;
-  background: var(--surface) !important;
-  color: var(--text-1) !important;
-  transition: transform var(--transition), box-shadow var(--transition), background var(--transition) !important;
-}
-.hdr-btn:hover, .table-toggle-btn:hover, .manual-div-toggle-btn:hover,
-.auto-fill-btn:hover, .mode-btn:hover, .news-filter-btn:hover {
-  transform: translate(-1px,-1px);
-  box-shadow: var(--shadow) !important;
-}
-.hdr-btn:active, .mode-btn:active, .news-filter-btn:active,
-.table-toggle-btn:active, .auto-fill-btn:active {
-  transform: translate(2px,2px);
-  box-shadow: 0 0 0 var(--ink) !important;
-}
-/* Active / selected state filled with accent */
-.mode-btn.active, .news-filter-btn.active {
-  background: var(--accent) !important;
-  color: #141414 !important;
-}
-/* Icon buttons (theme, dark, palette) get the chip too */
-.icon-btn {
-  border: var(--bw) solid var(--ink) !important;
-  border-radius: var(--radius-sm) !important;
-  box-shadow: var(--shadow-sm) !important;
-  background: var(--surface) !important;
-}
-.icon-btn:active { transform: translate(2px,2px); box-shadow: 0 0 0 var(--ink) !important; }
-
-/* ── Sliders: chunky track + square ink thumb ── */
-.slider {
-  height: 10px !important;
-  background: var(--surface-3) !important;
-  border: 2px solid var(--ink) !important;
-  border-radius: 999px !important;
-}
-.slider::-webkit-slider-thumb {
-  width: 24px !important; height: 24px !important;
-  background: var(--accent) !important;
-  border: 2.5px solid var(--ink) !important;
-  border-radius: 6px !important;
-  box-shadow: 2px 2px 0 var(--ink) !important;
-}
-.slider::-moz-range-thumb {
-  width: 24px !important; height: 24px !important;
-  background: var(--accent) !important;
-  border: 2.5px solid var(--ink) !important;
-  border-radius: 6px !important;
-}
-
-/* ── Value badges (click-to-edit) ── */
-.input-val {
-  border: 2px solid var(--ink) !important;
-  border-radius: var(--radius-sm) !important;
-  background: var(--accent-bg) !important;
-  color: var(--text-1) !important;
-  font-family: var(--mono) !important;
-  font-weight: 700 !important;
-  box-shadow: 1.5px 1.5px 0 var(--ink) !important;
-}
-
-/* ── Big numbers ── */
-.stat-value, .highlight-val { font-weight: 700; }
-.highlight-result {
-  background: var(--accent-bg) !important;
-}
-
-/* ── Badges (live, source, news) ── */
-.live-badge, .src-tag, .news-badge {
-  border: 2px solid var(--ink) !important;
-  border-radius: 999px !important;
-  box-shadow: 1.5px 1.5px 0 var(--ink) !important;
-  font-weight: 700 !important;
-}
-
-/* ── iOS switch → keep but ink border ── */
-.ios-switch {
-  border: 2.5px solid var(--ink) !important;
-  box-shadow: 2px 2px 0 var(--ink) !important;
-}
-.ios-switch-knob {
-  border: 2px solid var(--ink);
+/* Inner blocks stay flat (no cards-in-cards) */
+.auto-result, .calc-loan-row, .retire-bd-row, .age-milestone-row,
+.fire-flow, .mode-hint {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
   box-shadow: none;
 }
 
-/* ── Toggles (lang, mode) ── */
-.lang-toggle, .toggle-mode-row {
-  border: var(--bw) solid var(--ink) !important;
-  border-radius: var(--radius-sm) !important;
-  box-shadow: var(--shadow-sm) !important;
-  overflow: hidden;
+/* Hover lift on tappable cards — tactile, sub-300ms ease-out */
+.stat-card, .news-card, .instrument-card {
+  transition: transform var(--transition), box-shadow var(--transition);
 }
-.lang-toggle-btn.active { background: var(--accent) !important; color:#141414 !important; }
-
-/* ── Mode intro banner ── */
-.mode-banner { border-bottom: var(--bw) solid var(--ink); }
-.mode-banner-inner { }
-
-/* ── Footer ── */
-.app-footer { border-top: var(--bw-lg) solid var(--ink); }
-.footer-logo { border: 2px solid var(--ink); }
-
-/* ── Tooltips & popups: brutal ── */
-.tip-popup, #colorPickerPanel, .news-fallback-notice {
-  border: var(--bw) solid var(--ink) !important;
-  border-radius: var(--radius-sm) !important;
-  box-shadow: var(--shadow-md) !important;
+.stat-card:hover, .news-card:hover, .instrument-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+.stat-card:active, .news-card:active, .instrument-card:active {
+  transform: translateY(0) scale(0.992);
 }
 
-/* Color dots → square-ish with ink ring */
-.color-dot {
-  border: 2.5px solid var(--ink) !important;
-  border-radius: 6px !important;
-  box-shadow: 1.5px 1.5px 0 var(--ink);
+/* ── Header: clean, hairline, sticky ── */
+.app-header {
+  background: rgba(255,255,255,0.82);
+  backdrop-filter: saturate(1.4) blur(14px);
+  -webkit-backdrop-filter: saturate(1.4) blur(14px);
+  border-bottom: 1px solid var(--border);
+  box-shadow: none;
 }
-.color-dot.active { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--ink) !important; }
-
-/* Toast */
-.toast {
-  border: var(--bw) solid var(--ink) !important;
-  border-radius: var(--radius-sm) !important;
-  box-shadow: var(--shadow-md) !important;
-  font-weight: 600;
-}
-
-/* Reduced motion respect */
-@media (prefers-reduced-motion: reduce) {
-  .stat-card, .news-card, .instrument-card, .hdr-btn, .mode-btn,
-  .news-filter-btn { transition: none !important; }
-}
-
-
-/* ── EXTRA BRUTAL POLISH ── */
-/* Hero forecast number — oversized chunky */
-.highlight-val, #fcResultMain, .hero-number {
-  font-family: var(--display) !important;
-  font-weight: 700 !important;
-  letter-spacing: -0.04em !important;
-}
-/* Accent strip under header for a bolder identity */
-.app-header { position: relative; }
-.app-header::after {
-  content: '';
-  position: absolute;
-  left: 0; right: 0; bottom: -4px;
-  height: 4px;
-  background: repeating-linear-gradient(90deg,
-    var(--accent) 0, var(--accent) 24px,
-    var(--ink) 24px, var(--ink) 28px);
-}
-/* Brand mark — solid accent fill */
+[data-theme="dark"] .app-header { background: rgba(23,27,34,0.82); }
+.brand-name { font-weight: 700; letter-spacing: -0.02em; }
 .brand-mark {
+  border-radius: 12px !important;
+  box-shadow: 0 4px 12px -2px var(--accent-bg);
+}
+
+/* ── Tab nav: clean, smooth pill indicator ── */
+.tab-nav {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+.tab-btn { font-weight: 600; transition: color var(--transition); }
+.tab-indicator {
+  height: 3px !important;
+  border-radius: 999px !important;
   background: var(--accent) !important;
 }
-/* Section/panel titles get an accent underline tick */
-.panel-title {
-  display: inline-block;
+
+/* ── Buttons: rounded, tactile, accent primary ── */
+.hdr-btn, .table-toggle-btn, .manual-div-toggle-btn, .auto-fill-btn,
+.mode-btn, .news-filter-btn {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text-1);
+  font-weight: 600;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-fast), box-shadow var(--transition), background var(--transition), border-color var(--transition);
 }
-/* Stat values pop bigger */
-.stat-value { font-size: 1.55rem; }
-/* Big hero RM number */
-.highlight-val { font-size: clamp(2.4rem, 7vw, 3.6rem) !important; line-height: 1.02; }
+.hdr-btn:hover, .table-toggle-btn:hover, .manual-div-toggle-btn:hover,
+.auto-fill-btn:hover, .mode-btn:hover, .news-filter-btn:hover {
+  border-color: var(--accent-border);
+  box-shadow: var(--shadow);
+}
+.hdr-btn:active, .mode-btn:active, .news-filter-btn:active,
+.table-toggle-btn:active, .auto-fill-btn:active,
+.manual-div-toggle-btn:active {
+  transform: scale(0.97);
+}
+.mode-btn.active, .news-filter-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+/* Primary share button — accent filled */
+.hdr-btn.hdr-share, .hdr-btn[onclick*="shareURL"] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.hdr-btn.hdr-share:hover, .hdr-btn[onclick*="shareURL"]:hover {
+  box-shadow: var(--shadow-md);
+  filter: brightness(1.04);
+}
+
+.icon-btn {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-fast), border-color var(--transition);
+}
+.icon-btn:hover { border-color: var(--accent-border); }
+.icon-btn:active { transform: scale(0.94); }
+
+/* ── Sliders: clean track + soft accent thumb ── */
+.slider {
+  height: 6px !important;
+  background: var(--surface-3) !important;
+  border: none !important;
+  border-radius: 999px !important;
+}
+.slider::-webkit-slider-thumb {
+  width: 22px !important; height: 22px !important;
+  background: #fff !important;
+  border: 2px solid var(--accent) !important;
+  border-radius: 50% !important;
+  box-shadow: var(--shadow) !important;
+  transition: transform var(--transition-fast);
+}
+.slider::-webkit-slider-thumb:active { transform: scale(1.15); }
+.slider::-moz-range-thumb {
+  width: 22px !important; height: 22px !important;
+  background: #fff !important;
+  border: 2px solid var(--accent) !important;
+  border-radius: 50% !important;
+  box-shadow: var(--shadow) !important;
+}
+
+/* ── Value badge: subtle accent pill ── */
+.input-val {
+  border: none !important;
+  border-radius: 999px !important;
+  background: var(--accent-bg) !important;
+  color: var(--accent) !important;
+  font-family: var(--mono) !important;
+  font-weight: 600 !important;
+  box-shadow: none !important;
+}
+[data-theme="dark"] .input-val { color: var(--accent-2) !important; }
+
+/* Hero highlight block — subtle accent gradient wash */
+.highlight-result {
+  background: linear-gradient(135deg, var(--accent-bg), transparent 70%) !important;
+  border: 1px solid var(--accent-border) !important;
+  border-radius: var(--radius-lg) !important;
+}
+
+/* ── Badges: soft pills ── */
+.live-badge, .src-tag, .news-badge {
+  border: 1px solid var(--border) !important;
+  border-radius: 999px !important;
+  box-shadow: none !important;
+  font-weight: 600 !important;
+}
+.src-real { background: var(--bull-bg) !important; color: var(--bull) !important; border-color: transparent !important; }
+.src-manual { background: var(--base-bg) !important; color: var(--base) !important; border-color: transparent !important; }
+
+/* iOS switch — soft, no hard border */
+.ios-switch { border: 1px solid var(--border) !important; box-shadow: var(--shadow-sm) !important; }
+.ios-switch-knob { border: none; box-shadow: var(--shadow-sm); }
+
+/* Lang toggle / segmented */
+.lang-toggle {
+  border: 1px solid var(--border) !important;
+  border-radius: 999px !important;
+  box-shadow: var(--shadow-sm) !important;
+  overflow: hidden;
+  background: var(--surface) !important;
+}
+.lang-toggle-btn.active { background: var(--accent) !important; color: #fff !important; }
+
+/* Color dots — clean rings */
+.color-dot {
+  border: 2px solid var(--surface) !important;
+  border-radius: 50% !important;
+  box-shadow: 0 0 0 1px var(--border) !important;
+  transition: transform var(--transition-fast);
+}
+.color-dot:hover { transform: scale(1.12); }
+.color-dot.active { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--accent) !important; }
+
+/* Mode banner */
+.mode-banner { background: var(--accent-bg); border-bottom: 1px solid var(--accent-border); }
+
+/* Footer */
+.app-footer { border-top: 1px solid var(--border); background: var(--surface); }
+
+/* Tooltips / popups */
+.tip-popup, #colorPickerPanel, .news-fallback-notice, .toast {
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius) !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+
+/* Generous panel padding (8px rhythm) */
+.stat-card { padding: 20px; }
+.chart-block { padding: 20px; }
+
+/* Stat value sizing — hierarchy via weight not just scale */
+.stat-value { font-weight: 700; letter-spacing: -0.01em; }
+
+/* KWSP divider stays subtle */
+.kwsp-section-divider { border-top: 1px dashed var(--border); color: var(--accent); }
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
