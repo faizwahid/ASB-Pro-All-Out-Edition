@@ -95,6 +95,9 @@ const STRINGS = {
     zakat_links_title:'Bayar Zakat Secara Online',
     zakat_note:'Kaedah pengiraan zakat ASB berbeza mengikut negeri dan fatwa. Rujuk lembaga zakat negeri anda untuk kepastian hukum.',
     hist_title:'Sejarah Dividen ASB',
+        hist_col_source:'Sumber',
+    hist_explain_title:'Macam mana data ini dikemas kini?',
+    hist_explain_body:'App cuba ambil dividen terbaru terus dari laman web PNB. Bila berjaya, data disimpan kekal — tak perlu cari lagi. Penanda Rasmi = diumumkan PNB. Manual = anda masukkan sendiri. App tidak meneka dividen masa depan — hanya papar angka yang benar-benar diumumkan.',
     hist_desc:'Data dividen & bonus PNB 2010–2024 · Auto-dikemas kini bila ada pengumuman baharu',
     hist_avg_all:'Purata 2010–2024', hist_avg5:'Purata 5 Tahun',
     hist_high:'Tertinggi', hist_low:'Terendah', hist_overall:'Keseluruhan',
@@ -278,6 +281,9 @@ const STRINGS = {
     zakat_links_title:'Pay Zakat Online',
     zakat_note:"ASB zakat calculation methods vary by state and religious ruling. Refer to your state's Lembaga Zakat for authoritative guidance.",
     hist_title:'ASB Dividend History',
+        hist_col_source:'Source',
+    hist_explain_title:'How is this data updated?',
+    hist_explain_body:'The app fetches the latest dividend directly from the PNB website. Once successful, data is saved permanently — no need to fetch again. The Real tag = announced by PNB. Manual = you entered it. The app never guesses future dividends — it only shows officially announced figures.',
     hist_desc:'PNB dividend & bonus data 2010–2024 · Auto-updated on new announcements',
     hist_avg_all:'Average 2010–2024', hist_avg5:'5-Year Average',
     hist_high:'Highest', hist_low:'Lowest', hist_overall:'Overall',
@@ -459,28 +465,59 @@ function initColorTheme() {
 
 // ── DIVIDEND HISTORY ──
 let DIVIDEND_HISTORY = [
-  { year:2010, dividend:7.25, bonus:0.25 },
-  { year:2011, dividend:7.35, bonus:0.25 },
-  { year:2012, dividend:7.65, bonus:0.25 },
-  { year:2013, dividend:7.25, bonus:0.25 },
-  { year:2014, dividend:7.50, bonus:0.25 },
-  { year:2015, dividend:7.50, bonus:0.25 },
-  { year:2016, dividend:6.50, bonus:0.25 },
-  { year:2017, dividend:7.25, bonus:0.25 },
-  { year:2018, dividend:6.00, bonus:0.25 },
-  { year:2019, dividend:5.50, bonus:0.25 },
-  { year:2020, dividend:4.25, bonus:0 },
-  { year:2021, dividend:5.00, bonus:0 },
-  { year:2022, dividend:5.00, bonus:0 },
-  { year:2023, dividend:5.00, bonus:0 },
-  { year:2024, dividend:5.00, bonus:0 },
+  { year:2010, dividend:7.25, bonus:0.25, src:'official' },
+  { year:2011, dividend:7.35, bonus:0.25, src:'official' },
+  { year:2012, dividend:7.65, bonus:0.25, src:'official' },
+  { year:2013, dividend:7.25, bonus:0.25, src:'official' },
+  { year:2014, dividend:7.50, bonus:0.25, src:'official' },
+  { year:2015, dividend:7.50, bonus:0.25, src:'official' },
+  { year:2016, dividend:6.50, bonus:0.25, src:'official' },
+  { year:2017, dividend:7.25, bonus:0.25, src:'official' },
+  { year:2018, dividend:6.00, bonus:0.25, src:'official' },
+  { year:2019, dividend:5.50, bonus:0.25, src:'official' },
+  { year:2020, dividend:4.25, bonus:0, src:'official' },
+  { year:2021, dividend:5.00, bonus:0, src:'official' },
+  { year:2022, dividend:5.00, bonus:0, src:'official' },
+  { year:2023, dividend:5.00, bonus:0, src:'official' },
+  { year:2024, dividend:5.00, bonus:0, src:'official' },
 ];
+
+// Merge any previously-saved dividends (accumulates year over year, persists forever)
+(function loadSavedDividends() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(DIV_SAVED_KEY) || '[]');
+    if (Array.isArray(saved)) {
+      saved.forEach(s => {
+        if (!s || !s.year || s.year > new Date().getFullYear()-1) return;
+        const idx = DIVIDEND_HISTORY.findIndex(r => r.year === s.year);
+        const e = { year:s.year, dividend:s.dividend, bonus:s.bonus||0, src:s.src||'official' };
+        if (idx >= 0) DIVIDEND_HISTORY[idx] = e;
+        else DIVIDEND_HISTORY.push(e);
+      });
+      DIVIDEND_HISTORY.sort((a,b)=>a.year-b.year);
+    }
+  } catch {}
+})();
+
+// Save a dividend permanently to the accumulated store
+function persistDividend(year, dividend, bonus, src) {
+  try {
+    const saved = JSON.parse(localStorage.getItem(DIV_SAVED_KEY) || '[]');
+    const arr = Array.isArray(saved) ? saved : [];
+    const idx = arr.findIndex(s => s.year === year);
+    const entry = { year, dividend, bonus:bonus||0, src: src||'official' };
+    if (idx >= 0) arr[idx] = entry;
+    else arr.push(entry);
+    localStorage.setItem(DIV_SAVED_KEY, JSON.stringify(arr));
+  } catch {}
+}
 
 
 // ── LIVE DIVIDEND FETCH ──
 // Cache key & TTL
 const DIV_CACHE_KEY = 'asb-pro-div-live';
 const DIV_MANUAL_KEY = 'asb-pro-div-manual';
+const DIV_SAVED_KEY  = 'asb-pro-div-saved'; // accumulated fetched/manual history (persists)
 const DIV_CACHE_TTL = 12 * 60 * 60 * 1000; // 12 jam
 const STATE_KEY    = 'asb-pro-state';
 
@@ -497,18 +534,22 @@ async function fetchLatestDividend() {
     }
   } catch {}
 
-  // 1. Check live cache
+  // 1. ALREADY HAVE target year permanently saved? → don't fetch again, ever.
   try {
-    const cached = JSON.parse(localStorage.getItem(DIV_CACHE_KEY)||'null');
-    if (cached && cached.year === targetYear && (Date.now()-cached.ts) < DIV_CACHE_TTL) {
-      // If user has manual for same year and it differs → prompt
-      if (manualEntry && manualEntry.year === cached.year &&
-          (manualEntry.dividend !== cached.dividend || (manualEntry.bonus||0) !== (cached.bonus||0))) {
-        promptDividendConflict(cached, manualEntry);
-      } else if (!manualEntry) {
-        applyLiveDividend(cached.year, cached.dividend, cached.bonus||0, cached.src, false);
+    const saved = JSON.parse(localStorage.getItem(DIV_SAVED_KEY) || '[]');
+    const savedTarget = Array.isArray(saved) ? saved.find(s => s.year === targetYear) : null;
+    if (savedTarget) {
+      // Target year is locked in — show it, skip all network calls
+      const bStr = savedTarget.bonus > 0 ? ` + ${savedTarget.bonus}% bonus` : '';
+      // Manual conflict still respected
+      if (manualEntry && manualEntry.year === targetYear &&
+          manualEntry.dividend !== savedTarget.dividend) {
+        // manual already shown above; leave it (user's choice persists)
+        setLiveBadge('live', `${manualEntry.year}: ${manualEntry.dividend.toFixed(2)}% (Manual)`);
+      } else {
+        setLiveBadge('live', `${savedTarget.year}: ${savedTarget.dividend.toFixed(2)}%${bStr} (Tersimpan)`);
       }
-      return;
+      return; // ← no network fetch needed
     }
   } catch {}
 
@@ -543,6 +584,24 @@ async function fetchLatestDividend() {
     return dividend > 0 ? { dividend, bonus } : null;
   }
 
+  // Parse MULTIPLE year→rate pairs from a page (PNB announcement lists several years)
+  function parseMultiYear(text) {
+    const results = [];
+    const maxYear = new Date().getFullYear() - 1;
+    // Look for patterns like "2024 ... 5.00 sen" or "tahun kewangan 2024 ... 5.00%"
+    // Match a 4-digit year (2010-2026) within ~80 chars of a rate
+    const yearRate = /(20[12]\d)[^0-9]{0,80}?(\d{1,2}[.,]\d{2})\s*(?:sen|%|peratus)/gi;
+    let m;
+    while ((m = yearRate.exec(text)) !== null) {
+      const year = parseInt(m[1]);
+      const rate = parseFloat(m[2].replace(',','.'));
+      if (year >= 2010 && year <= maxYear && rate > 1 && rate < 15) {
+        if (!results.find(r=>r.year===year)) results.push({ year, dividend:rate, bonus:0 });
+      }
+    }
+    return results;
+  }
+
   // 2. Try PNB website (domain confirmed stable)
   const pnbPages = [
     'https://www.pnb.com.my/index.php/pengumuman-agihan',
@@ -565,8 +624,32 @@ async function fetchLatestDividend() {
         } else {
           text = await resp.text();
         }
+        // First try multi-year: grab ALL years available on the page
+        const multi = parseMultiYear(text);
+        if (multi.length) {
+          let newestApplied = null;
+          multi.forEach(d => {
+            persistDividend(d.year, d.dividend, d.bonus);   // save permanently
+            const idx = DIVIDEND_HISTORY.findIndex(r=>r.year===d.year);
+            if (idx>=0) DIVIDEND_HISTORY[idx] = d; else DIVIDEND_HISTORY.push(d);
+            if (!newestApplied || d.year > newestApplied.year) newestApplied = d;
+          });
+          DIVIDEND_HISTORY.sort((a,b)=>a.year-b.year);
+          updateHistory(); updateDashboard();
+          // Handle manual conflict for the newest year
+          if (manualEntry && newestApplied && manualEntry.year === newestApplied.year &&
+              manualEntry.dividend !== newestApplied.dividend) {
+            promptDividendConflict({...newestApplied, src:'PNB Website'}, manualEntry);
+          } else if (newestApplied) {
+            const bStr = newestApplied.bonus>0?` + ${newestApplied.bonus}% bonus`:'';
+            setLiveBadge('live', `${newestApplied.year}: ${newestApplied.dividend.toFixed(2)}%${bStr} (PNB)`);
+          }
+          return;
+        }
+        // Fallback: single-value parse
         const found = parseDivBonus(text);
         if (found) {
+          persistDividend(targetYear, found.dividend, found.bonus);
           if (manualEntry && manualEntry.year === targetYear &&
               (manualEntry.dividend !== found.dividend || (manualEntry.bonus||0) !== (found.bonus||0))) {
             cacheLiveDividend(targetYear, found.dividend, found.bonus, 'PNB Website');
@@ -592,6 +675,7 @@ async function fetchLatestDividend() {
         const raw = (item.title||'') + ' ' + (item.description||'');
         const found = parseDivBonus(raw);
         if (found) {
+          persistDividend(targetYear, found.dividend, found.bonus);
           if (manualEntry && manualEntry.year === targetYear &&
               (manualEntry.dividend !== found.dividend || (manualEntry.bonus||0) !== (found.bonus||0))) {
             cacheLiveDividend(targetYear, found.dividend, found.bonus, 'Berita');
@@ -632,8 +716,9 @@ function saveManualDividend() {
     showToast(state.lang==='en' ? 'Enter a valid dividend %' : 'Masukkan kadar dividen yang sah');
     return;
   }
-  // Persist as MANUAL (separate from auto cache)
+  // Persist as MANUAL (separate) AND in accumulated history
   try { localStorage.setItem(DIV_MANUAL_KEY, JSON.stringify({ year, dividend:divRate, bonus })); } catch {}
+  persistDividend(year, divRate, bonus, 'manual');
   applyLiveDividend(year, divRate, bonus, 'Manual', true, true);
   document.getElementById('manualDivCard')?.classList.add('hidden');
   showToast(state.lang==='en'
@@ -1757,9 +1842,13 @@ function updateAgePlan() {
 function applyUIMode(mode) {
   state.uiMode = (mode === 'pro') ? 'pro' : 'normal';
   document.documentElement.setAttribute('data-uimode', state.uiMode);
-  // Update slide switch state
+  // Update pill button: label + icon reflect CURRENT mode
   const sw = document.getElementById('uiModeSwitch');
   if (sw) sw.setAttribute('data-uimode', state.uiMode);
+  const label = document.getElementById('uiModeLabel');
+  if (label) label.textContent = (state.uiMode === 'pro') ? t('ui_pro') : t('ui_normal');
+  const icon = document.getElementById('uiModeIcon');
+  if (icon) icon.className = (state.uiMode === 'pro') ? 'ph ph-sliders-horizontal' : 'ph ph-sliders-horizontal';
   try { localStorage.setItem('asb-pro-uimode', state.uiMode); } catch {}
 }
 
@@ -1890,11 +1979,19 @@ function buildHistoryTable(totals) {
         : total<prev ? '<span class="trend-down"><i class="ph ph-trend-down"></i></span>'
         : '<span class="trend-same">→</span>';
     }
+    // Source badge: official (PNB announced) vs manual (user entered)
+    let srcBadge;
+    if (r.src === 'manual') {
+      srcBadge = `<span class="src-tag src-manual" title="${state.lang==='en'?'You entered this':'Anda masukkan'}">${state.lang==='en'?'Manual':'Manual'}</span>`;
+    } else {
+      srcBadge = `<span class="src-tag src-real" title="${state.lang==='en'?'Officially announced by PNB':'Diumumkan rasmi oleh PNB'}"><i class="ph ph-seal-check"></i> ${state.lang==='en'?'Real':'Rasmi'}</span>`;
+    }
     return `<tr>
       <td>${r.year}</td>
       <td>${fmtPct(r.dividend)}</td>
       <td>${r.bonus>0?fmtPct(r.bonus):'—'}</td>
       <td style="font-weight:700;color:var(--text-1)">${fmtPct(total)}</td>
+      <td>${srcBadge}</td>
       <td>${trend}</td>
     </tr>`;
   }).join('');
@@ -2219,12 +2316,28 @@ const NEWS_FEEDS = {
   'default':  'https://news.google.com/rss/search?q=Malaysia%20pelaburan&hl=ms&gl=MY&ceid=MY:ms',
 };
 
+function setNewsBadge(status) {
+  const badge = document.getElementById('newsBadge');
+  const text  = document.getElementById('newsBadgeText');
+  if (!badge || !text) return;
+  badge.style.display = 'inline-flex';
+  badge.className = 'news-badge news-badge-' + status;
+  const labels = {
+    loading: state.lang==='en' ? 'Loading…' : 'Memuatkan…',
+    live:    'LIVE',
+    static:  state.lang==='en' ? 'Static' : 'Statik',
+  };
+  text.textContent = labels[status] || '';
+}
+
 async function loadNews(feedKey) {
   const grid = el('newsGrid');
   if (!grid) return;
+  setNewsBadge('loading');
   feedKey = feedKey || 'asb';
   if (_newsCache && _newsCache.feed === feedKey) {
     grid.innerHTML = _newsCache.html;
+    setNewsBadge('live');
     return;
   }
   grid.innerHTML = '<div class="skeleton"></div>'.repeat(6);
@@ -2251,6 +2364,7 @@ async function loadNews(feedKey) {
     if (!html) return false;
     grid.innerHTML = html;
     try { _newsCache = { feed: feedKey, html }; } catch {}
+    setNewsBadge('live');
     return true;
   };
 
@@ -2349,6 +2463,7 @@ async function loadNews(feedKey) {
     ? 'Live feed busy right now — trusted sources below'
     : 'Suapan langsung sibuk — sumber dipercayai di bawah';
   const visitText = state.lang==='en' ? 'Tap to visit' : 'Ketik untuk lawati';
+  setNewsBadge('static');
   grid.innerHTML = `
     <div class="news-fallback-notice" style="grid-column:1/-1">
       <i class="ph ph-info"></i>

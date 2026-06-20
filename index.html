@@ -20,7 +20,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
   <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
-  <link rel="stylesheet" href="style.css?v=20260620d">
+  <link rel="stylesheet" href="style.css?v=20260620i">
 </head>
 <body>
   <header class="app-header">
@@ -52,12 +52,9 @@
           <button class="lang-toggle-btn" data-lang="en">EN</button>
         </div>
         <!-- Normal/Pro mode toggle -->
-        <button class="ui-switch" id="uiModeSwitch" data-uimode="normal" title="Standard / Pro" aria-label="Mode">
-          <span class="ui-switch-track">
-            <span class="ui-switch-label ui-switch-label-left" data-i18n="ui_normal">Standard</span>
-            <span class="ui-switch-label ui-switch-label-right" data-i18n="ui_pro">Pro</span>
-            <span class="ui-switch-thumb"></span>
-          </span>
+        <button class="ui-mode-pill" id="uiModeSwitch" data-uimode="normal" title="Tukar mod paparan" aria-label="Mode">
+          <i class="ph ph-sliders-horizontal" id="uiModeIcon"></i>
+          <span id="uiModeLabel" data-i18n="ui_normal">Standard</span>
         </button>
         <button class="hdr-btn" onclick="shareURL()">
           <i class="ph ph-link"></i><span data-i18n="hdr_share">Kongsi Link</span>
@@ -431,8 +428,15 @@
     <!-- ============ HISTORY ============ -->
     <section class="tab-panel" id="panel-history">
       <div class="hist-panel-header panel-header">
-        <div><h2 class="panel-title" data-i18n="hist_title">Sejarah Dividen ASB</h2><p class="panel-desc" data-i18n="hist_desc">Data dividen &amp; bonus PNB 2010–2024 · Auto-dikemas kini bila ada pengumuman baharu</p></div>
+        <div><h2 class="panel-title" data-i18n="hist_title">Sejarah Dividen ASB</h2><p class="panel-desc" data-i18n="hist_desc">Data dividen &amp; bonus rasmi PNB dari 2010</p></div>
         <div class="live-badge live-static" id="histLiveBadge" style="display:none"><span class="live-dot"></span><span id="histLiveBadgeText">—</span></div>
+      </div>
+      <div class="hist-explain">
+        <i class="ph ph-info"></i>
+        <div>
+          <strong data-i18n="hist_explain_title">Macam mana data ini dikemas kini?</strong>
+          <p data-i18n="hist_explain_body">App cuba ambil dividen terbaru terus dari laman web PNB. Bila berjaya, data disimpan kekal — tak perlu cari lagi. Penanda <b>Rasmi</b> = diumumkan PNB. <b>Manual</b> = anda masukkan sendiri. App tidak meneka dividen masa depan — hanya papar angka yang benar-benar diumumkan.</p>
+        </div>
       </div>
       <div class="stats-grid stats-grid-4">
         <div class="stat-card"><div class="stat-label" data-i18n="hist_avg_all">Purata 2010–2024</div><div class="stat-value accent" id="histAvgAll">—</div><div class="stat-sub" data-i18n="hist_overall">Keseluruhan</div></div>
@@ -441,7 +445,7 @@
         <div class="stat-card"><div class="stat-label" data-i18n="hist_low">Terendah</div><div class="stat-value" id="histLow">—</div><div class="stat-sub" id="histLowYear">—</div></div>
       </div>
       <div class="chart-block"><div class="chart-header"><span class="chart-title" data-i18n="hist_chart_title">Dividen &amp; Bonus Tahunan (%)</span><span class="chart-legend"><span class="leg-item"><span class="leg-dot base"></span><span data-i18n="th_dividend">Dividen</span></span><span class="leg-item"><span class="leg-dot bull"></span><span data-i18n="hist_col_bonus">Bonus</span></span></span></div><div class="chart-wrap h300"><canvas id="histChart"></canvas></div></div>
-      <div class="data-table"><table><thead><tr><th data-i18n="hist_col_year">Tahun</th><th data-i18n="hist_col_div">Dividen</th><th data-i18n="hist_col_bonus">Bonus</th><th data-i18n="hist_col_total">Jumlah</th><th data-i18n="hist_col_trend">Trend</th></tr></thead><tbody id="histTableBody"></tbody></table></div>
+      <div class="data-table"><table><thead><tr><th data-i18n="hist_col_year">Tahun</th><th data-i18n="hist_col_div">Dividen</th><th data-i18n="hist_col_bonus">Bonus</th><th data-i18n="hist_col_total">Jumlah</th><th data-i18n="hist_col_source">Sumber</th><th data-i18n="hist_col_trend">Trend</th></tr></thead><tbody id="histTableBody"></tbody></table></div>
       <!-- Manual entry toggle button -->
       <div class="manual-div-toggle-row">
         <button class="manual-div-toggle-btn" id="manualDivToggle" onclick="toggleManualDividend()">
@@ -572,10 +576,16 @@
           <h2 class="panel-title" data-i18n="news_title">Berita ASB &amp; Pelaburan</h2>
           <p class="panel-desc" data-i18n="news_desc">Berita terkini berkaitan ASB, PNB dan pasaran kewangan Malaysia</p>
         </div>
-        <button class="hdr-btn" onclick="refreshNews()">
-          <i class="ph ph-arrows-clockwise"></i>
-          <span data-i18n="news_refresh">Muat Semula</span>
-        </button>
+        <div class="news-header-actions">
+          <span class="news-badge news-badge-loading" id="newsBadge" style="display:none">
+            <span class="news-badge-dot"></span>
+            <span id="newsBadgeText">—</span>
+          </span>
+          <button class="hdr-btn" onclick="refreshNews()">
+            <i class="ph ph-arrows-clockwise"></i>
+            <span data-i18n="news_refresh">Muat Semula</span>
+          </button>
+        </div>
       </div>
       <div class="news-filters" id="newsTopics">
         <button class="news-filter-btn active" data-feed="asb">ASB / PNB</button>
@@ -613,6 +623,6 @@
     onerror="var s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.3/chart.umd.min.js';document.head.appendChild(s);"
   ></script>
   <!-- app.js — has built-in retry that waits for Chart.js to be ready -->
-  <script src="app.js?v=20260620d"></script>
+  <script src="app.js?v=20260620i"></script>
 </body>
 </html>

@@ -1639,8 +1639,8 @@ tbody tr:hover { background: var(--surface-2); }
 .app-footer {
   border-top: 1px solid var(--border);
   background: var(--surface);
-  margin-top: 1.5rem;
-  padding: 1rem 1.25rem;
+  margin-top: 1rem;
+  padding: 0.6rem 1rem;
 }
 .footer-inner {
   max-width: 1400px;
@@ -1649,33 +1649,33 @@ tbody tr:hover { background: var(--surface-2); }
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 0.4rem 0.6rem;
+  gap: 0.25rem 0.5rem;
   text-align: center;
 }
 .footer-top {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: 0.3rem;
 }
 .footer-logo {
-  width: 16px;
-  height: 16px;
-  border-radius: 4px;
+  width: 13px;
+  height: 13px;
+  border-radius: 3px;
   background: var(--brand-gradient, linear-gradient(135deg, var(--accent), var(--accent-2)));
   flex-shrink: 0;
 }
 .footer-name {
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   font-weight: 700;
-  color: var(--text-1);
+  color: var(--text-2);
 }
 .footer-credit {
-  font-size: 0.72rem;
-  color: var(--text-3);
+  font-size: 0.66rem;
+  color: var(--text-4);
 }
-.footer-credit strong { color: var(--accent); font-weight: 600; }
+.footer-credit strong { color: var(--text-3); font-weight: 600; }
 .footer-disclaimer {
-  font-size: 0.68rem;
+  font-size: 0.62rem;
   color: var(--text-4);
   font-style: italic;
 }
@@ -1873,62 +1873,35 @@ tbody tr:hover { background: var(--surface-2); }
 }
 
 /* ══════════════════════════════════════════
-   STANDARD / PRO SLIDE SWITCH
+   STANDARD / PRO MODE PILL
    ══════════════════════════════════════════ */
-.ui-switch {
-  border: none;
-  background: none;
-  padding: 0;
-  cursor: pointer;
+.ui-mode-pill {
   display: inline-flex;
   align-items: center;
-}
-.ui-switch-track {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  width: 116px;
-  height: 30px;
+  gap: 0.4rem;
+  padding: 0.4rem 0.75rem;
   background: var(--surface-3);
   border: 1px solid var(--border);
   border-radius: 999px;
-  transition: background var(--transition);
-  overflow: hidden;
+  color: var(--text-2);
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all var(--transition);
 }
-.ui-switch-label {
-  flex: 1;
-  text-align: center;
-  font-size: 0.72rem;
-  font-weight: 700;
-  z-index: 2;
-  transition: color var(--transition);
-  user-select: none;
-  letter-spacing: 0.01em;
+.ui-mode-pill i { font-size: 0.95rem; }
+.ui-mode-pill:hover {
+  border-color: var(--accent-border);
+  color: var(--text-1);
 }
-.ui-switch-label-left { color: var(--text-1); }
-.ui-switch-label-right { color: var(--text-4); }
-.ui-switch-thumb {
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: calc(50% - 3px);
-  height: calc(100% - 4px);
-  background: var(--surface);
-  border-radius: 999px;
-  box-shadow: var(--shadow-sm);
-  transition: transform var(--transition), background var(--transition);
-  z-index: 1;
+/* Pro mode — pill lights up with accent */
+.ui-mode-pill[data-uimode="pro"] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  box-shadow: 0 0 10px var(--accent-border);
 }
-/* Pro mode active — thumb slides right, glows */
-.ui-switch[data-uimode="pro"] .ui-switch-thumb {
-  transform: translateX(100%);
-  background: var(--brand-gradient, linear-gradient(135deg, var(--accent), var(--accent-2)));
-  box-shadow: 0 0 12px var(--accent-border), var(--shadow-sm);
-}
-.ui-switch[data-uimode="pro"] .ui-switch-label-right { color: #fff; }
-.ui-switch[data-uimode="pro"] .ui-switch-label-left { color: var(--text-4); }
-/* Standard mode — left label dark, right dim */
-.ui-switch[data-uimode="normal"] .ui-switch-label-left { color: var(--text-1); }
 
 /* Hide pro-only elements in Standard mode */
 html[data-uimode="normal"] .pro-only {
@@ -1962,3 +1935,112 @@ html[data-uimode="normal"] .pro-only {
   border-style: solid;
 }
 .manual-div-toggle-btn i { font-size: 1rem; }
+
+/* ── HISTORY: SOURCE TAGS + EXPLANATION ── */
+.hist-explain {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  padding: 0.85rem 1rem;
+  background: var(--accent-bg);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius);
+  margin-bottom: 1rem;
+}
+.hist-explain > i {
+  font-size: 1.2rem;
+  color: var(--accent);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.hist-explain strong {
+  display: block;
+  font-size: 0.82rem;
+  color: var(--text-1);
+  margin-bottom: 0.25rem;
+}
+.hist-explain p {
+  font-size: 0.74rem;
+  color: var(--text-3);
+  line-height: 1.5;
+  margin: 0;
+}
+.hist-explain b { color: var(--text-2); font-weight: 600; }
+
+.src-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 0.66rem;
+  font-weight: 600;
+  padding: 0.15rem 0.45rem;
+  border-radius: 5px;
+  white-space: nowrap;
+}
+.src-real {
+  background: var(--bull-bg);
+  color: var(--bull);
+}
+.src-real i { font-size: 0.75rem; }
+.src-manual {
+  background: var(--base-bg);
+  color: var(--base);
+}
+
+/* ── NEWS LIVE BADGE ── */
+.news-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.news-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  text-transform: uppercase;
+}
+.news-badge-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+/* Loading */
+.news-badge-loading {
+  background: var(--surface-3);
+  color: var(--text-3);
+}
+.news-badge-loading .news-badge-dot {
+  background: var(--text-4);
+  animation: news-pulse 1s ease-in-out infinite;
+}
+/* Live — green pulsing */
+.news-badge-live {
+  background: var(--bull-bg);
+  color: var(--bull);
+}
+.news-badge-live .news-badge-dot {
+  background: var(--bull);
+  animation: news-pulse 1.5s ease-in-out infinite;
+}
+/* Static — grey, no pulse */
+.news-badge-static {
+  background: var(--surface-3);
+  color: var(--text-3);
+}
+.news-badge-static .news-badge-dot {
+  background: var(--text-4);
+}
+@keyframes news-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.8); }
+}
+
+@media (max-width: 600px) {
+  .news-badge { font-size: 0.62rem; padding: 0.2rem 0.5rem; }
+}
