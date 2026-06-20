@@ -164,8 +164,14 @@ const STRINGS = {
     age_current:'Umur Sekarang', age_retire:'Umur Nak Bersara',
     age_savings:'Simpanan Sekarang', age_monthly:'Boleh Tabung Sebulan',
     age_years_left:'Tahun Sehingga Bersara',
-    age_at_retire:'Nilai Masa Bersara', age_monthly_income:'Pendapatan Bulanan (4%)',
-    age_monthly_income_sub:'Jika keluar 4%/tahun',
+    age_at_retire:'Umur Bersara', age_monthly_income:'Pendapatan Bulanan (4%)',
+    age_monthly_income_sub:'Jumlah ÷ 4% ÷ 12 bulan',
+    age_kwsp_section:'KWSP / EPF',
+    age_salary:'Gaji Bulanan',
+    age_kwsp_monthly:'Caruman KWSP/bulan (23%):',
+    age_kwsp_current:'Simpanan KWSP Sekarang',
+    age_breakdown_title:'Nilai Masa Bersara',
+    age_total:'JUMLAH',
     age_instruments:'Pilihan Instrumen Untuk Anda',
     age_timeline:'Unjuran Sehingga Bersara',
     age_milestones:'Pencapaian Ikut Umur (ASB 5%)',
@@ -349,8 +355,14 @@ const STRINGS = {
     age_current:'Current Age', age_retire:'Retirement Age',
     age_savings:'Current Savings', age_monthly:'Monthly Saving',
     age_years_left:'Years Until Retirement',
-    age_at_retire:'Value at Retirement', age_monthly_income:'Monthly Income (4%)',
-    age_monthly_income_sub:'If withdrawing 4%/year',
+    age_at_retire:'Retirement Age', age_monthly_income:'Monthly Income (4%)',
+    age_monthly_income_sub:'Total ÷ 4% ÷ 12 months',
+    age_kwsp_section:'EPF / KWSP',
+    age_salary:'Monthly Salary',
+    age_kwsp_monthly:'EPF contribution/mo (23%):',
+    age_kwsp_current:'Current EPF Savings',
+    age_breakdown_title:'Value at Retirement',
+    age_total:'TOTAL',
     age_instruments:'Instrument Options For You',
     age_timeline:'Projection Until Retirement',
     age_milestones:'Milestones by Age (ASB 5%)',
@@ -830,6 +842,7 @@ const state = {
   zakatRate:2.5, zakatBasis:'balance', zakatBalance:0, zakatDividend:0,
   // Age plan
   ageCurrent:30, ageRetire:60, ageSavings:20000, ageMonthly:500,
+  ageSalary:4000, ageKwspCurrent:30000,
   uiMode:'normal', // 'normal' hides complex details, 'pro' shows all
 };
 
@@ -933,6 +946,7 @@ function applyStateToInputs() {
     zakatRate:'zakatRate',
     ageCurrent:'ageCurrent', ageRetire:'ageRetire',
     ageSavings:'ageSavings', ageMonthly:'ageMonthly',
+    ageSalary:'ageSalary', ageKwspCurrent:'ageKwspCurrent',
   };
   Object.entries(map).forEach(([stateKey, inputId]) => {
     const inp = el(inputId);
@@ -1721,7 +1735,7 @@ function updateZakat() {
 
 // ── UPDATE AGE PLAN ──
 function updateAgePlan() {
-  const { ageCurrent, ageRetire, ageSavings, ageMonthly } = state;
+  const { ageCurrent, ageRetire, ageSavings, ageMonthly, ageSalary, ageKwspCurrent } = state;
   const yearsLeft = Math.max(0, ageRetire - ageCurrent);
 
   setText('ageYearsLeft', yearsLeft > 0
@@ -1769,16 +1783,40 @@ function updateAgePlan() {
   const iconEl = el('lifeStageIcon');
   if (iconEl) iconEl.innerHTML = `<i class="ph ${stageIcon}"></i>`;
 
-  // Projection at retirement (ASB 5% as primary)
+  // ── ASB projection (5%) ──
   const asbProj = calcForecast(ageSavings, ageMonthly, 5, Math.max(1,yearsLeft), 0);
-  const retireValue = yearsLeft > 0 ? asbProj[asbProj.length-1].balance : ageSavings;
-  animateCounter(el('ageRetireValue'), retireValue, fmt);
-  setText('ageRetireSub', state.lang==='en'
-    ? `At age ${ageRetire}, ASB 5%`
-    : `Pada umur ${ageRetire}, ASB 5%`);
-  // Monthly income from 4% withdrawal
-  const monthlyIncome = (retireValue * 0.04) / 12;
+  const asbValue = yearsLeft > 0 ? asbProj[asbProj.length-1].balance : ageSavings;
+
+  // ── KWSP/EPF projection (6.3%) ──
+  // Monthly contribution = 23% of salary (11% employee + 12% employer; 13% if salary ≤ RM5000)
+  const epfRate = ageSalary <= 5000 ? 0.24 : 0.23; // 11+13 vs 11+12
+  const kwspMonthly = ageSalary * epfRate;
+  setText('ageKwspMonthly', fmt(kwspMonthly));
+  // FV: current KWSP grows + monthly contributions grow, at 6.3%
+  let kwspValue = ageKwspCurrent;
+  if (yearsLeft > 0) {
+    const epfProj = calcForecast(ageKwspCurrent, kwspMonthly, 6.3, yearsLeft, 0);
+    kwspValue = epfProj[epfProj.length-1].balance;
+  }
+
+  const totalValue = asbValue + kwspValue;
+
+  // Breakdown display
+  animateCounter(el('ageAsbValue'), asbValue, fmt);
+  animateCounter(el('ageKwspValue'), kwspValue, fmt);
+  animateCounter(el('ageTotalValue'), totalValue, fmt);
+
+  // Retirement age stat
+  setText('ageRetireValue', `${ageRetire} ${state.lang==='en'?'yrs':'thn'}`);
+  setText('ageRetireSub', yearsLeft > 0
+    ? (state.lang==='en' ? `In ${yearsLeft} years` : `Dalam ${yearsLeft} tahun`)
+    : (state.lang==='en' ? 'Now' : 'Sekarang'));
+
+  // Monthly income from 4% of TOTAL (ASB + KWSP)
+  const monthlyIncome = (totalValue * 0.04) / 12;
   animateCounter(el('ageMonthlyIncome'), monthlyIncome, fmt);
+
+  const retireValue = totalValue; // for milestone use below
 
   // Timeline chart — 3 instruments
   const yrs = Math.max(1, yearsLeft);
@@ -1842,13 +1880,10 @@ function updateAgePlan() {
 function applyUIMode(mode) {
   state.uiMode = (mode === 'pro') ? 'pro' : 'normal';
   document.documentElement.setAttribute('data-uimode', state.uiMode);
-  // Update pill button: label + icon reflect CURRENT mode
   const sw = document.getElementById('uiModeSwitch');
   if (sw) sw.setAttribute('data-uimode', state.uiMode);
   const label = document.getElementById('uiModeLabel');
   if (label) label.textContent = (state.uiMode === 'pro') ? t('ui_pro') : t('ui_normal');
-  const icon = document.getElementById('uiModeIcon');
-  if (icon) icon.className = (state.uiMode === 'pro') ? 'ph ph-sliders-horizontal' : 'ph ph-sliders-horizontal';
   try { localStorage.setItem('asb-pro-uimode', state.uiMode); } catch {}
 }
 
@@ -2056,6 +2091,8 @@ function setupSliders() {
     { id:'ageRetire',   key:'ageRetire',   disp:'ageRetireVal',  fmt:v=>`${v} ${state.lang==='en'?'yrs':'tahun'}` },
     { id:'ageSavings',  key:'ageSavings',  disp:'ageSavingsVal', fmt:v=>`RM ${(+v).toLocaleString('en-MY')}` },
     { id:'ageMonthly',  key:'ageMonthly',  disp:'ageMonthlyVal', fmt:v=>`RM ${(+v).toLocaleString('en-MY')}` },
+    { id:'ageSalary',   key:'ageSalary',   disp:'ageSalaryVal',  fmt:v=>`RM ${(+v).toLocaleString('en-MY')}` },
+    { id:'ageKwspCurrent', key:'ageKwspCurrent', disp:'ageKwspCurrentVal', fmt:v=>`RM ${(+v).toLocaleString('en-MY')}` },
   ];
 
   configs.forEach(({ id, key, disp, fmt:f }) => {

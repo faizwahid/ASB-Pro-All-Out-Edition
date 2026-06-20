@@ -20,7 +20,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
   <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
-  <link rel="stylesheet" href="style.css?v=20260620i">
+  <link rel="stylesheet" href="style.css?v=20260620j">
 </head>
 <body>
   <header class="app-header">
@@ -51,10 +51,12 @@
           <button class="lang-toggle-btn active" data-lang="bm">BM</button>
           <button class="lang-toggle-btn" data-lang="en">EN</button>
         </div>
-        <!-- Normal/Pro mode toggle -->
-        <button class="ui-mode-pill" id="uiModeSwitch" data-uimode="normal" title="Tukar mod paparan" aria-label="Mode">
-          <i class="ph ph-sliders-horizontal" id="uiModeIcon"></i>
-          <span id="uiModeLabel" data-i18n="ui_normal">Standard</span>
+        <!-- Standard/Pro iOS-style switch -->
+        <button class="ios-switch-wrap" id="uiModeSwitch" data-uimode="normal" title="Standard / Pro" aria-label="Mode">
+          <span class="ios-switch-text" id="uiModeLabel" data-i18n="ui_normal">Standard</span>
+          <span class="ios-switch">
+            <span class="ios-switch-knob"></span>
+          </span>
         </button>
         <button class="hdr-btn" onclick="shareURL()">
           <i class="ph ph-link"></i><span data-i18n="hdr_share">Kongsi Link</span>
@@ -507,9 +509,21 @@
             <div class="range-bounds"><span>RM 0</span><span>RM 500k</span></div>
           </div>
           <div class="input-group">
-            <label class="input-label"><span data-i18n="age_monthly">Boleh Tabung Sebulan</span> <span class="input-val" id="ageMonthlyVal">RM 500</span></label>
+            <label class="input-label"><span data-i18n="age_monthly">Boleh Tabung Sebulan (ASB)</span> <span class="input-val" id="ageMonthlyVal">RM 500</span></label>
             <input type="range" class="slider" id="ageMonthly" min="50" max="10000" step="50" value="500">
             <div class="range-bounds"><span>RM 50</span><span>RM 10k</span></div>
+          </div>
+          <div class="kwsp-section-divider"><i class="ph ph-umbrella"></i> <span data-i18n="age_kwsp_section">KWSP / EPF</span></div>
+          <div class="input-group">
+            <label class="input-label"><span data-i18n="age_salary">Gaji Bulanan</span> <span class="input-val" id="ageSalaryVal">RM 4,000</span></label>
+            <input type="range" class="slider" id="ageSalary" min="0" max="30000" step="100" value="4000">
+            <div class="range-bounds"><span>RM 0</span><span>RM 30k</span></div>
+          </div>
+          <div class="auto-result"><span class="auto-result-label" data-i18n="age_kwsp_monthly">Caruman KWSP/bulan (23%):</span><span class="auto-result-val" id="ageKwspMonthly">RM 0</span></div>
+          <div class="input-group">
+            <label class="input-label"><span data-i18n="age_kwsp_current">Simpanan KWSP Sekarang</span> <span class="input-val" id="ageKwspCurrentVal">RM 30,000</span></label>
+            <input type="range" class="slider" id="ageKwspCurrent" min="0" max="1000000" step="5000" value="30000">
+            <div class="range-bounds"><span>RM 0</span><span>RM 1j</span></div>
           </div>
           <div class="highlight-result">
             <div class="highlight-label" data-i18n="age_years_left">Tahun Sehingga Bersara</div>
@@ -527,17 +541,32 @@
             </div>
           </div>
 
-          <!-- Projected at retirement -->
+          <!-- Retirement breakdown: ASB + KWSP + Total -->
+          <div class="retire-breakdown">
+            <div class="retire-bd-title" data-i18n="age_breakdown_title">Nilai Masa Bersara</div>
+            <div class="retire-bd-row">
+              <span class="retire-bd-label"><span class="retire-bd-dot bull"></span> ASB</span>
+              <span class="retire-bd-val" id="ageAsbValue">RM 0</span>
+            </div>
+            <div class="retire-bd-row">
+              <span class="retire-bd-label"><span class="retire-bd-dot base"></span> KWSP</span>
+              <span class="retire-bd-val" id="ageKwspValue">RM 0</span>
+            </div>
+            <div class="retire-bd-row retire-bd-total">
+              <span class="retire-bd-label" data-i18n="age_total">JUMLAH</span>
+              <span class="retire-bd-val accent" id="ageTotalValue">RM 0</span>
+            </div>
+          </div>
           <div class="stats-grid stats-grid-2">
             <div class="stat-card">
-              <div class="stat-label" data-i18n="age_at_retire">Nilai Masa Bersara</div>
-              <div class="stat-value accent" id="ageRetireValue">RM 0</div>
-              <div class="stat-sub" id="ageRetireSub">—</div>
+              <div class="stat-label" data-i18n="age_monthly_income">Pendapatan Bulanan (4%)</div>
+              <div class="stat-value accent" id="ageMonthlyIncome">RM 0</div>
+              <div class="stat-sub" data-i18n="age_monthly_income_sub">Jumlah ÷ 4% ÷ 12 bulan</div>
             </div>
             <div class="stat-card">
-              <div class="stat-label" data-i18n="age_monthly_income">Pendapatan Bulanan (4%)</div>
-              <div class="stat-value" id="ageMonthlyIncome">RM 0</div>
-              <div class="stat-sub" data-i18n="age_monthly_income_sub">Jika keluar 4%/tahun</div>
+              <div class="stat-label" data-i18n="age_at_retire">Umur Bersara</div>
+              <div class="stat-value" id="ageRetireValue">—</div>
+              <div class="stat-sub" id="ageRetireSub">—</div>
             </div>
           </div>
 
@@ -623,6 +652,6 @@
     onerror="var s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.3/chart.umd.min.js';document.head.appendChild(s);"
   ></script>
   <!-- app.js — has built-in retry that waits for Chart.js to be ready -->
-  <script src="app.js?v=20260620i"></script>
+  <script src="app.js?v=20260620j"></script>
 </body>
 </html>

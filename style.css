@@ -1873,34 +1873,58 @@ tbody tr:hover { background: var(--surface-2); }
 }
 
 /* ══════════════════════════════════════════
-   STANDARD / PRO MODE PILL
+   STANDARD / PRO — iOS SWITCH
    ══════════════════════════════════════════ */
-.ui-mode-pill {
+.ios-switch-wrap {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  padding: 0.4rem 0.75rem;
+  gap: 0.5rem;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: inherit;
+}
+.ios-switch-text {
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--text-2);
+  transition: color var(--transition);
+  min-width: 48px;
+  text-align: right;
+}
+.ios-switch {
+  position: relative;
+  width: 46px;
+  height: 26px;
   background: var(--surface-3);
   border: 1px solid var(--border);
   border-radius: 999px;
-  color: var(--text-2);
-  font-size: 0.78rem;
-  font-weight: 600;
-  font-family: inherit;
-  cursor: pointer;
-  transition: all var(--transition);
+  transition: background 0.25s ease, border-color 0.25s ease;
+  flex-shrink: 0;
 }
-.ui-mode-pill i { font-size: 0.95rem; }
-.ui-mode-pill:hover {
-  border-color: var(--accent-border);
-  color: var(--text-1);
+.ios-switch-knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+  transition: transform 0.25s cubic-bezier(0.4, 0.0, 0.2, 1);
 }
-/* Pro mode — pill lights up with accent */
-.ui-mode-pill[data-uimode="pro"] {
+/* Pro ON — switch fills accent, knob slides right */
+.ios-switch-wrap[data-uimode="pro"] .ios-switch {
   background: var(--accent);
   border-color: var(--accent);
-  color: #fff;
-  box-shadow: 0 0 10px var(--accent-border);
+}
+.ios-switch-wrap[data-uimode="pro"] .ios-switch-knob {
+  transform: translateX(20px);
+}
+.ios-switch-wrap[data-uimode="pro"] .ios-switch-text {
+  color: var(--accent);
+  font-weight: 700;
 }
 
 /* Hide pro-only elements in Standard mode */
@@ -2043,4 +2067,75 @@ html[data-uimode="normal"] .pro-only {
 
 @media (max-width: 600px) {
   .news-badge { font-size: 0.62rem; padding: 0.2rem 0.5rem; }
+}
+
+/* ── AGE PLAN: KWSP SECTION + BREAKDOWN ── */
+.kwsp-section-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 1.25rem 0 0.75rem;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--border);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--base);
+}
+.kwsp-section-divider i { font-size: 1rem; }
+
+.retire-breakdown {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem 1.1rem;
+}
+.retire-bd-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 0.7rem;
+}
+.retire-bd-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.4rem 0;
+}
+.retire-bd-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.85rem;
+  color: var(--text-2);
+  font-weight: 500;
+}
+.retire-bd-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.retire-bd-dot.bull { background: var(--bull); }
+.retire-bd-dot.base { background: var(--base); }
+.retire-bd-val {
+  font-family: var(--mono);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-1);
+}
+.retire-bd-total {
+  margin-top: 0.4rem;
+  padding-top: 0.7rem;
+  border-top: 1px solid var(--border);
+}
+.retire-bd-total .retire-bd-label {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--text-1);
+}
+.retire-bd-total .retire-bd-val {
+  font-size: 1.15rem;
+  font-weight: 800;
 }
