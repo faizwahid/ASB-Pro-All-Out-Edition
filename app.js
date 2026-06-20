@@ -10,6 +10,11 @@ const STRINGS = {
     tab_comparison:'Banding', tab_forecast:'Ramalan', tab_goal:'Matlamat',
     tab_zakat:'Zakat', tab_history:'Sejarah', tab_news:'Berita', tab_ageplan:'Pelan Umur',
     ui_normal:'Standard', ui_pro:'Pro',
+    banner_intro:'<b>Standard</b> tunjuk yang asas & mudah. <b>Pro</b> buka semua detail & laras lanjutan.',
+    banner_detail:'Lihat perbezaan', banner_detail_hide:'Sembunyi',
+    banner_std_title:'Standard', banner_pro_title:'Pro',
+    banner_std_list:'<li>Kalkulator asas (simpanan, ASBF, matlamat)</li><li>Kadar KWSP automatik (11% + 12/13%)</li><li>Paparan ringkas tanpa jadual rumit</li>',
+    banner_pro_list:'<li>Semua dalam Standard, dan:</li><li>Jadual tahunan & amortisasi penuh</li><li>Kadar senario tersuai (Ramalan)</li><li>Analisis sensitiviti dividen</li><li>Laras kadar caruman KWSP + top-up</li>',
     hero_label:'Unjuran Nilai Akhir (Kadar Sederhana)',
     hero_eyebrow:'Nilai dikira berdasarkan tetapan di tab Simpanan — ubah untuk lihat unjuran anda',
     stat_invested:'Jumlah Dilaburkan', stat_dividends:'Jumlah Dividen',
@@ -167,6 +172,11 @@ const STRINGS = {
     age_at_retire:'Umur Bersara', age_monthly_income:'Pendapatan Bulanan (4%)',
     age_monthly_income_sub:'Jumlah ÷ 4% ÷ 12 bulan',
     age_kwsp_section:'KWSP / EPF',
+    age_epf_advanced:'Laras Kadar Caruman (Lanjutan)',
+    age_epf_employee:'Caruman Pekerja',
+    age_epf_employer:'Caruman Majikan',
+    age_epf_topup:'Top-up Sukarela/bulan',
+    age_epf_topup_note:'Caruman tambahan layak potongan cukai sehingga RM4,000/tahun (termasuk caruman wajib)',
     age_salary:'Gaji Bulanan',
     age_kwsp_monthly:'Caruman KWSP/bulan (23%):',
     age_kwsp_current:'Simpanan KWSP Sekarang',
@@ -202,6 +212,12 @@ const STRINGS = {
     tab_comparison:'Compare', tab_forecast:'Forecast', tab_goal:'Goals',
     tab_zakat:'Zakat', tab_history:'History', tab_news:'News', tab_ageplan:'Age Plan',
     ui_normal:'Standard', ui_pro:'Pro',
+    banner_intro:'<b>Standard</b> shows the basics. <b>Pro</b> unlocks all details & advanced controls.',
+    banner_detail:'See differences', banner_detail_hide:'Hide',
+    banner_std_title:'Standard', banner_pro_title:'Pro',
+    banner_std_list:'<li>Basic calculators (savings, ASBF, goals)</li><li>Automatic EPF rates (11% + 12/13%)</li><li>Clean view without complex tables</li>',
+    banner_pro_list:'<li>Everything in Standard, plus:</li><li>Full annual & amortisation tables</li><li>Custom scenario rates (Forecast)</li><li>Dividend sensitivity analysis</li><li>Adjustable EPF contribution + top-up</li>',
+    
     hero_label:'Projected Final Value (Base Rate)',
     hero_eyebrow:'Calculated from your Savings settings — adjust to see your projection',
     stat_invested:'Total Invested', stat_dividends:'Total Dividends',
@@ -358,6 +374,11 @@ const STRINGS = {
     age_at_retire:'Retirement Age', age_monthly_income:'Monthly Income (4%)',
     age_monthly_income_sub:'Total ÷ 4% ÷ 12 months',
     age_kwsp_section:'EPF / KWSP',
+    age_epf_advanced:'Adjust Contribution Rates (Advanced)',
+    age_epf_employee:'Employee Contribution',
+    age_epf_employer:'Employer Contribution',
+    age_epf_topup:'Voluntary Top-up/month',
+    age_epf_topup_note:'Extra contributions qualify for tax relief up to RM4,000/year (incl. mandatory)',
     age_salary:'Monthly Salary',
     age_kwsp_monthly:'EPF contribution/mo (23%):',
     age_kwsp_current:'Current EPF Savings',
@@ -404,6 +425,11 @@ function applyLanguage(lang) {
   document.querySelectorAll('[data-i18n-ph]').forEach(node => {
     const str = t(node.dataset.i18nPh);
     if (str) node.placeholder = str;
+  });
+  // Update HTML content (allows <b> etc)
+  document.querySelectorAll('[data-i18n-html]').forEach(node => {
+    const str = t(node.dataset.i18nHtml);
+    if (str && str !== node.dataset.i18nHtml) node.innerHTML = str;
   });
   // Update html lang attribute
   document.documentElement.lang = lang === 'en' ? 'en' : 'ms';
@@ -843,6 +869,7 @@ const state = {
   // Age plan
   ageCurrent:30, ageRetire:60, ageSavings:20000, ageMonthly:500,
   ageSalary:4000, ageKwspCurrent:30000,
+  ageEpfEmployee:11, ageEpfEmployer:12, ageEpfTopup:0,
   uiMode:'normal', // 'normal' hides complex details, 'pro' shows all
 };
 
@@ -947,6 +974,7 @@ function applyStateToInputs() {
     ageCurrent:'ageCurrent', ageRetire:'ageRetire',
     ageSavings:'ageSavings', ageMonthly:'ageMonthly',
     ageSalary:'ageSalary', ageKwspCurrent:'ageKwspCurrent',
+    ageEpfEmployee:'ageEpfEmployee', ageEpfEmployer:'ageEpfEmployer', ageEpfTopup:'ageEpfTopup',
   };
   Object.entries(map).forEach(([stateKey, inputId]) => {
     const inp = el(inputId);
@@ -1788,10 +1816,20 @@ function updateAgePlan() {
   const asbValue = yearsLeft > 0 ? asbProj[asbProj.length-1].balance : ageSavings;
 
   // ── KWSP/EPF projection (6.3%) ──
-  // Monthly contribution = 23% of salary (11% employee + 12% employer; 13% if salary ≤ RM5000)
-  const epfRate = ageSalary <= 5000 ? 0.24 : 0.23; // 11+13 vs 11+12
-  const kwspMonthly = ageSalary * epfRate;
-  setText('ageKwspMonthly', fmt(kwspMonthly));
+  // Standard mode: auto 11% + (13% if ≤RM5k else 12%). Pro mode: user-set rates.
+  let empRate, erRate, topup;
+  if (state.uiMode === 'pro') {
+    empRate = (state.ageEpfEmployee ?? 11) / 100;
+    erRate  = (state.ageEpfEmployer ?? 12) / 100;
+    topup   = state.ageEpfTopup || 0;
+  } else {
+    empRate = 0.11;
+    erRate  = ageSalary <= 5000 ? 0.13 : 0.12; // statutory
+    topup   = 0;
+  }
+  const kwspMonthly = ageSalary * (empRate + erRate) + topup;
+  const totalPct = ((empRate + erRate) * 100).toFixed(1);
+  setText('ageKwspMonthly', `${fmt(kwspMonthly)}${topup>0?` (${totalPct}% + top-up)`:` (${totalPct}%)`}`);
   // FV: current KWSP grows + monthly contributions grow, at 6.3%
   let kwspValue = ageKwspCurrent;
   if (yearsLeft > 0) {
@@ -1885,6 +1923,7 @@ function applyUIMode(mode) {
   const label = document.getElementById('uiModeLabel');
   if (label) label.textContent = (state.uiMode === 'pro') ? t('ui_pro') : t('ui_normal');
   try { localStorage.setItem('asb-pro-uimode', state.uiMode); } catch {}
+  try { updateAgePlan(); } catch {}
 }
 
 // Pull values from Savings tab (optional shortcut)
@@ -2093,6 +2132,9 @@ function setupSliders() {
     { id:'ageMonthly',  key:'ageMonthly',  disp:'ageMonthlyVal', fmt:v=>`RM ${(+v).toLocaleString('en-MY')}` },
     { id:'ageSalary',   key:'ageSalary',   disp:'ageSalaryVal',  fmt:v=>`RM ${(+v).toLocaleString('en-MY')}` },
     { id:'ageKwspCurrent', key:'ageKwspCurrent', disp:'ageKwspCurrentVal', fmt:v=>`RM ${(+v).toLocaleString('en-MY')}` },
+    { id:'ageEpfEmployee', key:'ageEpfEmployee', disp:'ageEpfEmployeeVal', fmt:v=>`${(+v).toFixed(1)}%` },
+    { id:'ageEpfEmployer', key:'ageEpfEmployer', disp:'ageEpfEmployerVal', fmt:v=>`${(+v).toFixed(1)}%` },
+    { id:'ageEpfTopup',    key:'ageEpfTopup',    disp:'ageEpfTopupVal',    fmt:v=>`RM ${(+v).toLocaleString('en-MY')}` },
   ];
 
   configs.forEach(({ id, key, disp, fmt:f }) => {
@@ -2560,6 +2602,27 @@ function updateChartTheme(dark) {
   }
 }
 
+// ── MODE INTRO BANNER (first-time) ──
+function initModeBanner() {
+  let dismissed = false;
+  try { dismissed = localStorage.getItem('asb-pro-banner-seen') === '1'; } catch {}
+  const banner = document.getElementById('modeBanner');
+  if (banner && !dismissed) banner.style.display = 'block';
+}
+function dismissModeBanner() {
+  const banner = document.getElementById('modeBanner');
+  if (banner) banner.style.display = 'none';
+  try { localStorage.setItem('asb-pro-banner-seen', '1'); } catch {}
+}
+function toggleModeDetail() {
+  const exp = document.getElementById('modeBannerExpand');
+  const btn = document.getElementById('modeBannerDetail');
+  if (!exp) return;
+  const open = exp.style.display !== 'none';
+  exp.style.display = open ? 'none' : 'flex';
+  if (btn) btn.textContent = open ? t('banner_detail') : t('banner_detail_hide');
+}
+
 // ── INIT ──
 function init() {
   try {
@@ -2599,6 +2662,8 @@ function init() {
     applyLanguage(state.lang || 'bm');
   } catch(e) { console.error('[ASB] Language error:', e); }
 
+  try { initModeBanner(); } catch {}
+
   setTimeout(() => {
     const active = document.querySelector('.tab-btn.active');
     if (active) moveTabIndicator(active);
@@ -2617,6 +2682,8 @@ window.switchTab         = switchTab;
 window.autoFillZakat     = autoFillZakat;
 window.saveManualDividend= saveManualDividend;
 window.toggleManualDividend = toggleManualDividend;
+window.dismissModeBanner = dismissModeBanner;
+window.toggleModeDetail = toggleModeDetail;
 window.toggleColorPicker = function(ev) {
   if (ev) ev.stopPropagation();
   const panel = document.getElementById('colorPickerPanel');

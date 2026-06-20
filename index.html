@@ -20,7 +20,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
   <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
-  <link rel="stylesheet" href="style.css?v=20260620j">
+  <link rel="stylesheet" href="style.css?v=20260620l">
 </head>
 <body>
   <header class="app-header">
@@ -70,6 +70,38 @@
       </div>
     </div>
   </header>
+
+  <!-- First-time mode intro banner -->
+  <div class="mode-banner" id="modeBanner" style="display:none">
+    <div class="mode-banner-inner">
+      <i class="ph ph-info mode-banner-icon"></i>
+      <div class="mode-banner-text">
+        <span data-i18n-html="banner_intro"><b>Standard</b> tunjuk yang asas &amp; mudah. <b>Pro</b> buka semua detail &amp; laras lanjutan.</span>
+        <button class="mode-banner-detail" id="modeBannerDetail" onclick="toggleModeDetail()" data-i18n="banner_detail">Lihat perbezaan</button>
+      </div>
+      <button class="mode-banner-close" onclick="dismissModeBanner()" aria-label="Tutup"><i class="ph ph-x"></i></button>
+    </div>
+    <div class="mode-banner-expand" id="modeBannerExpand" style="display:none">
+      <div class="mode-compare-col">
+        <div class="mode-compare-head"><i class="ph ph-circle"></i> <span data-i18n="banner_std_title">Standard</span></div>
+        <ul class="mode-compare-list" data-i18n-html="banner_std_list">
+          <li>Kalkulator asas (simpanan, ASBF, matlamat)</li>
+          <li>Kadar KWSP automatik (11% + 12/13%)</li>
+          <li>Paparan ringkas tanpa jadual rumit</li>
+        </ul>
+      </div>
+      <div class="mode-compare-col mode-compare-pro">
+        <div class="mode-compare-head"><i class="ph ph-check-circle"></i> <span data-i18n="banner_pro_title">Pro</span></div>
+        <ul class="mode-compare-list" data-i18n-html="banner_pro_list">
+          <li>Semua dalam Standard, dan:</li>
+          <li>Jadual tahunan &amp; amortisasi penuh</li>
+          <li>Kadar senario tersuai (Ramalan)</li>
+          <li>Analisis sensitiviti dividen</li>
+          <li>Laras kadar caruman KWSP + top-up</li>
+        </ul>
+      </div>
+    </div>
+  </div>
 
   <nav class="tab-nav" id="tabNav">
     <div class="tab-nav-inner" id="tabNavInner">
@@ -519,7 +551,29 @@
             <input type="range" class="slider" id="ageSalary" min="0" max="30000" step="100" value="4000">
             <div class="range-bounds"><span>RM 0</span><span>RM 30k</span></div>
           </div>
-          <div class="auto-result"><span class="auto-result-label" data-i18n="age_kwsp_monthly">Caruman KWSP/bulan (23%):</span><span class="auto-result-val" id="ageKwspMonthly">RM 0</span></div>
+          <div class="auto-result"><span class="auto-result-label" data-i18n="age_kwsp_monthly">Caruman KWSP/bulan:</span><span class="auto-result-val" id="ageKwspMonthly">RM 0</span></div>
+
+          <!-- Advanced EPF rates — Pro mode only -->
+          <details class="epf-advanced pro-only">
+            <summary data-i18n="age_epf_advanced">Laras Kadar Caruman (Lanjutan)</summary>
+            <div class="input-group" style="margin-top:0.6rem">
+              <label class="input-label"><span data-i18n="age_epf_employee">Caruman Pekerja</span> <span class="input-val" id="ageEpfEmployeeVal">11%</span></label>
+              <input type="range" class="slider" id="ageEpfEmployee" min="0" max="30" step="0.5" value="11">
+              <div class="range-bounds"><span>0%</span><span>30%</span></div>
+            </div>
+            <div class="input-group">
+              <label class="input-label"><span data-i18n="age_epf_employer">Caruman Majikan</span> <span class="input-val" id="ageEpfEmployerVal">12%</span></label>
+              <input type="range" class="slider" id="ageEpfEmployer" min="0" max="30" step="0.5" value="12">
+              <div class="range-bounds"><span>0%</span><span>30%</span></div>
+            </div>
+            <div class="input-group">
+              <label class="input-label"><span data-i18n="age_epf_topup">Top-up Sukarela/bulan</span> <span class="input-val" id="ageEpfTopupVal">RM 0</span></label>
+              <input type="range" class="slider" id="ageEpfTopup" min="0" max="5000" step="50" value="0">
+              <div class="range-bounds"><span>RM 0</span><span>RM 5k</span></div>
+            </div>
+            <div class="epf-topup-note" data-i18n="age_epf_topup_note">Caruman tambahan layak potongan cukai sehingga RM4,000/tahun (termasuk caruman wajib)</div>
+          </details>
+
           <div class="input-group">
             <label class="input-label"><span data-i18n="age_kwsp_current">Simpanan KWSP Sekarang</span> <span class="input-val" id="ageKwspCurrentVal">RM 30,000</span></label>
             <input type="range" class="slider" id="ageKwspCurrent" min="0" max="1000000" step="5000" value="30000">
@@ -652,6 +706,6 @@
     onerror="var s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.3/chart.umd.min.js';document.head.appendChild(s);"
   ></script>
   <!-- app.js — has built-in retry that waits for Chart.js to be ready -->
-  <script src="app.js?v=20260620j"></script>
+  <script src="app.js?v=20260620l"></script>
 </body>
 </html>
