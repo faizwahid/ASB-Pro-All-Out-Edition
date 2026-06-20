@@ -1578,3 +1578,43 @@ tbody tr:hover { background: var(--surface-2); }
   color: var(--text-3);
   line-height: 1.4;
 }
+
+/* ── TOOLTIP ICON + POPUP ── */
+.tip-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  font-size: 0.7rem;
+  color: var(--text-4);
+  background: var(--surface-3);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all var(--transition);
+  vertical-align: middle;
+}
+.tip-icon:hover, .tip-icon:active {
+  background: var(--accent);
+  color: white;
+}
+.tip-popup {
+  position: absolute;
+  max-width: 270px;
+  background: var(--text-1);
+  color: var(--surface);
+  font-size: 0.76rem;
+  line-height: 1.45;
+  padding: 0.7rem 0.85rem;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-lg);
+  z-index: 2000;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-4px);
+  transition: opacity 0.18s, transform 0.18s;
+}
+.tip-popup.show {
+  opacity: 1;
+  transform: translateY(0);
+}

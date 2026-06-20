@@ -135,12 +135,12 @@
             <div class="range-bounds"><span>RM 0</span><span>RM 500k</span></div>
           </div>
           <div class="input-group">
-            <label class="input-label"><span data-i18n="sav_monthly">Tabung Setiap Bulan</span> <span class="input-val" id="savMonthlyVal">RM 500</span></label>
+            <label class="input-label"><span data-i18n="sav_monthly">Tabung Setiap Bulan</span> <i class="ph ph-question tip-icon" data-tip="tip_dca"></i> <span class="input-val" id="savMonthlyVal">RM 500</span></label>
             <input type="range" class="slider" id="savMonthly" min="0" max="5000" step="50" value="500">
             <div class="range-bounds"><span>RM 0</span><span>RM 5,000</span></div>
           </div>
           <div class="input-group">
-            <label class="input-label"><span data-i18n="sav_rate">Anggaran Dividen Tahunan (%)</span> <span class="input-val" id="savRateVal">5.00%</span></label>
+            <label class="input-label"><span data-i18n="sav_rate">Anggaran Dividen Tahunan (%)</span> <i class="ph ph-question tip-icon" data-tip="tip_dividend"></i> <span class="input-val" id="savRateVal">5.00%</span></label>
             <input type="range" class="slider" id="savRate" min="1" max="10" step="0.25" value="5">
             <div class="range-bounds"><span>1%</span><span>10%</span></div>
           </div>
@@ -175,7 +175,7 @@
             <div class="stat-card"><div class="stat-label" data-i18n="sav_impact">Impak Pengeluaran</div><div class="stat-value" id="savWithdrawImpact">—</div></div>
           </div>
           <div class="compare-block">
-            <div class="compare-block-title" data-i18n="sav_compare">DCA vs Lump Sum</div>
+            <div class="compare-block-title"><span data-i18n="sav_compare">DCA vs Lump Sum</span> <i class="ph ph-question tip-icon" data-tip="tip_dca_lump"></i></div>
             <div class="compare-pair">
               <div class="compare-side"><div class="compare-side-label" data-i18n="sav_dca_label">DCA Bulanan</div><div class="compare-side-val" id="dcaFinalVal">RM 0</div><div class="compare-side-sub" data-i18n="sav_dca_sub">Salin RM/bulan sepanjang tempoh</div></div>
               <div class="compare-vs">VS</div>
@@ -216,7 +216,7 @@
           <div class="input-group"><label class="input-label"><span data-i18n="fin_tenure">Tempoh Pinjaman</span> <span class="input-val" id="finTenureVal">30 tahun</span></label><input type="range" class="slider" id="finTenure" min="1" max="42" step="1" value="30"><div class="range-bounds"><span>1</span><span>42</span></div></div>
           <div class="input-group"><label class="input-label"><span data-i18n="fin_div">Kadar Dividen ASB</span> <span class="input-val" id="finDivVal">5.00%</span></label><input type="range" class="slider" id="finDiv" min="1" max="10" step="0.25" value="5"><div class="range-bounds"><span>1%</span><span>10%</span></div></div>
           <div class="highlight-result"><div class="highlight-label" data-i18n="fin_net_label">Keuntungan Bersih ASBF</div><div class="highlight-val" id="finNetProfit">RM 0</div><div class="highlight-sub" id="finNetSub">—</div></div>
-          <div class="spread-card" id="spreadCard"><div class="spread-label" data-i18n="fin_spread">Spread (Dividen − Faedah)</div><div class="spread-val" id="spreadVal">0.00%</div><div class="spread-note" id="spreadNote">—</div></div>
+          <div class="spread-card" id="spreadCard"><div class="spread-label"><span data-i18n="fin_spread">Spread (Dividen − Faedah)</span> <i class="ph ph-question tip-icon" data-tip="tip_spread"></i></div><div class="spread-val" id="spreadVal">0.00%</div><div class="spread-note" id="spreadNote">—</div></div>
         </div>
         <div class="results-panel">
           <!-- Calculated loan amount — shown in payment mode -->
@@ -314,7 +314,7 @@
             <summary data-i18n="goal_fire_advanced">Tetapan Lanjutan (opsyenal)</summary>
             <div class="input-group" style="margin-top:0.75rem"><label class="input-label"><span data-i18n="goal_fire_rate">Kadar Pengeluaran Selamat (%)</span> <span class="input-val" id="fireWithdrawVal">4.00%</span></label><input type="range" class="slider" id="fireWithdraw" min="0" max="8" step="0.5" value="4"><div class="range-bounds"><span>0%</span><span>8%</span></div><div class="input-hint" data-i18n="goal_fire_rate_hint">Pakar kewangan cadang 4% sebagai kadar selamat</div></div>
           </details>
-          <div class="highlight-result"><div class="highlight-label" data-i18n="goal_fire_label">Nombor FIRE Anda</div><div class="highlight-val" id="fireNumber">RM 0</div><div class="highlight-sub" id="fireSub">—</div></div>
+          <div class="highlight-result"><div class="highlight-label"><span data-i18n="goal_fire_label">Nombor FIRE Anda</span> <i class="ph ph-question tip-icon" data-tip="tip_fire"></i></div><div class="highlight-val" id="fireNumber">RM 0</div><div class="highlight-sub" id="fireSub">—</div></div>
         </div>
         <div class="results-panel">
           <div id="goalBreakdown"></div>
@@ -469,6 +469,7 @@
   </main>
 
   <div class="slider-tooltip" id="sliderTooltip"></div>
+  <div class="tip-popup" id="tipPopup"></div>
   <div class="toast" id="toast"></div>
 
   <!-- Chart.js — primary CDN with clean backup fallback (no document.write) -->

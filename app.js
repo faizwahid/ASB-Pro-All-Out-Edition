@@ -150,7 +150,12 @@ const STRINGS = {
     fin_mode_hint_loan:'Masukkan jumlah yang anda pinjam — kami kira bayaran bulanan anda',
     fin_mode_hint_pay:'Masukkan berapa mampu bayar sebulan — kami kira jumlah pinjaman maksimum',
     cmpEPFRateVal_default:'6.30%',
-        manual_div_title:'Masukkan Dividen Terkini',
+            tip_dca:'DCA (Dollar Cost Averaging) — cara melabur sikit-sikit setiap bulan, bukan sekali gus. Kurangkan risiko turun naik harga.',
+    tip_dividend:'Dividen — pulangan tahunan yang ASB bayar. Contoh 2024: ~5%. Makin tinggi, makin banyak untung.',
+    tip_dca_lump:'Lump Sum = labur semua duit sekali gus dari awal. DCA = labur sikit-sikit. Banding mana lebih baik untuk anda.',
+    tip_spread:'Spread = Dividen ASB tolak Faedah pinjaman. Kalau positif (+), ASBF untung. Kalau negatif (−), rugi.',
+    tip_fire:'FIRE = Financial Independence, Retire Early. Jumlah simpanan yang cukup untuk hidup dari pulangan pelaburan tanpa kerja.',
+    manual_div_title:'Masukkan Dividen Terkini',
     manual_div_sub:'PNB belum kemaskini laman web — isi sendiri bila diumumkan',
     manual_div_year:'Tahun', manual_div_rate:'Dividen (%)', manual_div_bonus:'Bonus (%)',
     manual_div_save:'Simpan & Kemas Kini',
@@ -306,7 +311,12 @@ const STRINGS = {
     fin_mode_hint_loan:'Enter the loan amount — we calculate your monthly payment',
     fin_mode_hint_pay:'Enter what you can afford monthly — we calculate the maximum loan',
     cmpEPFRateVal_default:'6.30%',
-        manual_div_title:'Enter Latest Dividend',
+            tip_dca:'DCA (Dollar Cost Averaging) — investing a fixed amount monthly instead of all at once. Reduces risk from price swings.',
+    tip_dividend:'Dividend — the annual return ASB pays out. 2024 example: ~5%. Higher rate means more profit.',
+    tip_dca_lump:'Lump Sum = invest everything upfront. DCA = invest gradually. Compare which works better for you.',
+    tip_spread:'Spread = ASB dividend minus loan interest. Positive (+) means ASBF profits. Negative (−) means a loss.',
+    tip_fire:'FIRE = Financial Independence, Retire Early. The savings amount enough to live off investment returns without working.',
+    manual_div_title:'Enter Latest Dividend',
     manual_div_sub:'PNB has not updated their website yet — fill in once announced',
     manual_div_year:'Year', manual_div_rate:'Dividend (%)', manual_div_bonus:'Bonus (%)',
     manual_div_save:'Save & Update',
@@ -609,7 +619,7 @@ const state = {
   fcInit:10000, fcMonthly:500, fcYears:30, fcInflation:3, fcBear:3, fcBase:5, fcBull:7,
   // Goal
   goalType:'retirement', goalAmt:500000, goalCurrent:10000, goalYears:20, goalRate:5,
-  fireExp:3000, // monthly withdrawal amount fireWithdraw:4,
+  fireExp:3000, fireWithdraw:4, // monthly withdrawal RM + safe rate %
   // Zakat (simplified)
   zakatRate:2.5, zakatBasis:'balance', zakatBalance:0, zakatDividend:0,
 };
@@ -1363,11 +1373,21 @@ function updateGoal() {
       : 'Kadar 0% — simpan terus, keluarkan bila perlu sahaja');
   } else {
     setText('fireNumber', fmt(fireNum));
-    // Plain language: what this number means
     const monthly = fmt(state.fireExp);
-    setText('fireSub', state.lang==='en'
-      ? `To withdraw ${monthly}/month forever without running out of money`
-      : `Supaya boleh keluarkan ${monthly}/bulan seumur hidup tanpa kehabisan wang`);
+    // Warn if withdrawal rate is unrealistically low (makes FIRE number explode)
+    if (fireWithdraw < 3) {
+      setText('fireSub', state.lang==='en'
+        ? `⚠️ ${fmtPct(fireWithdraw)} is very low — needs a huge fund. Experts suggest 4%.`
+        : `⚠️ ${fmtPct(fireWithdraw)} terlalu rendah — perlu dana besar. Pakar cadang 4%.`);
+      const fnEl = el('fireNumber');
+      if (fnEl) fnEl.style.color = 'var(--bear)';
+    } else {
+      const fnEl = el('fireNumber');
+      if (fnEl) fnEl.style.color = '';
+      setText('fireSub', state.lang==='en'
+        ? `To withdraw ${monthly}/month for life without running out`
+        : `Supaya boleh keluarkan ${monthly}/bulan seumur hidup tanpa kehabisan wang`);
+    }
   }
 
   const trajectory = calcForecast(goalCurrent, reqDCA>0?reqDCA:0, goalRate, goalYears, 0);
@@ -1744,6 +1764,24 @@ function setupEventListeners() {
     if (!wrap) el('colorPickerPanel')?.classList.remove('picker-open');
   });
 
+  // Tooltip icons — tap to show explanation
+  document.querySelectorAll('.tip-icon').forEach(icon => {
+    icon.addEventListener('click', e => {
+      e.stopPropagation();
+      const popup = el('tipPopup');
+      if (!popup) return;
+      const text = t(icon.dataset.tip);
+      popup.textContent = text;
+      const rect = icon.getBoundingClientRect();
+      popup.style.left = Math.min(rect.left, window.innerWidth - 280) + 'px';
+      popup.style.top  = (rect.bottom + window.scrollY + 6) + 'px';
+      popup.classList.add('show');
+    });
+  });
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.tip-icon')) el('tipPopup')?.classList.remove('show');
+  });
+
   // Color dots — pick theme + close
   document.querySelectorAll('.color-dot').forEach(dot => {
     dot.addEventListener('click', e => {
@@ -1930,7 +1968,16 @@ async function loadNews(feedKey) {
     });
   }
 
-  // Strategy 1: rss2json
+  // Strategy 1: codetabs proxy (fast, reliable, rarely blocked)
+  try {
+    const proxy = `https://api.codetabs.com/v1/proxy/?quest=${encodeURIComponent(rssUrl)}`;
+    const res   = await fetch(proxy, { signal: AbortSignal.timeout(8000) });
+    const xml   = await res.text();
+    const items = parseRssXml(xml);
+    if (items.length && renderItems(items)) return;
+  } catch {}
+
+  // Strategy 2: rss2json
   try {
     const r2j = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}&count=15`;
     const res  = await fetch(r2j, { signal: AbortSignal.timeout(8000) });
@@ -1938,7 +1985,7 @@ async function loadNews(feedKey) {
     if (data.status === 'ok' && data.items?.length && renderItems(data.items)) return;
   } catch {}
 
-  // Strategy 2: allorigins (JSON wrapper)
+  // Strategy 3: allorigins (JSON wrapper)
   try {
     const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(rssUrl)}`;
     const res   = await fetch(proxy, { signal: AbortSignal.timeout(8000) });
@@ -1949,7 +1996,7 @@ async function loadNews(feedKey) {
     }
   } catch {}
 
-  // Strategy 3: allorigins raw
+  // Strategy 4: allorigins raw
   try {
     const proxy = `https://api.allorigins.win/raw?url=${encodeURIComponent(rssUrl)}`;
     const res   = await fetch(proxy, { signal: AbortSignal.timeout(8000) });
@@ -1958,7 +2005,7 @@ async function loadNews(feedKey) {
     if (items.length && renderItems(items)) return;
   } catch {}
 
-  // Strategy 4: corsproxy.io
+  // Strategy 5: corsproxy.io
   try {
     const proxy = `https://corsproxy.io/?url=${encodeURIComponent(rssUrl)}`;
     const res   = await fetch(proxy, { signal: AbortSignal.timeout(8000) });
