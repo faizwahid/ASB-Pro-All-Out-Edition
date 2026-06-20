@@ -103,8 +103,8 @@ const STRINGS = {
         hist_col_source:'Sumber',
     hist_explain_title:'Macam mana data ini dikemas kini?',
     hist_explain_body:'App cuba ambil dividen terbaru terus dari laman web PNB. Bila berjaya, data disimpan kekal — tak perlu cari lagi. Penanda Rasmi = diumumkan PNB. Manual = anda masukkan sendiri. App tidak meneka dividen masa depan — hanya papar angka yang benar-benar diumumkan.',
-    hist_desc:'Data dividen & bonus PNB 2010–2024 · Auto-dikemas kini bila ada pengumuman baharu',
-    hist_avg_all:'Purata 2010–2024', hist_avg5:'Purata 5 Tahun',
+    hist_desc:'Data dividen & bonus rasmi PNB sejak 2010',
+    hist_avg_all:'Purata Keseluruhan', hist_avg5:'Purata 5 Tahun',
     hist_high:'Tertinggi', hist_low:'Terendah', hist_overall:'Keseluruhan',
     hist_chart_title:'Dividen & Bonus Tahunan (%)',
     hist_col_year:'Tahun', hist_col_div:'Dividen',
@@ -306,8 +306,8 @@ const STRINGS = {
         hist_col_source:'Source',
     hist_explain_title:'How is this data updated?',
     hist_explain_body:'The app fetches the latest dividend directly from the PNB website. Once successful, data is saved permanently — no need to fetch again. The Real tag = announced by PNB. Manual = you entered it. The app never guesses future dividends — it only shows officially announced figures.',
-    hist_desc:'PNB dividend & bonus data 2010–2024 · Auto-updated on new announcements',
-    hist_avg_all:'Average 2010–2024', hist_avg5:'5-Year Average',
+    hist_desc:'Official PNB dividend & bonus data since 2010',
+    hist_avg_all:'Overall Average', hist_avg5:'5-Year Average',
     hist_high:'Highest', hist_low:'Lowest', hist_overall:'Overall',
     hist_chart_title:'Annual Dividend & Bonus (%)',
     hist_col_year:'Year', hist_col_div:'Dividend',
@@ -455,15 +455,16 @@ function initLanguage() {
 // COLOR THEMES
 // ══════════════════════════════════════════════════════
 const THEMES = {
-  emerald: { accent:'#059669', accent2:'#10b981', bg:'rgba(5,150,105,0.08)', border:'rgba(5,150,105,0.25)' },
-  ocean:   { accent:'#0284c7', accent2:'#38bdf8', bg:'rgba(2,132,199,0.08)',  border:'rgba(2,132,199,0.25)' },
-  sunset:  { accent:'#ea580c', accent2:'#f97316', bg:'rgba(234,88,12,0.08)',  border:'rgba(234,88,12,0.25)' },
-  purple:  { accent:'#7c3aed', accent2:'#a78bfa', bg:'rgba(124,58,237,0.08)',border:'rgba(124,58,237,0.25)' },
-  rose:    { accent:'#e11d48', accent2:'#fb7185', bg:'rgba(225,29,72,0.08)',  border:'rgba(225,29,72,0.25)' },
+  // Neo-brutal: saturated accents, solid tint bg, ink-black borders (set in CSS)
+  gold:    { accent:'#F5A700', accent2:'#FFC23C', bg:'rgba(245,167,0,0.16)',   border:'#141414' },
+  grass:   { accent:'#00B589', accent2:'#00C896', bg:'rgba(0,181,137,0.16)',   border:'#141414' },
+  ocean:   { accent:'#2D6CDF', accent2:'#5B8DEF', bg:'rgba(45,108,223,0.16)',  border:'#141414' },
+  violet:  { accent:'#7B61FF', accent2:'#9B86FF', bg:'rgba(123,97,255,0.16)',  border:'#141414' },
+  coral:   { accent:'#FF5A5F', accent2:'#FF8084', bg:'rgba(255,90,95,0.16)',   border:'#141414' },
 };
 
 function setColorTheme(name) {
-  const th = THEMES[name] || THEMES.emerald;
+  const th = THEMES[name] || THEMES.gold;
   const root = document.documentElement;
   root.dataset.color = name;
   root.style.setProperty('--accent',         th.accent);
@@ -492,7 +493,7 @@ function updateChartAccent(accent, accent2) {
 }
 
 function initColorTheme() {
-  const saved = localStorage.getItem('asb-pro-color') || 'emerald';
+  const saved = localStorage.getItem('asb-pro-color') || 'gold';
   setColorTheme(saved);
 }
 
@@ -514,10 +515,11 @@ let DIVIDEND_HISTORY = [
   { year:2018, dividend:6.00, bonus:0.25, src:'official' },
   { year:2019, dividend:5.50, bonus:0.25, src:'official' },
   { year:2020, dividend:4.25, bonus:0, src:'official' },
-  { year:2021, dividend:5.00, bonus:0, src:'official' },
-  { year:2022, dividend:5.00, bonus:0, src:'official' },
-  { year:2023, dividend:5.00, bonus:0, src:'official' },
-  { year:2024, dividend:5.00, bonus:0, src:'official' },
+  { year:2021, dividend:4.60, bonus:0, src:'official' },
+  { year:2022, dividend:4.60, bonus:0, src:'official' },
+  { year:2023, dividend:5.25, bonus:0, src:'official' },
+  { year:2024, dividend:5.75, bonus:0, src:'official' },
+  { year:2025, dividend:5.75, bonus:0, src:'official' },
 ];
 
 // Merge any previously-saved dividends (accumulates year over year, persists forever)

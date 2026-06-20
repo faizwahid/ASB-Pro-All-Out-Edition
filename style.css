@@ -5,69 +5,76 @@
    Base: Zinc/Slate neutrals
    ===================================================== */
 
-/* ── CUSTOM PROPERTIES ── */
+/* ── CUSTOM PROPERTIES — NEO-BRUTALISM "Kertas & Dakwat" ── */
 :root {
-  --bg: #f4f4f5;
+  --bg: #FFFDF5;
   --surface: #ffffff;
-  --surface-2: #f9fafb;
-  --surface-3: #f3f4f6;
-  --border: #e4e4e7;
-  --border-2: #d1d5db;
-  --text-1: #18181b;
-  --text-2: #3f3f46;
-  --text-3: #71717a;
-  --text-4: #a1a1aa;
-  --accent: #059669;
-  --accent-2: #10b981;
-  --accent-bg: rgba(5,150,105,0.08);
-  --accent-border: rgba(5,150,105,0.25);
-  --bull: #059669;
-  --bull-bg: rgba(5,150,105,0.10);
-  --base: #d97706;
-  --base-bg: rgba(217,119,6,0.10);
-  --bear: #be123c;
-  --bear-bg: rgba(190,18,60,0.10);
-  --slate: #64748b;
-  --slate-bg: rgba(100,116,139,0.10);
-  --radius: 14px;
-  --radius-sm: 8px;
-  --radius-lg: 20px;
-  --shadow: 0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.05);
-  --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
-  --shadow-lg: 0 10px 40px rgba(0,0,0,0.10), 0 4px 12px rgba(0,0,0,0.05);
-  --transition: 0.22s cubic-bezier(0.16,1,0.3,1);
+  --surface-2: #FBF6E9;
+  --surface-3: #F2ECDA;
+  --border: #141414;
+  --border-2: #141414;
+  --ink: #141414;
+  --text-1: #141414;
+  --text-2: #2E2E2E;
+  --text-3: #5A564C;
+  --text-4: #8A857A;
+  --accent: #F5A700;
+  --accent-2: #FFC23C;
+  --accent-bg: rgba(245,167,0,0.16);
+  --accent-border: #141414;
+  --bull: #00B589;
+  --bull-bg: rgba(0,181,137,0.16);
+  --base: #F5A700;
+  --base-bg: rgba(245,167,0,0.16);
+  --bear: #FF5A5F;
+  --bear-bg: rgba(255,90,95,0.16);
+  --slate: #5A564C;
+  --slate-bg: rgba(90,86,76,0.12);
+  --radius: 10px;
+  --radius-sm: 6px;
+  --radius-lg: 14px;
+  --shadow: 3px 3px 0 var(--ink);
+  --shadow-sm: 2px 2px 0 var(--ink);
+  --shadow-md: 4px 4px 0 var(--ink);
+  --shadow-lg: 6px 6px 0 var(--ink);
+  --bw: 2.5px;
+  --bw-lg: 3px;
+  --transition: 0.14s cubic-bezier(0.34,1.2,0.64,1);
   --font: 'Outfit', system-ui, sans-serif;
+  --display: 'Space Grotesk', 'Outfit', system-ui, sans-serif;
   --mono: 'JetBrains Mono', 'Courier New', monospace;
   --header-h: 60px;
   --nav-h: 52px;
 }
 
 [data-theme="dark"] {
-  --bg: #0f0f11;
-  --surface: #18181b;
-  --surface-2: #1f1f23;
-  --surface-3: #27272a;
-  --border: #3f3f46;
-  --border-2: #52525b;
-  --text-1: #fafafa;
-  --text-2: #d4d4d8;
-  --text-3: #a1a1aa;
-  --text-4: #71717a;
-  --accent: #10b981;
-  --accent-2: #059669;
-  --accent-bg: rgba(16,185,129,0.10);
-  --accent-border: rgba(16,185,129,0.25);
-  --bull: #10b981;
-  --bull-bg: rgba(16,185,129,0.12);
-  --base: #f59e0b;
-  --base-bg: rgba(245,158,11,0.10);
-  --bear: #f43f5e;
-  --bear-bg: rgba(244,63,94,0.10);
-  --slate: #94a3b8;
-  --slate-bg: rgba(148,163,184,0.10);
-  --shadow: 0 1px 3px rgba(0,0,0,0.3);
-  --shadow-md: 0 4px 12px rgba(0,0,0,0.35);
-  --shadow-lg: 0 10px 40px rgba(0,0,0,0.45);
+  --bg: #16140E;
+  --surface: #211E16;
+  --surface-2: #2A2619;
+  --surface-3: #332E1F;
+  --border: #F5EFD8;        /* light ink on dark — borders stay bold */
+  --border-2: #F5EFD8;
+  --ink: #F5EFD8;
+  --text-1: #FBF7E8;
+  --text-2: #E5DFCB;
+  --text-3: #B5AE96;
+  --text-4: #847E68;
+  --accent: #FFC23C;
+  --accent-2: #FFD36B;
+  --accent-bg: rgba(255,194,60,0.18);
+  --accent-border: #F5EFD8;
+  --bull: #1FD9A6;
+  --bull-bg: rgba(31,217,166,0.16);
+  --base: #FFC23C;
+  --base-bg: rgba(255,194,60,0.16);
+  --bear: #FF7479;
+  --bear-bg: rgba(255,116,121,0.16);
+  --slate: #B5AE96;
+  --slate-bg: rgba(181,174,150,0.14);
+  --shadow: 3px 3px 0 var(--ink);
+  --shadow-sm: 2px 2px 0 var(--ink);
+  --shadow-md: 4px 4px 0 var(--ink);
+  --shadow-lg: 6px 6px 0 var(--ink);
 }
 
 /* ── RESET ── */
@@ -2262,4 +2269,221 @@ html[data-uimode="normal"] .pro-only {
 }
 @media (max-width: 600px) {
   .mode-banner-expand { flex-direction: column; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   NEO-BRUTALISM OVERRIDE LAYER  ·  "Kertas & Dakwat"
+   Thick ink borders · hard offset shadows · chunky display type
+   Appended last so it wins specificity for structural restyle.
+   ═══════════════════════════════════════════════════════════ */
+
+/* Paper grain — subtle dotted texture on the canvas */
+body {
+  background-color: var(--bg);
+  background-image: radial-gradient(var(--surface-3) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+/* Display type for headings + wordmark */
+.panel-title, .brand-name, .footer-name, .life-stage-title,
+.highlight-val, .stat-value, h1, h2, h3 {
+  font-family: var(--display);
+  letter-spacing: -0.02em;
+}
+.panel-title { font-weight: 700; }
+
+/* ── Cards & panels: thick border + hard shadow ── */
+.stat-card, .chart-block, .inputs-panel, .results-panel,
+.highlight-result, .news-card, .life-stage, .instrument-card,
+.retire-breakdown, .manual-div-card, .hist-explain, .auto-result,
+.mode-hint, .calc-loan-row, .fire-flow, .zakat-pay-card,
+.compare-card, .data-table, .epf-advanced, .fire-advanced,
+.mode-compare-col {
+  border: var(--bw) solid var(--ink) !important;
+  border-radius: var(--radius) !important;
+  box-shadow: var(--shadow) !important;
+}
+
+/* Inner/secondary blocks: lighter (no double heavy shadow) */
+.auto-result, .mode-hint, .calc-loan-row, .hist-explain,
+.fire-flow, .retire-bd-row, .age-milestone-row {
+  box-shadow: var(--shadow-sm) !important;
+}
+.retire-bd-row, .age-milestone-row { border-width: 2px !important; }
+
+/* Cards lift+press interaction */
+.stat-card, .news-card, .instrument-card, .zakat-pay-link {
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+.stat-card:hover, .news-card:hover, .instrument-card:hover, .zakat-pay-link:hover {
+  transform: translate(-2px,-2px);
+  box-shadow: var(--shadow-md) !important;
+}
+
+/* ── Header & nav: bold ink rules ── */
+.app-header {
+  border-bottom: var(--bw-lg) solid var(--ink);
+  box-shadow: 0 4px 0 var(--ink);
+  background: var(--surface);
+}
+.brand-name {
+  font-family: var(--display);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+/* Logo chip — bordered box */
+.brand-mark {
+  border: var(--bw) solid var(--ink) !important;
+  border-radius: 8px !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+.tab-nav {
+  border-bottom: var(--bw) solid var(--ink);
+  background: var(--surface);
+}
+.tab-btn { font-weight: 600; }
+.tab-btn.active { color: var(--ink); }
+/* Tab indicator → chunky underline */
+.tab-indicator {
+  height: 4px !important;
+  background: var(--accent) !important;
+  border-radius: 0 !important;
+  border-top: 1px solid var(--ink);
+}
+
+/* ── Buttons: brutal chip with press ── */
+.hdr-btn, .table-toggle-btn, .manual-div-toggle-btn, .auto-fill-btn,
+.mode-btn, .news-filter-btn, .ph-btn {
+  border: var(--bw) solid var(--ink) !important;
+  border-radius: var(--radius-sm) !important;
+  box-shadow: var(--shadow-sm) !important;
+  font-weight: 600 !important;
+  background: var(--surface) !important;
+  color: var(--text-1) !important;
+  transition: transform var(--transition), box-shadow var(--transition), background var(--transition) !important;
+}
+.hdr-btn:hover, .table-toggle-btn:hover, .manual-div-toggle-btn:hover,
+.auto-fill-btn:hover, .mode-btn:hover, .news-filter-btn:hover {
+  transform: translate(-1px,-1px);
+  box-shadow: var(--shadow) !important;
+}
+.hdr-btn:active, .mode-btn:active, .news-filter-btn:active,
+.table-toggle-btn:active, .auto-fill-btn:active {
+  transform: translate(2px,2px);
+  box-shadow: 0 0 0 var(--ink) !important;
+}
+/* Active / selected state filled with accent */
+.mode-btn.active, .news-filter-btn.active {
+  background: var(--accent) !important;
+  color: #141414 !important;
+}
+/* Icon buttons (theme, dark, palette) get the chip too */
+.icon-btn {
+  border: var(--bw) solid var(--ink) !important;
+  border-radius: var(--radius-sm) !important;
+  box-shadow: var(--shadow-sm) !important;
+  background: var(--surface) !important;
+}
+.icon-btn:active { transform: translate(2px,2px); box-shadow: 0 0 0 var(--ink) !important; }
+
+/* ── Sliders: chunky track + square ink thumb ── */
+.slider {
+  height: 10px !important;
+  background: var(--surface-3) !important;
+  border: 2px solid var(--ink) !important;
+  border-radius: 999px !important;
+}
+.slider::-webkit-slider-thumb {
+  width: 24px !important; height: 24px !important;
+  background: var(--accent) !important;
+  border: 2.5px solid var(--ink) !important;
+  border-radius: 6px !important;
+  box-shadow: 2px 2px 0 var(--ink) !important;
+}
+.slider::-moz-range-thumb {
+  width: 24px !important; height: 24px !important;
+  background: var(--accent) !important;
+  border: 2.5px solid var(--ink) !important;
+  border-radius: 6px !important;
+}
+
+/* ── Value badges (click-to-edit) ── */
+.input-val {
+  border: 2px solid var(--ink) !important;
+  border-radius: var(--radius-sm) !important;
+  background: var(--accent-bg) !important;
+  color: var(--text-1) !important;
+  font-family: var(--mono) !important;
+  font-weight: 700 !important;
+  box-shadow: 1.5px 1.5px 0 var(--ink) !important;
+}
+
+/* ── Big numbers ── */
+.stat-value, .highlight-val { font-weight: 700; }
+.highlight-result {
+  background: var(--accent-bg) !important;
+}
+
+/* ── Badges (live, source, news) ── */
+.live-badge, .src-tag, .news-badge {
+  border: 2px solid var(--ink) !important;
+  border-radius: 999px !important;
+  box-shadow: 1.5px 1.5px 0 var(--ink) !important;
+  font-weight: 700 !important;
+}
+
+/* ── iOS switch → keep but ink border ── */
+.ios-switch {
+  border: 2.5px solid var(--ink) !important;
+  box-shadow: 2px 2px 0 var(--ink) !important;
+}
+.ios-switch-knob {
+  border: 2px solid var(--ink);
+  box-shadow: none;
+}
+
+/* ── Toggles (lang, mode) ── */
+.lang-toggle, .toggle-mode-row {
+  border: var(--bw) solid var(--ink) !important;
+  border-radius: var(--radius-sm) !important;
+  box-shadow: var(--shadow-sm) !important;
+  overflow: hidden;
+}
+.lang-toggle-btn.active { background: var(--accent) !important; color:#141414 !important; }
+
+/* ── Mode intro banner ── */
+.mode-banner { border-bottom: var(--bw) solid var(--ink); }
+.mode-banner-inner { }
+
+/* ── Footer ── */
+.app-footer { border-top: var(--bw-lg) solid var(--ink); }
+.footer-logo { border: 2px solid var(--ink); }
+
+/* ── Tooltips & popups: brutal ── */
+.tip-popup, #colorPickerPanel, .news-fallback-notice {
+  border: var(--bw) solid var(--ink) !important;
+  border-radius: var(--radius-sm) !important;
+  box-shadow: var(--shadow-md) !important;
+}
+
+/* Color dots → square-ish with ink ring */
+.color-dot {
+  border: 2.5px solid var(--ink) !important;
+  border-radius: 6px !important;
+  box-shadow: 1.5px 1.5px 0 var(--ink);
+}
+.color-dot.active { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--ink) !important; }
+
+/* Toast */
+.toast {
+  border: var(--bw) solid var(--ink) !important;
+  border-radius: var(--radius-sm) !important;
+  box-shadow: var(--shadow-md) !important;
+  font-weight: 600;
+}
+
+/* Reduced motion respect */
+@media (prefers-reduced-motion: reduce) {
+  .stat-card, .news-card, .instrument-card, .hdr-btn, .mode-btn,
+  .news-filter-btn { transition: none !important; }
 }

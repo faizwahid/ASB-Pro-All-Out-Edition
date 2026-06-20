@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ms" data-theme="light" data-color="emerald">
+<html lang="ms" data-theme="light" data-color="gold">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,10 +17,10 @@
   <meta name="twitter:description" content="Kalkulator pelaburan ASB percuma untuk semua rakyat Malaysia.">
   <meta name="theme-color" content="#059669">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
   <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
-  <link rel="stylesheet" href="style.css?v=20260620l">
+  <link rel="stylesheet" href="style.css?v=20260620n">
 </head>
 <body>
   <header class="app-header">
@@ -39,11 +39,11 @@
             <i class="ph ph-palette"></i>
           </button>
           <div class="color-picker" id="colorPickerPanel">
-            <button class="color-dot active" data-color="emerald" style="background:#059669" title="Emerald"></button>
-            <button class="color-dot" data-color="ocean"   style="background:#0284c7" title="Ocean"></button>
-            <button class="color-dot" data-color="sunset"  style="background:#ea580c" title="Sunset"></button>
-            <button class="color-dot" data-color="purple"  style="background:#7c3aed" title="Purple"></button>
-            <button class="color-dot" data-color="rose"    style="background:#e11d48" title="Rose"></button>
+            <button class="color-dot active" data-color="gold"   style="background:#F5A700" title="Gold"></button>
+            <button class="color-dot" data-color="grass"  style="background:#00B589" title="Grass"></button>
+            <button class="color-dot" data-color="ocean"  style="background:#2D6CDF" title="Ocean"></button>
+            <button class="color-dot" data-color="violet" style="background:#7B61FF" title="Violet"></button>
+            <button class="color-dot" data-color="coral"  style="background:#FF5A5F" title="Coral"></button>
           </div>
         </div>
         <!-- Language toggle -->
@@ -473,7 +473,7 @@
         </div>
       </div>
       <div class="stats-grid stats-grid-4">
-        <div class="stat-card"><div class="stat-label" data-i18n="hist_avg_all">Purata 2010–2024</div><div class="stat-value accent" id="histAvgAll">—</div><div class="stat-sub" data-i18n="hist_overall">Keseluruhan</div></div>
+        <div class="stat-card"><div class="stat-label" data-i18n="hist_avg_all">Purata Keseluruhan</div><div class="stat-value accent" id="histAvgAll">—</div><div class="stat-sub" data-i18n="hist_overall">Keseluruhan</div></div>
         <div class="stat-card"><div class="stat-label" data-i18n="hist_avg5">Purata 5 Tahun</div><div class="stat-value" id="histAvg5">—</div><div class="stat-sub">2020–2024</div></div>
         <div class="stat-card"><div class="stat-label" data-i18n="hist_high">Tertinggi</div><div class="stat-value" id="histHigh">—</div><div class="stat-sub" id="histHighYear">—</div></div>
         <div class="stat-card"><div class="stat-label" data-i18n="hist_low">Terendah</div><div class="stat-value" id="histLow">—</div><div class="stat-sub" id="histLowYear">—</div></div>
@@ -706,6 +706,6 @@
     onerror="var s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.3/chart.umd.min.js';document.head.appendChild(s);"
   ></script>
   <!-- app.js — has built-in retry that waits for Chart.js to be ready -->
-  <script src="app.js?v=20260620l"></script>
+  <script src="app.js?v=20260620n"></script>
 </body>
 </html>
