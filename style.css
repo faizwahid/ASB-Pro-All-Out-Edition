@@ -2815,3 +2815,70 @@ body { background: var(--bg); }
   pointer-events: none;
   user-select: none;
 }
+
+/* ═══════════════════════════════════════════════════════════
+   RESPONSIVE HEADER (no overflow at any width)
+   ═══════════════════════════════════════════════════════════ */
+.header-inner {
+  gap: 8px;
+  flex-wrap: nowrap;
+}
+.header-brand { min-width: 0; flex-shrink: 1; gap: 0.6rem; }
+.header-brand > div { min-width: 0; }
+.brand-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.brand-sub { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+/* Tablet & below: condense */
+@media (max-width: 720px) {
+  .brand-sub { display: none; }                 /* drop subtitle */
+  .ios-switch-text { display: none; }           /* keep toggle, hide "Standard" word */
+  .hdr-share span { display: none; }            /* "Kongsi Link" → icon only */
+  .hdr-share { padding: 0; width: 38px; height: 38px; justify-content: center; }
+  .hdr-share i { margin: 0; }
+}
+
+/* Phones: trim further */
+@media (max-width: 480px) {
+  .header-inner { padding: 0 0.75rem; }
+  .hdr-btn-ghost { display: none; }             /* hide reset (rare action) on phone */
+  .header-actions { gap: 5px; }
+  .lang-toggle-btn { padding: 5px 9px; font-size: 0.72rem; }
+  .brand-name { font-size: 0.95rem; }
+  .icon-btn { width: 36px; height: 36px; }
+}
+@media (max-width: 340px) {
+  .brand-name { font-size: 0.88rem; }
+  .header-actions { gap: 4px; }
+}
+
+/* FW watermark — much finer & subtler */
+.hero-fw {
+  font-size: 1.7rem;
+  right: 16px; bottom: 12px;
+  color: rgba(255,255,255,0.08);
+  font-weight: 600;
+}
+
+/* Keep app name fully visible — it fits; don't truncate */
+.brand-name { overflow: visible; text-overflow: clip; flex-shrink: 0; }
+.header-brand { flex-shrink: 0; }
+
+/* Safety: never allow horizontal page scroll */
+html, body { overflow-x: hidden; max-width: 100%; }
+
+/* Very small phones — tighten action cluster to guarantee fit */
+@media (max-width: 380px) {
+  .header-actions { gap: 4px; }
+  .icon-btn { width: 33px; height: 33px; }
+  .hdr-share { width: 33px; height: 33px; }
+  .lang-toggle-btn { padding: 4px 7px; font-size: 0.7rem; }
+  .ios-switch { width: 40px; height: 24px; }
+  .ios-switch-knob { width: 18px; height: 18px; }
+  .ios-switch-wrap[data-uimode="pro"] .ios-switch-knob { transform: translateX(16px); }
+}
