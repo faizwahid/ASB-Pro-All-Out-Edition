@@ -2859,7 +2859,7 @@ body { background: var(--bg); }
 .header-brand { flex-shrink: 0; }
 
 /* Safety: never allow horizontal page scroll */
-html, body { overflow-x: hidden; max-width: 100%; }
+html, body { overflow-x: clip; max-width: 100%; }
 
 /* Very small phones — tighten action cluster to guarantee fit */
 @media (max-width: 380px) {
@@ -3045,3 +3045,81 @@ html, body { overflow-x: hidden; max-width: 100%; }
 @media (max-width: 380px) {
   .seg-mini { height: 32px; padding: 0 9px; font-size: 0.7rem; gap: 4px; }
 }
+
+/* ═══════════════════════════════════════════════════════════
+   RICHER VISUALS — bg texture, colored header/footer, stat icons
+   ═══════════════════════════════════════════════════════════ */
+
+/* Subtle accent mesh in page background (fixed, no repaint cost) */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(45vw 40vw at 88% -8%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 70%),
+    radial-gradient(40vw 38vw at -6% 8%, color-mix(in srgb, var(--accent-2) 11%, transparent), transparent 70%);
+  opacity: 0.9;
+  transition: background 0.4s ease;
+}
+
+/* Header: subtle accent tint + soft accent under-line */
+.app-header {
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--accent) 10%, var(--surface)),
+    var(--surface)) !important;
+}
+.app-header::after {
+  content: '';
+  position: absolute; left: 0; right: 0; bottom: -1px; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent-border), transparent);
+}
+
+/* Tab nav: faint accent tint so it doesn't read as plain white */
+.tab-nav { background: color-mix(in srgb, var(--accent) 5%, var(--surface)) !important; }
+/* Tab icons carry a hint of accent even when inactive */
+.tab-btn i { color: var(--text-4); transition: color var(--transition); }
+.tab-btn.active i { color: var(--accent); }
+
+/* Stat cards: colored icon badge top-right + faint corner wash */
+.stat-card { position: relative; overflow: hidden; padding-right: 56px; }
+.stat-ic {
+  position: absolute; top: 14px; right: 14px;
+  display: grid; place-items: center;
+  width: 36px; height: 36px; border-radius: 11px;
+  font-size: 1.15rem;
+}
+.stat-card::after {
+  content: '';
+  position: absolute; top: -30px; right: -30px;
+  width: 90px; height: 90px; border-radius: 50%;
+  background: radial-gradient(circle, var(--accent-bg), transparent 70%);
+  pointer-events: none;
+}
+/* Per-metric icon colors (harmonious family) */
+.si-invest { background: rgba(79,70,229,0.12);  color: #4F46E5; }
+.si-div    { background: rgba(14,160,110,0.12); color: #0EA06F; }
+.si-month  { background: rgba(37,102,204,0.12); color: #2566CC; }
+.si-zakat  { background: rgba(194,147,22,0.14); color: #C29316; }
+[data-theme="dark"] .si-invest { background: rgba(109,124,255,0.18); color: #8B95FF; }
+[data-theme="dark"] .si-div    { background: rgba(45,212,155,0.18);  color: #2DD49B; }
+[data-theme="dark"] .si-month  { background: rgba(62,132,232,0.18);  color: #6FA3F0; }
+[data-theme="dark"] .si-zakat  { background: rgba(220,172,46,0.18);  color: #E0C24E; }
+
+/* Footer: 3 fine lines + subtle accent tint + accent top hairline */
+.app-footer {
+  background: linear-gradient(180deg, var(--surface),
+    color-mix(in srgb, var(--accent) 7%, var(--surface))) !important;
+  border-top: 1px solid var(--accent-border);
+  text-align: center;
+}
+.footer-inner {
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 18px 16px;
+}
+.footer-l1 { font-size: 0.74rem; font-weight: 700; color: var(--accent); letter-spacing: 0.02em; }
+.footer-l2 { font-size: 0.66rem; font-weight: 500; color: var(--text-3); }
+.footer-l3 { font-size: 0.62rem; font-weight: 400; color: var(--text-4); letter-spacing: 0.03em; }

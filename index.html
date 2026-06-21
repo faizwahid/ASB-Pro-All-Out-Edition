@@ -29,7 +29,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
   <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
-  <link rel="stylesheet" href="style.css?v=20260621f">
+  <link rel="stylesheet" href="style.css?v=20260621h">
 </head>
 <body>
   <!-- ONBOARDING (first-time only) -->
@@ -189,10 +189,10 @@
         </div>
       </div>
       <div class="stats-grid stats-grid-4">
-        <div class="stat-card"><div class="stat-label" data-i18n="stat_invested">Jumlah Dilaburkan</div><div class="stat-value accent" id="dashTotalInvest">RM 0</div><div class="stat-sub" id="dashInvestSub">—</div></div>
-        <div class="stat-card"><div class="stat-label" data-i18n="stat_dividends">Jumlah Dividen</div><div class="stat-value" id="dashTotalReturn">RM 0</div><div class="stat-sub" id="dashReturnSub">—</div></div>
-        <div class="stat-card"><div class="stat-label" data-i18n="stat_monthly">Sumbangan Bulanan</div><div class="stat-value" id="dashMonthly">RM 0</div><div class="stat-sub" id="dashDivRate">—</div></div>
-        <div class="stat-card"><div class="stat-label" data-i18n="stat_zakat">Zakat Tahun Ini</div><div class="stat-value" id="dashZakat">RM 0</div><div class="stat-sub" id="dashZakatSub">—</div></div>
+        <div class="stat-card"><span class="stat-ic si-invest"><i class="ph-fill ph-wallet"></i></span><div class="stat-label" data-i18n="stat_invested">Jumlah Dilaburkan</div><div class="stat-value accent" id="dashTotalInvest">RM 0</div><div class="stat-sub" id="dashInvestSub">—</div></div>
+        <div class="stat-card"><span class="stat-ic si-div"><i class="ph-fill ph-trend-up"></i></span><div class="stat-label" data-i18n="stat_dividends">Jumlah Dividen</div><div class="stat-value" id="dashTotalReturn">RM 0</div><div class="stat-sub" id="dashReturnSub">—</div></div>
+        <div class="stat-card"><span class="stat-ic si-month"><i class="ph-fill ph-calendar-dots"></i></span><div class="stat-label" data-i18n="stat_monthly">Sumbangan Bulanan</div><div class="stat-value" id="dashMonthly">RM 0</div><div class="stat-sub" id="dashDivRate">—</div></div>
+        <div class="stat-card"><span class="stat-ic si-zakat"><i class="ph-fill ph-hand-heart"></i></span><div class="stat-label" data-i18n="stat_zakat">Zakat Tahun Ini</div><div class="stat-value" id="dashZakat">RM 0</div><div class="stat-sub" id="dashZakatSub">—</div></div>
       </div>
       <div class="chart-block">
         <div class="chart-header">
@@ -741,7 +741,9 @@
 
   <footer class="app-footer">
     <div class="footer-inner">
-      <span class="footer-line"><span class="footer-ver">Version 1.0</span> · <span data-i18n="footer_disclaimer">Bukan nasihat kewangan</span> <span class="footer-by">(Faiz Wahid)</span></span>
+      <span class="footer-l1">Version 1.0</span>
+      <span class="footer-l2" data-i18n="footer_disclaimer">Bukan Penasihat Kewangan Anda</span>
+      <span class="footer-l3">Faiz Wahid — 2026</span>
     </div>
   </footer>
 
@@ -755,6 +757,6 @@
     onerror="var s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.3/chart.umd.min.js';document.head.appendChild(s);"
   ></script>
   <!-- app.js — has built-in retry that waits for Chart.js to be ready -->
-  <script src="app.js?v=20260621f"></script>
+  <script src="app.js?v=20260621h"></script>
 </body>
 </html>
