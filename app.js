@@ -2828,7 +2828,14 @@ async function installPWA() {
 }
 window.installPWA = installPWA;
 function toggleLang() { applyLanguage(state.lang === 'en' ? 'bm' : 'en'); }
-function toggleMode() { applyUIMode(state.uiMode === 'pro' ? 'normal' : 'pro'); }
+function toggleMode() {
+  applyUIMode(state.uiMode === 'pro' ? 'normal' : 'pro');
+  try {
+    showToast(state.uiMode === 'pro'
+      ? (state.lang==='en' ? 'Pro mode on — full tables & advanced controls' : 'Mode Pro — jadual penuh & laras lanjutan')
+      : (state.lang==='en' ? 'Standard mode — simple view' : 'Mode Standard — paparan ringkas'));
+  } catch {}
+}
 window.toggleLang = toggleLang;
 window.toggleMode = toggleMode;
 // Hide install button once installed

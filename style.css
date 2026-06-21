@@ -3123,3 +3123,32 @@ body::before {
 .footer-l1 { font-size: 0.74rem; font-weight: 700; color: var(--accent); letter-spacing: 0.02em; }
 .footer-l2 { font-size: 0.66rem; font-weight: 500; color: var(--text-3); }
 .footer-l3 { font-size: 0.62rem; font-weight: 400; color: var(--text-4); letter-spacing: 0.03em; }
+
+/* ═══════════════════════════════════════════════════════════
+   HEADER COMPACT FIX (no overflow with install button) + FOOTER SLIM
+   ═══════════════════════════════════════════════════════════ */
+/* Phones: mode + install show icon only (label via toast / tooltip) */
+@media (max-width: 480px) {
+  #modeToggle span, .hdr-install span { display: none; }
+  #modeToggle { padding: 0; width: 34px; height: 34px; justify-content: center; }
+  #modeToggle i { opacity: 0.9; }
+  .hdr-install { width: 34px; height: 34px; }
+  .seg-mini { height: 34px; }
+  .header-actions { gap: 5px; }
+  .icon-btn { width: 34px; height: 34px; }
+}
+@media (max-width: 360px) {
+  .header-actions { gap: 4px; }
+  #langToggle { padding: 0 8px; }
+  .icon-btn, #modeToggle, .hdr-install, .hdr-share { width: 32px; height: 32px; }
+}
+
+/* Footer: slim & subtle (was too prominent) */
+.app-footer {
+  background: var(--surface) !important;
+  border-top: 1px solid var(--border) !important;
+}
+.footer-inner { padding: 11px 16px; gap: 2px; }
+.footer-l1 { font-size: 0.66rem; font-weight: 700; color: var(--text-3); letter-spacing: 0.02em; }
+.footer-l2 { font-size: 0.62rem; font-weight: 400; color: var(--text-4); }
+.footer-l3 { font-size: 0.6rem; font-weight: 400; color: var(--text-4); letter-spacing: 0.02em; }
