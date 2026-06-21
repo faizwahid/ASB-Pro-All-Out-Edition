@@ -1,7 +1,7 @@
 // ASB Pro service worker — offline support without stale-cache traps.
 // Strategy: network-first for our own HTML/CSS/JS (so latest always wins online),
 // cache-first for fonts/icons (CDN assets rarely change), offline fallback to cache.
-const CACHE = 'asb-pro-v4';
+const CACHE = 'asb-pro-v5';
 const CORE = [
   './',
   './index.html',

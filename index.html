@@ -29,7 +29,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
   <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
-  <link rel="stylesheet" href="style.css?v=20260621i">
+  <link rel="stylesheet" href="style.css?v=20260621j">
 </head>
 <body>
   <!-- ONBOARDING (first-time only) -->
@@ -72,11 +72,13 @@
       <div class="header-brand">
         <div class="brand-mark">
           <svg viewBox="0 0 32 32" width="20" height="20" fill="none" aria-hidden="true">
-            <rect x="7" y="19" width="4.2" height="6" rx="1.4" fill="#fff"/>
-            <rect x="14" y="15" width="4.2" height="10" rx="1.4" fill="#fff"/>
-            <rect x="21" y="10" width="4.2" height="15" rx="1.4" fill="#fff"/>
-            <path d="M7 17 L22 8" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
-            <path d="M22 8 L18.5 8.2 M22 8 L21.8 11.5" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+            <path d="M7.5 13 L11 7 L21 7 L24.5 13 L16 26 Z" fill="#fff"/>
+            <g stroke="rgba(79,70,229,0.55)" stroke-width="0.9" stroke-linejoin="round">
+              <path d="M7.5 13 L24.5 13"/>
+              <path d="M11 7 L13.5 13 L16 26"/>
+              <path d="M21 7 L18.5 13 L16 26"/>
+              <path d="M7.5 13 L16 26 M24.5 13 L16 26"/>
+            </g>
           </svg>
         </div>
         <div>
@@ -757,6 +759,6 @@
     onerror="var s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.3/chart.umd.min.js';document.head.appendChild(s);"
   ></script>
   <!-- app.js — has built-in retry that waits for Chart.js to be ready -->
-  <script src="app.js?v=20260621i"></script>
+  <script src="app.js?v=20260621j"></script>
 </body>
 </html>

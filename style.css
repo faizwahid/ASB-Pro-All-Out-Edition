@@ -3152,3 +3152,37 @@ body::before {
 .footer-l1 { font-size: 0.66rem; font-weight: 700; color: var(--text-3); letter-spacing: 0.02em; }
 .footer-l2 { font-size: 0.62rem; font-weight: 400; color: var(--text-4); }
 .footer-l3 { font-size: 0.6rem; font-weight: 400; color: var(--text-4); letter-spacing: 0.02em; }
+
+/* ═══════════════════════════════════════════════════════════
+   LOGO — faceted gem with gentle float + periodic shimmer
+   ═══════════════════════════════════════════════════════════ */
+.brand-mark {
+  position: relative;
+  overflow: hidden;
+  animation: gemFloat 4.5s ease-in-out infinite;
+  will-change: transform;
+}
+.brand-mark svg { position: relative; z-index: 1; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.12)); }
+/* Shimmer sweep across the gem */
+.brand-mark::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(115deg, transparent 35%, rgba(255,255,255,0.55) 50%, transparent 65%);
+  transform: translateX(-120%);
+  animation: gemShimmer 6s ease-in-out infinite;
+  z-index: 2;
+  pointer-events: none;
+}
+@keyframes gemFloat {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-2px); }
+}
+@keyframes gemShimmer {
+  0%, 70%  { transform: translateX(-120%); }
+  85%      { transform: translateX(120%); }
+  100%     { transform: translateX(120%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .brand-mark { animation: none; }
+  .brand-mark::after { animation: none; opacity: 0; }
+}
