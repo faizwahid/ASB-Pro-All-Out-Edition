@@ -24,6 +24,8 @@ const STRINGS = {
     hero_eyebrow:'Nilai dikira berdasarkan tetapan di tab Simpanan — ubah untuk lihat unjuran anda',
     stat_invested:'Jumlah Dilaburkan', stat_dividends:'Jumlah Dividen',
     stat_monthly:'Sumbangan Bulanan', stat_zakat:'Zakat Tahun Ini',
+    hdr_install:'Pasang App',
+    zakat_est:'Anggaran', zakat_enter:'Isi di tab Zakat untuk tepat',
     chart_scenarios:'Pertumbuhan ASB — 3 Senario',
     lbl_optimis:'Optimis', lbl_moderate:'Sederhana', lbl_pessimis:'Pesimis',
     lbl_invested:'Dilaburkan', lbl_asb_value:'Nilai ASB', lbl_loan_bal:'Baki Pinjaman',
@@ -232,6 +234,8 @@ const STRINGS = {
     hero_eyebrow:'Calculated from your Savings settings — adjust to see your projection',
     stat_invested:'Total Invested', stat_dividends:'Total Dividends',
     stat_monthly:'Monthly Contribution', stat_zakat:'Zakat This Year',
+    hdr_install:'Install App',
+    zakat_est:'Estimate', zakat_enter:'Fill the Zakat tab for accuracy',
     chart_scenarios:'ASB Growth — 3 Scenarios',
     lbl_optimis:'Optimistic', lbl_moderate:'Moderate', lbl_pessimis:'Conservative',
     lbl_invested:'Invested', lbl_asb_value:'ASB Value', lbl_loan_bal:'Loan Balance',
@@ -443,10 +447,11 @@ function applyLanguage(lang) {
   });
   // Update html lang attribute
   document.documentElement.lang = lang === 'en' ? 'en' : 'ms';
-  // Toggle active state on lang buttons
-  document.querySelectorAll('.lang-toggle-btn').forEach(b => {
-    b.classList.toggle('active', b.dataset.lang === lang);
-  });
+  // Compact toggles: reflect current language + mode
+  const _ll = document.getElementById('langLabel');
+  if (_ll) _ll.textContent = (lang === 'en') ? 'EN' : 'BM';
+  const _ml = document.getElementById('modeLabel');
+  if (_ml) _ml.textContent = (state.uiMode === 'pro') ? t('ui_pro') : t('ui_normal');
   // Re-run dynamic content so t() picks new lang
   updateAll();
   localStorage.setItem('asb-pro-lang', lang);
@@ -456,9 +461,8 @@ function initLanguage() {
   const saved = localStorage.getItem('asb-pro-lang') || 'bm';
   state.lang = saved;
   document.documentElement.lang = saved === 'en' ? 'en' : 'ms';
-  document.querySelectorAll('.lang-toggle-btn').forEach(b => {
-    b.classList.toggle('active', b.dataset.lang === saved);
-  });
+  const ll = document.getElementById('langLabel');
+  if (ll) ll.textContent = (saved === 'en') ? 'EN' : 'BM';
 }
 
 // ══════════════════════════════════════════════════════
@@ -1385,18 +1389,27 @@ function updateDashboard() {
   setText('dashPillYears', `${t('tab_forecast')}: ${years} ${t('years_sfx')}`);
   setText('dashPillRate', `${t('th_dividend')}: ${fmtPct(state.savRate)}`);
 
-  // Zakat uses standalone user inputs (zakatBalance / zakatDividend)
+  // Zakat: use Zakat-tab inputs if entered; else estimate from current ASB savings
   const zBal = state.zakatBalance || 0;
   const zDiv = state.zakatDividend || 0;
-  const zakatBase = state.zakatBasis==='dividend' ? zDiv
-    : state.zakatBasis==='both' ? (zBal+zDiv)
-    : zBal;
+  const zakatEntered = zBal > 0 || zDiv > 0;
+  let zakatBase, zakatNote;
+  if (zakatEntered) {
+    zakatBase = state.zakatBasis==='dividend' ? zDiv
+      : state.zakatBasis==='both' ? (zBal+zDiv)
+      : zBal;
+    zakatNote = `${state.zakatRate}% × ${fmt(zakatBase)}`;
+  } else {
+    // Estimate on current ASB holding (initial savings) — clearly labelled anggaran
+    zakatBase = state.savInitial || 0;
+    zakatNote = zakatBase > 0
+      ? `${t('zakat_est')}: ${state.zakatRate}% × ${fmt(zakatBase)}`
+      : t('zakat_enter');
+  }
   const zakatAmt = zakatBase*(state.zakatRate/100);
   const dashZakatEl = el('dashZakat');
   if (dashZakatEl) animateCounter(dashZakatEl, zakatAmt, fmt);
-  setText('dashZakatSub', zakatBase > 0
-    ? `${state.zakatRate}% × ${fmt(zakatBase)}`
-    : 'Masukkan nilai di tab Zakat');
+  setText('dashZakatSub', zakatNote);
 }
 
 // ── UPDATE SAVINGS ──
@@ -1931,13 +1944,10 @@ function updateAgePlan() {
 function applyUIMode(mode) {
   state.uiMode = (mode === 'pro') ? 'pro' : 'normal';
   document.documentElement.setAttribute('data-uimode', state.uiMode);
-  const sw = document.getElementById('uiModeSwitch');
-  if (sw) {
-    sw.setAttribute('data-uimode', state.uiMode);
-    sw.querySelectorAll('.mode-toggle-btn').forEach(b =>
-      b.classList.toggle('active', b.dataset.uimode === state.uiMode)
-    );
-  }
+  const mt = document.getElementById('modeToggle');
+  if (mt) mt.setAttribute('data-uimode', state.uiMode);
+  const label = document.getElementById('modeLabel');
+  if (label) label.textContent = (state.uiMode === 'pro') ? t('ui_pro') : t('ui_normal');
   try { localStorage.setItem('asb-pro-uimode', state.uiMode); } catch {}
   try { updateAgePlan(); } catch {}
 }
@@ -2132,7 +2142,7 @@ function switchTab(tabId) {
   if (btn) {
     btn.classList.add('active');
     moveTabIndicator(btn);
-    btn.scrollIntoView({ behavior:'smooth', block:'nearest', inline:'center' });
+    // No scrollIntoView — all tabs visible in the 2-row grid; scrolling caused jitter
   }
   if (tabId==='news') {
     const grid = el('newsGrid');
@@ -2274,9 +2284,7 @@ function setupEventListeners() {
   el('themeToggle')?.addEventListener('click', toggleTheme);
 
   // Language toggle
-  document.querySelectorAll('.lang-toggle-btn').forEach(btn => {
-    btn.addEventListener('click', () => applyLanguage(btn.dataset.lang));
-  });
+  // Language + mode use compact single-tap toggles (inline onclick toggleLang/toggleMode)
 
   // Color picker — toggle handled by inline onclick="toggleColorPicker()"
   // Close popup when clicking outside it
@@ -2285,10 +2293,7 @@ function setupEventListeners() {
     if (!wrap) el('colorPickerPanel')?.classList.remove('picker-open');
   });
 
-  // Standard/Pro segmented toggle — set mode on button click
-  document.querySelectorAll('.mode-toggle-btn').forEach(btn => {
-    btn.addEventListener('click', () => applyUIMode(btn.dataset.uimode));
-  });
+  // Standard/Pro uses compact toggle (inline onclick toggleMode)
 
   // Tooltip icons — tap to show explanation
   document.querySelectorAll('.tip-icon').forEach(icon => {
@@ -2791,3 +2796,44 @@ if ('serviceWorker' in navigator) {
     );
   });
 }
+
+// ── PWA: install button (appears when installable) ──
+let _deferredPrompt = null;
+function _isStandalone() {
+  return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+}
+function _showInstallBtn() {
+  const btn = document.getElementById('installBtn');
+  if (btn && !_isStandalone()) btn.style.display = '';
+}
+window.addEventListener('load', _showInstallBtn);
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  _deferredPrompt = e;
+  _showInstallBtn();
+});
+async function installPWA() {
+  if (!_deferredPrompt) {
+    // Fallback guidance when no prompt (e.g. iOS Safari / already installed)
+    showToast(state.lang === 'en'
+      ? 'To install: open browser menu → "Add to Home screen".'
+      : 'Untuk pasang: buka menu pelayar → "Add to Home screen" / "Tambah ke Skrin Utama".');
+    return;
+  }
+  _deferredPrompt.prompt();
+  try { await _deferredPrompt.userChoice; } catch {}
+  _deferredPrompt = null;
+  const btn = document.getElementById('installBtn');
+  if (btn) btn.style.display = 'none';
+}
+window.installPWA = installPWA;
+function toggleLang() { applyLanguage(state.lang === 'en' ? 'bm' : 'en'); }
+function toggleMode() { applyUIMode(state.uiMode === 'pro' ? 'normal' : 'pro'); }
+window.toggleLang = toggleLang;
+window.toggleMode = toggleMode;
+// Hide install button once installed
+window.addEventListener('appinstalled', () => {
+  const btn = document.getElementById('installBtn');
+  if (btn) btn.style.display = 'none';
+  _deferredPrompt = null;
+});

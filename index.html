@@ -29,7 +29,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
   <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
-  <link rel="stylesheet" href="style.css?v=20260621c">
+  <link rel="stylesheet" href="style.css?v=20260621f">
 </head>
 <body>
   <!-- ONBOARDING (first-time only) -->
@@ -98,16 +98,17 @@
             <button class="color-dot" data-color="slate" style="background:#516079" title="Slate"></button>
           </div>
         </div>
-        <!-- Language toggle -->
-        <div class="lang-toggle">
-          <button class="lang-toggle-btn active" data-lang="bm">BM</button>
-          <button class="lang-toggle-btn" data-lang="en">EN</button>
-        </div>
-        <!-- Standard/Pro segmented toggle (matches BM/EN) -->
-        <div class="mode-toggle" id="uiModeSwitch" role="group" aria-label="Mode">
-          <button class="mode-toggle-btn active" data-uimode="normal">Standard</button>
-          <button class="mode-toggle-btn" data-uimode="pro">Pro</button>
-        </div>
+        <!-- Language: compact single-tap toggle -->
+        <button class="seg-mini" id="langToggle" onclick="toggleLang()" title="Bahasa / Language" aria-label="Language">
+          <i class="ph ph-translate"></i><span id="langLabel">BM</span>
+        </button>
+        <!-- Standard/Pro: compact single-tap toggle -->
+        <button class="seg-mini" id="modeToggle" onclick="toggleMode()" data-uimode="normal" title="Standard / Pro" aria-label="Mode">
+          <i class="ph ph-sliders-horizontal"></i><span id="modeLabel">Standard</span>
+        </button>
+        <button class="hdr-btn hdr-install" id="installBtn" onclick="installPWA()" style="display:none">
+          <i class="ph ph-download-simple"></i><span data-i18n="hdr_install">Pasang App</span>
+        </button>
         <button class="hdr-btn hdr-share" onclick="shareURL()">
           <i class="ph ph-link"></i><span data-i18n="hdr_share">Kongsi Link</span>
         </button>
@@ -754,6 +755,6 @@
     onerror="var s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.3/chart.umd.min.js';document.head.appendChild(s);"
   ></script>
   <!-- app.js — has built-in retry that waits for Chart.js to be ready -->
-  <script src="app.js?v=20260621c"></script>
+  <script src="app.js?v=20260621f"></script>
 </body>
 </html>

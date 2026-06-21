@@ -2694,29 +2694,18 @@ body { background: var(--bg); }
 .onboard-next:hover { filter: brightness(1.05); }
 
 /* ── Tab panel entrance: staggered cascade ── */
-.tab-panel.active > * {
-  animation: panelRise 0.42s cubic-bezier(0.32,0.72,0,1) both;
+.tab-panel.active {
+  animation: panelRise 0.28s cubic-bezier(0.32,0.72,0,1) both;
 }
-.tab-panel.active > *:nth-child(1){ animation-delay: 0.02s; }
-.tab-panel.active > *:nth-child(2){ animation-delay: 0.07s; }
-.tab-panel.active > *:nth-child(3){ animation-delay: 0.12s; }
-.tab-panel.active > *:nth-child(4){ animation-delay: 0.17s; }
-.tab-panel.active > *:nth-child(5){ animation-delay: 0.22s; }
-.tab-panel.active > *:nth-child(n+6){ animation-delay: 0.26s; }
 @keyframes panelRise {
-  from { opacity: 0; transform: translateY(12px); }
+  from { opacity: 0; transform: translateY(5px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
 /* Stat cards within a grid stagger too */
-.stats-grid .stat-card { animation: cardPop 0.4s cubic-bezier(0.32,0.72,0,1) both; }
-.stats-grid .stat-card:nth-child(1){ animation-delay: 0.06s; }
-.stats-grid .stat-card:nth-child(2){ animation-delay: 0.11s; }
-.stats-grid .stat-card:nth-child(3){ animation-delay: 0.16s; }
-.stats-grid .stat-card:nth-child(4){ animation-delay: 0.21s; }
 @keyframes cardPop {
-  from { opacity: 0; transform: translateY(10px) scale(0.98); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 /* ── Chart loading skeleton ── */
@@ -2837,7 +2826,7 @@ body { background: var(--bg); }
 /* Tablet & below: condense */
 @media (max-width: 720px) {
   .brand-sub { display: none; }                 /* drop subtitle */
-  .ios-switch-text { display: none; }           /* keep toggle, hide "Standard" word */
+  /* mode label stays visible (shown below toggle) */
   .hdr-share span { display: none; }            /* "Kongsi Link" → icon only */
   .hdr-share { padding: 0; width: 38px; height: 38px; justify-content: center; }
   .hdr-share i { margin: 0; }
@@ -2918,25 +2907,7 @@ html, body { overflow-x: hidden; max-width: 100%; }
   padding: 0 !important;
 }
 
-/* ── Standard/Pro switch: caption BELOW toggle (vertical, no h-space) ── */
-.ios-switch-wrap {
-  flex-direction: column;
-  gap: 3px;
-  align-items: center;
-}
-.ios-switch-text {
-  display: block !important;          /* always show — clarity for all users */
-  order: 2;
-  font-size: 0.58rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  min-width: 0;
-  text-align: center;
-  line-height: 1;
-}
-.ios-switch { order: 1; }
-@media (max-width: 380px) {
-  .ios-switch-text { font-size: 0.54rem; }
+
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -2978,8 +2949,6 @@ html, body { overflow-x: hidden; max-width: 100%; }
 .lang-toggle { border-radius: 999px; height: 32px; align-items: center; box-shadow: var(--shadow-sm); }
 .lang-toggle-btn { display: flex; align-items: center; }
 
-/* Hide leftover iOS-switch styles if any remain referenced */
-.ios-switch-wrap, .ios-switch, .ios-switch-knob, .ios-switch-text { display: none !important; }
 
 /* ── Footer: fine, subtle single line ── */
 .footer-inner { justify-content: center; padding: 14px 16px; }
@@ -2992,3 +2961,87 @@ html, body { overflow-x: hidden; max-width: 100%; }
 }
 .footer-ver { font-weight: 600; color: var(--text-3); }
 .footer-by { color: var(--text-4); }
+
+/* ═══════════════════════════════════════════════════════════
+   STANDARD/PRO SWITCH — caption below, aligned with BM/EN
+   ═══════════════════════════════════════════════════════════ */
+.ios-switch-wrap {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  height: 40px;           /* same vertical box as BM/EN row for clean alignment */
+}
+.ios-switch { width: 42px; height: 24px; order: 1; }
+.ios-switch-knob { width: 18px; height: 18px; }
+.ios-switch-wrap[data-uimode="pro"] .ios-switch-knob { transform: translateX(18px); }
+.ios-switch-text {
+  display: block !important;     /* always visible */
+  order: 2;
+  min-width: 0;
+  text-align: center;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+/* Align the action cluster on a shared centerline */
+.header-actions { align-items: center; }
+@media (max-width: 380px) {
+  .ios-switch { width: 38px; height: 22px; }
+  .ios-switch-knob { width: 16px; height: 16px; }
+  .ios-switch-wrap[data-uimode="pro"] .ios-switch-knob { transform: translateX(16px); }
+  .ios-switch-text { font-size: 0.55rem; }
+}
+
+/* PWA install button — accent-tinted, sits before share */
+.hdr-install {
+  background: var(--accent-bg);
+  border-color: var(--accent-border);
+  color: var(--accent);
+  font-weight: 700;
+}
+.hdr-install:hover { background: var(--accent-bg); filter: brightness(0.98); box-shadow: var(--shadow); }
+@media (max-width: 720px) {
+  .hdr-install span { display: none; }       /* icon-only on small screens */
+  .hdr-install { padding: 0; width: 38px; height: 38px; justify-content: center; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   COMPACT TOGGLES — language + mode (single-tap, space-saving)
+   like the day/night button; aligned on one row
+   ═══════════════════════════════════════════════════════════ */
+.seg-mini {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 34px;
+  padding: 0 11px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text-2);
+  font-family: var(--font);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-fast), border-color var(--transition), background var(--transition), color var(--transition);
+}
+.seg-mini i { font-size: 0.95rem; opacity: 0.7; }
+.seg-mini:hover { border-color: var(--accent-border); color: var(--text-1); }
+.seg-mini:active { transform: scale(0.96); }
+/* Mode in Pro → accent-filled to signal advanced is ON */
+#modeToggle[data-uimode="pro"] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+#modeToggle[data-uimode="pro"] i { opacity: 0.9; }
+
+@media (max-width: 380px) {
+  .seg-mini { height: 32px; padding: 0 9px; font-size: 0.7rem; gap: 4px; }
+}
