@@ -2938,3 +2938,57 @@ html, body { overflow-x: hidden; max-width: 100%; }
 @media (max-width: 380px) {
   .ios-switch-text { font-size: 0.54rem; }
 }
+
+/* ═══════════════════════════════════════════════════════════
+   STANDARD/PRO SEGMENTED TOGGLE (matches BM/EN, perfectly aligned)
+   ═══════════════════════════════════════════════════════════ */
+.mode-toggle {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  height: 32px;
+}
+.mode-toggle-btn {
+  padding: 0 0.85rem;
+  height: 100%;
+  border: none;
+  background: transparent;
+  color: var(--text-3);
+  font-family: var(--font);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: color var(--transition), background var(--transition), transform var(--transition-fast);
+  white-space: nowrap;
+}
+.mode-toggle-btn.active {
+  background: var(--accent);
+  color: #fff;
+}
+.mode-toggle-btn:active { transform: scale(0.96); }
+.mode-toggle-btn:hover:not(.active) { background: var(--surface-2); color: var(--text-1); }
+
+/* Match BM/EN pill radius to the mode pill for visual harmony */
+.lang-toggle { border-radius: 999px; height: 32px; align-items: center; box-shadow: var(--shadow-sm); }
+.lang-toggle-btn { display: flex; align-items: center; }
+
+/* Hide leftover iOS-switch styles if any remain referenced */
+.ios-switch-wrap, .ios-switch, .ios-switch-knob, .ios-switch-text { display: none !important; }
+
+/* ── Footer: fine, subtle single line ── */
+.footer-inner { justify-content: center; padding: 14px 16px; }
+.footer-line {
+  font-size: 0.66rem;
+  font-weight: 400;
+  color: var(--text-4);
+  letter-spacing: 0.01em;
+  text-align: center;
+}
+.footer-ver { font-weight: 600; color: var(--text-3); }
+.footer-by { color: var(--text-4); }

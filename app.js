@@ -443,9 +443,6 @@ function applyLanguage(lang) {
   });
   // Update html lang attribute
   document.documentElement.lang = lang === 'en' ? 'en' : 'ms';
-  // Keep mode label correct in current language (not overwritten by data-i18n)
-  const _ml = document.getElementById('uiModeLabel');
-  if (_ml) _ml.textContent = (state.uiMode === 'pro') ? t('ui_pro') : t('ui_normal');
   // Toggle active state on lang buttons
   document.querySelectorAll('.lang-toggle-btn').forEach(b => {
     b.classList.toggle('active', b.dataset.lang === lang);
@@ -1935,9 +1932,12 @@ function applyUIMode(mode) {
   state.uiMode = (mode === 'pro') ? 'pro' : 'normal';
   document.documentElement.setAttribute('data-uimode', state.uiMode);
   const sw = document.getElementById('uiModeSwitch');
-  if (sw) sw.setAttribute('data-uimode', state.uiMode);
-  const label = document.getElementById('uiModeLabel');
-  if (label) label.textContent = (state.uiMode === 'pro') ? t('ui_pro') : t('ui_normal');
+  if (sw) {
+    sw.setAttribute('data-uimode', state.uiMode);
+    sw.querySelectorAll('.mode-toggle-btn').forEach(b =>
+      b.classList.toggle('active', b.dataset.uimode === state.uiMode)
+    );
+  }
   try { localStorage.setItem('asb-pro-uimode', state.uiMode); } catch {}
   try { updateAgePlan(); } catch {}
 }
@@ -2285,9 +2285,9 @@ function setupEventListeners() {
     if (!wrap) el('colorPickerPanel')?.classList.remove('picker-open');
   });
 
-  // Normal/Pro mode slide switch — toggle on click
-  el('uiModeSwitch')?.addEventListener('click', () => {
-    applyUIMode(state.uiMode === 'pro' ? 'normal' : 'pro');
+  // Standard/Pro segmented toggle — set mode on button click
+  document.querySelectorAll('.mode-toggle-btn').forEach(btn => {
+    btn.addEventListener('click', () => applyUIMode(btn.dataset.uimode));
   });
 
   // Tooltip icons — tap to show explanation
